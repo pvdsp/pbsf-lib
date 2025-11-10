@@ -3,7 +3,7 @@
 A Python module for **pattern-based sequence learning** using **hierarchical piecewise approximation**.  
 This library implements the concepts presented in the paper:
 
-> **A Hierarchical Piecewise Approximation Framework for Pattern-Based Sequence Learning**  
+> [**A Hierarchical Piecewise Approximation Framework for Pattern-Based Sequence Learning** ](https://bnaic2025.unamur.be/accepted-submissions/accepted_poster/072%20-%20A%20Hierarchical%20Piecewise%20Approximation%20Framework%20for%20Pattern-Based%20Sequence%20Learning.pdf)  
 > *Patrick Van der Spiegel, Johan Loeckx*  
 > Vrije Universiteit Brussel (VUB) – Artificial Intelligence Lab – Applied Research Team  
 > BNAIC/BeNeLearn 2025: 37th Benelux Conference on Artificial Intelligence and the 34th Belgian Dutch Conference on Machine Learning. 2025.
