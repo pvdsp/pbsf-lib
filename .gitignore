@@ -29,7 +29,7 @@ htmlcov/
 Thumbs.db
 
 # UCR benchmark data and results
-ucr/data/
+eval/ucr/data/
 results/
 *.csv
 *.npy
