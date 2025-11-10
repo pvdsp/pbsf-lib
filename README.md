@@ -162,26 +162,41 @@ Discretisers convert continuous segments into hierarchical representations.
 
 ```python
 import numpy as np
+import matplotlib.pyplot as plt
+
 from pbsf.discretisers import PiecewiseLinear
-from pbsf.nodes import SlopeSignNode
+from pbsf.nodes import PLANode
+from pbsf.utils.visualise import show
 
 # Create a segment
-segment = np.sin(np.linspace(0, 2 * np.pi, 200))
+segment = np.sin(np.linspace(0, 4 * np.pi, 800))
+segment += np.linspace(0, 2, 800) + np.random.normal(0, 0.05, 800)
 
 # Configure discretiser
 discretiser = PiecewiseLinear({
-    "max_depth": lambda data: 3,  # 3 levels of hierarchy
-    "frames": lambda depth: 2 ** depth,  # Double number of frames at each level
-    "node_type": SlopeSignNode,
-    "node_params": {}
+    "max_depth": lambda data: 3,
+    "frames": lambda depth: 3 ** depth,
+    "node_type": PLANode,
+    "node_params": {
+        "distance_threshold": lambda depth: 0.25
+    }
 })
 
 # Discretise the segment into a chain of nodes
 nodes = discretiser.discretise(segment)
-print(f"Created {len(nodes)} nodes at different scales")
 for node in nodes:
-    print(f"Depth {node.depth}: {len(node.slopes)} segments")
+    print(node)
+
+# Visualise the approximations at each depth
+fig, axs = plt.subplots(3, 1, figsize=(8, 6), sharex=True)
+for depth, node in enumerate(nodes):
+    axs[depth].plot((segment - segment.mean()) / segment.std(), alpha=.75)
+    plt.axes(axs[depth])
+    axs[depth].set_title(f"Node at depth {node.depth}, approximates segment using {len(node.slopes)} frames")
+    node.show()
 ```
+
+![readme-discretisers.png](docs/images/readme-discretisers.png)
 
 ### Nodes
 
@@ -221,6 +236,7 @@ from pbsf.models import PatternTree, PatternGraph, PatternSet
 from pbsf.segmenters import SlidingWindow
 from pbsf.discretisers import PiecewiseLinear
 from pbsf.nodes import SlopeSignNode
+from pbsf.utils.visualise import show
 
 # Prepare data
 train = np.sin(np.linspace(0, 4 * np.pi, 200))
@@ -252,7 +268,11 @@ model = PatternGraph()
 model.learn(chains)
 contains = model.contains(chains[0])
 print(f"Pattern seen before: {contains}")
+
+show(model)
 ```
+
+![readme-model.png](docs/images/readme-model.png)
 
 ### Algorithms
 
@@ -337,6 +357,13 @@ algorithms = [
     }
 ]
 ```
+
+### Visualising Results
+
+Visualisations of anomaly scores and detected anomalies are saved in `ucr/results/figures/`. Example:
+
+![019-HPM_PatternGraph_auto.png](docs/images/019-HPM_PatternGraph_auto.png)
+![046-HPM_PatternGraph_auto.png](docs/images/046-HPM_PatternGraph_auto.png)
 
 ---
 
