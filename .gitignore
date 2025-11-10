@@ -1,0 +1,35 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+*.pyo
+*.pyd
+build/
+dist/
+wheels/
+*.egg-info
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# UV-specific files
+uv.lock
+
+# IDE files
+.idea/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# UCR benchmark data and results
+ucr/data/
+results/
+*.csv
+*.npy
