@@ -21,4 +21,9 @@ packages = ["src/pbsf"]
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
+    "python-lsp-server>=1.14.0",
+    "ruff>=0.15.2",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
