@@ -1,8 +1,9 @@
 from pbsf.models.base import Model
 from pbsf.models.pattern_graph import PatternGraph
 from pbsf.models.pattern_tree import PatternTree
-from pbsf.utils.nested_word import NestedWord
 from pbsf.nodes import Node
+from pbsf.utils.nested_word import NestedWord
+
 
 class NestedWordSet(Model):
     """

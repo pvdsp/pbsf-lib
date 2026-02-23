@@ -177,7 +177,7 @@ def evaluate_configurations(
             end_time = time.time()
             evaluation_time = end_time - start_time
             print(f"\t({evaluation_time:.2f}s)")
-            
+
             f.write(f"{identifier}")
             for result in results:
                 f.write(f",{result}")

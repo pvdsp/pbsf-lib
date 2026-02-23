@@ -6,7 +6,7 @@ import scipy.stats
 
 from pbsf.discretisers.base import Discretiser, _normalise
 from pbsf.discretisers.paa import PiecewiseAggregate
-from pbsf.nodes import SAXNode, PAANode
+from pbsf.nodes import PAANode, SAXNode
 from pbsf.utils import has_required
 
 
@@ -99,7 +99,7 @@ class SymbolicAggregate(Discretiser):
         nodes = []
         segment = _normalise(segment)
         if segment.ndim != 1:
-            raise ValueError(f"Can only discretise 1D data.")
+            raise ValueError("Can only discretise 1D data.")
         paa = PiecewiseAggregate({
                 "max_depth": self.max_depth,
                 "frames": self.frames,

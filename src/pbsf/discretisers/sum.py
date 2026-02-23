@@ -3,9 +3,10 @@ from typing import Any
 
 import numpy as np
 
+from pbsf.discretisers.base import Discretiser, _divide
 from pbsf.nodes import SumNode
 from pbsf.utils import has_required
-from pbsf.discretisers.base import Discretiser, _divide
+
 
 class Summation(Discretiser):
     """
@@ -62,7 +63,7 @@ class Summation(Discretiser):
         """
         nodes = []
         if segment.ndim != 1:
-            raise ValueError(f"Can only discretise 1D data.")
+            raise ValueError("Can only discretise 1D data.")
         for depth in range(self.max_depth(segment)):
             breakpoints = _divide(0, len(segment), self.frames(depth))
             sums = np.array([np.sum(segment[i:j]) for (i, j) in breakpoints])

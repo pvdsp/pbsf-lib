@@ -1,9 +1,11 @@
 import unittest
+
 import numpy as np
 
-from pbsf.utils.nested_word import NestedWord
-from pbsf.models import PatternSet, PatternTree, PatternGraph, NestedWordSet
+from pbsf.models import NestedWordSet, PatternGraph, PatternSet, PatternTree
 from pbsf.nodes import SlopeSignNode
+from pbsf.utils.nested_word import NestedWord
+
 
 def create_test_node(slopes):
     return SlopeSignNode({
@@ -478,18 +480,18 @@ class TestNestedWordSet(unittest.TestCase):
         model.update(chain)
         self.assertEqual(len(model.patterns.graph.vertices), 1)
         self.assertEqual(len(model.nested_words), 0)
-        
+
         model.update(chain)
         self.assertEqual(len(model.patterns.graph.vertices), 1)
         self.assertEqual(len(model.nested_words), 1)
-        
+
         expected_nw = NestedWord.from_tagged_sequence([0])
         self.assertEqual(list(model.nested_words)[0], expected_nw)
 
     def test_update_regular_chains(self):
         """Adding chain of length >1 to an empty NestedWord"""
         model = NestedWordSet({"context_size": 4})
-        
+
         # First chain
         chain1 = [create_test_node([1.0]),
                   create_test_node([1.0, 1.0]),
@@ -540,7 +542,7 @@ class TestNestedWordSet(unittest.TestCase):
         model.update(chain)
         self.assertEqual(len(model.patterns.graph.vertices), 5)
         self.assertEqual(len(model.nested_words), 1)
-        
+
         expected_nw = NestedWord.from_tagged_sequence(['<', 0, '<', 1, '<', 2, '<', 3, 4])
         self.assertTrue(expected_nw in model.nested_words)
 
@@ -605,14 +607,14 @@ class TestNestedWordSet(unittest.TestCase):
         for _ in range(10):
             for chain in chains:
                 model.update(chain)
-        
+
         # Test sequential order chains
         self.assertTrue(model.contains(chains[0:5]))  # 1-2-3-4-5
         self.assertTrue(model.contains(chains[1:5] + [chains[0]]))  # 2-3-4-5-1
         self.assertTrue(model.contains(chains[2:5] + chains[0:2]))  # 3-4-5-1-2
         self.assertTrue(model.contains(chains[3:5] + chains[0:3]))  # 4-5-1-2-3
         self.assertTrue(model.contains([chains[4]] + chains[0:4]))  # 5-1-2-3-4
-        
+
         # Test shuffled order (should be False)
         shuffled = [chains[1], chains[0], chains[4], chains[2], chains[3]]  # 2-1-5-3-4
         self.assertFalse(model.contains(shuffled))
@@ -662,7 +664,7 @@ class TestNestedWordSet(unittest.TestCase):
         model = NestedWordSet({"context_size": 1})
         chain1 = [create_test_node([1.0])]
         chain2 = [create_test_node([1.0])]
-        
+
         # First update should create NestedWord immediately, as context_size is 1
         result = model.update(chain1)
         self.assertEqual(len(result), 1)
@@ -671,7 +673,7 @@ class TestNestedWordSet(unittest.TestCase):
         result = model.update(chain2)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(model.nested_words), 1)
-        
+
         # Add exactly context_size chains
         model = NestedWordSet({"context_size": 3})
         chains = [
@@ -686,7 +688,7 @@ class TestNestedWordSet(unittest.TestCase):
                 self.assertEqual(len(result), 0)  # No NestedWord yet
             else:
                 self.assertEqual(len(result), 1)  # NestedWord created
-        
+
         # Add one more chain to test queue overflow
         overflow_chain = [create_test_node([-1.0, -1.0])]
         result = model.update(overflow_chain)
@@ -698,11 +700,11 @@ class TestNestedWordSet(unittest.TestCase):
         # Test with None parameters (should use defaults)
         model = NestedWordSet(None)
         self.assertEqual(model.context_size, 2)
-        
-        # Test with empty dict (should use defaults)  
+
+        # Test with empty dict (should use defaults)
         model = NestedWordSet({})
         self.assertEqual(model.context_size, 2)
-        
+
         # Test with large context_size
         model = NestedWordSet({"context_size": 1000})
         self.assertEqual(model.context_size, 1000)
@@ -710,7 +712,7 @@ class TestNestedWordSet(unittest.TestCase):
     def test_nesting_scenarios(self):
         """Test scenarios with multiple chain interactions"""
         model = NestedWordSet({"context_size": 3})
-        
+
         # Create chains that will result in complex nested word combinations
         chain1 = [create_test_node([1.0]), create_test_node([1.0, 1.0])]
         chain2 = [create_test_node([1.0]), create_test_node([-1.0, 1.0])]  # Differs at second node
@@ -721,11 +723,11 @@ class TestNestedWordSet(unittest.TestCase):
         result = model.update(chain1)
         self.assertEqual(len(result), 0)
         self.assertEqual(len(model.nested_words), 0)
-        
+
         result = model.update(chain2)
         self.assertEqual(len(result), 0)
         self.assertEqual(len(model.nested_words), 0)
-        
+
         result = model.update(chain3)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(model.nested_words), 1)
@@ -739,12 +741,12 @@ class TestNestedWordSet(unittest.TestCase):
     def test_learn_with_empty_and_invalid_chains(self):
         """Test learn method with edge cases"""
         model = NestedWordSet({"context_size": 2})
-        
+
         # Test learn with empty list
         result = model.learn([])
         self.assertEqual(result, [])
         self.assertEqual(len(model.nested_words), 0)
-        
+
         # Test learn with list containing empty chain
         with self.assertRaises(ValueError):
             model.learn([[], [create_test_node([1.0])]])

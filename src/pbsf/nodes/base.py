@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from pbsf.utils import has_required
-
 
 class Node(ABC):
     """

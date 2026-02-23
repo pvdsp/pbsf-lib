@@ -78,9 +78,9 @@ class PLANode(Node):
         if not isinstance(node, PLANode):
             raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
         if self.depth != node.depth:
-            raise ValueError(f"Cannot compare nodes of different depths.")
+            raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != node.distance_threshold:
-            raise ValueError(f"Cannot compare nodes with different distance thresholds.")
+            raise ValueError("Cannot compare nodes with different distance thresholds.")
         slopes = self.slopes - node.slopes
         intercepts = self.intercepts - node.intercepts
         length = self.breakpoints[0][1] - self.breakpoints[0][0]

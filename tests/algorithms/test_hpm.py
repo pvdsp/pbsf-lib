@@ -1,8 +1,9 @@
 import unittest
+
 import numpy as np
 
-from pbsf.nodes import StructuralProminenceNode
 from pbsf.algorithms import hpm
+from pbsf.nodes import StructuralProminenceNode
 
 
 class TestHPM(unittest.TestCase):

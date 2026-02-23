@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from ..utils import has_required
-
 
 class Discretiser(ABC):
     """

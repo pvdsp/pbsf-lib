@@ -70,9 +70,9 @@ class SAXNode(Node):
         if not isinstance(node, SAXNode):
             raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
         if self.depth != node.depth:
-            raise ValueError(f"Cannot compare nodes of different depths.")
+            raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != node.distance_threshold:
-            raise ValueError(f"Cannot compare nodes with different distance thresholds.")
+            raise ValueError("Cannot compare nodes with different distance thresholds.")
         if self.n != node.n or self.frames != node.frames:
             raise ValueError(f"Cannot compare nodes with different segment lengths or number of frames: "
                              f"segment lengths: {self.n} and {node.n}, frames: {self.frames} and {node.frames}.")

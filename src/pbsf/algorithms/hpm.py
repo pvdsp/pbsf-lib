@@ -1,9 +1,9 @@
 import numpy as np
 
+from pbsf.discretisers import PiecewiseLinear
 from pbsf.models import PatternTree
 from pbsf.nodes import StructuralProminenceNode
 from pbsf.segmenters import SlidingWindow
-from pbsf.discretisers import PiecewiseLinear
 
 
 def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> np.ndarray:

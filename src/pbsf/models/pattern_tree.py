@@ -1,8 +1,8 @@
 import math
 
 from pbsf.models.base import Model
-from pbsf.utils.digraph import Digraph
 from pbsf.nodes import Node
+from pbsf.utils.digraph import Digraph
 
 
 class PatternTree(Model):

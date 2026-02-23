@@ -87,11 +87,11 @@ class StructuralProminenceNode(Node):
         if not isinstance(node, StructuralProminenceNode):
             raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
         if self.depth != node.depth:
-            raise ValueError(f"Cannot compare nodes of different depths.")
+            raise ValueError("Cannot compare nodes of different depths.")
         if self.structural_threshold != node.structural_threshold:
-            raise ValueError(f"Cannot compare nodes with different structural thresholds.")
+            raise ValueError("Cannot compare nodes with different structural thresholds.")
         if self.prominence_threshold != node.prominence_threshold:
-            raise ValueError(f"Cannot compare nodes with different prominence thresholds.")
+            raise ValueError("Cannot compare nodes with different prominence thresholds.")
 
     def structural_distance(self, node: 'StructuralProminenceNode') -> float:
         """

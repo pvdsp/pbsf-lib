@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 
 from pbsf.discretisers.base import Discretiser, _divide, _normalise, _piecewise_linear
-from pbsf.nodes import SlopeSignNode, StructuralProminenceNode, PLANode
+from pbsf.nodes import PLANode, SlopeSignNode, StructuralProminenceNode
 from pbsf.utils import has_required
 
 
@@ -62,7 +62,7 @@ class PiecewiseLinear(Discretiser):
         std = np.std(segment)
         segment = _normalise(segment)
         if segment.ndim != 1:
-            raise ValueError(f"Can only discretise 1D data.")
+            raise ValueError("Can only discretise 1D data.")
         for depth in range(self.max_depth(segment)):
             breakpoints = _divide(0, len(segment), self.frames(depth))
             slopes, intercepts = _piecewise_linear(segment, breakpoints)

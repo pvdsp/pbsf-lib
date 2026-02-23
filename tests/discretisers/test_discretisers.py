@@ -1,7 +1,9 @@
 import unittest
+
 import numpy as np
-from pbsf.nodes import SlopeSignNode, StructuralProminenceNode
+
 from pbsf.discretisers import PiecewiseLinear
+from pbsf.nodes import SlopeSignNode, StructuralProminenceNode
 
 
 class TestPiecewiseLinear(unittest.TestCase):

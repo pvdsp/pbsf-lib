@@ -62,7 +62,7 @@ class PiecewiseAggregate(Discretiser):
         nodes = []
         segment = _normalise(segment)
         if segment.ndim != 1:
-            raise ValueError(f"Can only discretise 1D data.")
+            raise ValueError("Can only discretise 1D data.")
         for depth in range(self.max_depth(segment)):
             breakpoints = _divide(0, len(segment), self.frames(depth))
             paa = np.array([np.mean(segment[start:end]) for start, end in breakpoints])

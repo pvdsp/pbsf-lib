@@ -1,8 +1,8 @@
 import math
 
 from pbsf.models.base import Model
-from pbsf.utils.layered_digraph import LayeredDigraph
 from pbsf.nodes import Node
+from pbsf.utils.layered_digraph import LayeredDigraph
 
 
 class PatternGraph(Model):

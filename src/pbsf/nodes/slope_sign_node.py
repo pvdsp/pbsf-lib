@@ -73,7 +73,7 @@ class SlopeSignNode(Node):
         if not isinstance(node, SlopeSignNode):
             raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
         if self.depth != node.depth:
-            raise ValueError(f"Cannot compare nodes of different depths.")
+            raise ValueError("Cannot compare nodes of different depths.")
 
     def distance(self, node: 'SlopeSignNode') -> float:
         """

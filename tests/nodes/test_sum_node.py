@@ -1,4 +1,5 @@
 import unittest
+
 import numpy as np
 
 from pbsf.nodes import SumNode
@@ -23,7 +24,7 @@ class TestSumNode(unittest.TestCase):
         self.assertEqual(n2.distance(n2), 0.0)
         self.assertAlmostEqual(n1.distance(n2), 20/3)
         self.assertAlmostEqual(n2.distance(n1), 20/3)
-        
+
         n2.sums = np.array([300, 195, 115])
         self.assertEqual(n1.distance(n2), 130.0)
         self.assertEqual(n1.distance(n2), 130.0)

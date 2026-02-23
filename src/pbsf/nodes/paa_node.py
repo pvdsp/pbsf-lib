@@ -67,9 +67,9 @@ class PAANode(Node):
         if not isinstance(other, PAANode):
             raise ValueError(f"Cannot compare node of type {type(self)} with {type(other)}.")
         if self.depth != other.depth:
-            raise ValueError(f"Cannot compare nodes of different depths.")
+            raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != other.distance_threshold:
-            raise ValueError(f"Cannot compare nodes with different distance thresholds.")
+            raise ValueError("Cannot compare nodes with different distance thresholds.")
         return np.linalg.norm(self.paa - other.paa)
 
     def show(self) -> None:
