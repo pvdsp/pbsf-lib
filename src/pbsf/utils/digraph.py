@@ -95,5 +95,7 @@ class Digraph:
         str
             String representation showing number of vertices and edges.
         """
-        return (f"Digraph(vertices={len(self.vertices)}, "
-                f"edges={sum([len(self.outgoing(node)) for node in range(len(self.vertices))])})")
+        n_edges = sum(
+            len(self.outgoing(v)) for v in range(len(self.vertices))
+        )
+        return f"Digraph(vertices={len(self.vertices)}, edges={n_edges})"

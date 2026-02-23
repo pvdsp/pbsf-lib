@@ -94,15 +94,21 @@ class LayeredDigraph(Digraph):
         v2 = self.vertices[to_v]
         if v2["layer"] == 0:
             if len(self.outgoing(to_v)) > 0:
-                raise ValueError(f"Cannot add edge from node {from_v} in layer {v1['layer']} "
-                                 f"to root layer node {to_v} with outgoing edges.")
+                raise ValueError(
+                    f"Cannot add edge from node {from_v}"
+                    f" in layer {v1['layer']} to root layer"
+                    f" node {to_v} with outgoing edges."
+                )
             else:
                 super().add_edge(from_v, to_v)
         elif v2["layer"] == v1["layer"] + 1:
             super().add_edge(from_v, to_v)
         else:
-            raise ValueError(f"Cannot add edge from node {from_v} of layer {v1['layer']} "
-                                f"to node {to_v} of layer {v2['layer']}.")
+            raise ValueError(
+                f"Cannot add edge from node {from_v}"
+                f" of layer {v1['layer']} to node {to_v}"
+                f" of layer {v2['layer']}."
+            )
         self._update_layer(to_v, v1["layer"] + 1)
 
     def outgoing(self, vertex: int) -> set[int]:
@@ -158,5 +164,10 @@ class LayeredDigraph(Digraph):
         str
             String representation showing number of vertices, edges, and layers.
         """
-        num_edges = sum([len(self.outgoing(node)) for node in range(len(self.vertices))])
-        return f"LayeredDigraph(vertices={len(self.vertices)}, edges={num_edges}, layers={self.max_depth})"
+        num_edges = sum(
+            len(self.outgoing(v)) for v in range(len(self.vertices))
+        )
+        return (
+            f"LayeredDigraph(vertices={len(self.vertices)}, "
+            f"edges={num_edges}, layers={self.max_depth})"
+        )

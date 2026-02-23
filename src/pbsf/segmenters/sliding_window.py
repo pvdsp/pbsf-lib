@@ -28,9 +28,16 @@ class SlidingWindow(Segmenter):
         self.window_size = params.get("window_size", None)
         if not self.window_size:
             if not self.autocorrelation:
-                raise ValueError("`window_size` must be specified if `autocorrelation` is False.")
+                raise ValueError(
+                    "`window_size` must be specified"
+                    " if `autocorrelation` is False."
+                )
             else:
-                raise ValueError("`window_size` must be specified as a fallback for when there is no periodicity.")
+                raise ValueError(
+                    "`window_size` must be specified as a"
+                    " fallback for when there is no"
+                    " periodicity."
+                )
         if self.window_size <= 0:
             raise ValueError("`window_size` must be greater than 0.")
         if self.autocorrelation:
@@ -71,7 +78,10 @@ class SlidingWindow(Segmenter):
         size = data.size
         norm = data - np.mean(data)
         autocorr = np.correlate(norm, norm, mode='same')
-        autocorr = autocorr[data.size // 2 + 1:] / (data.var() * np.arange(size - 1, size // 2, -1))
+        autocorr = (
+            autocorr[data.size // 2 + 1:]
+            / (data.var() * np.arange(size - 1, size // 2, -1))
+        )
         autocorr = autocorr[minimum:]
         lag = autocorr.argmax() + 1
         if autocorr[lag - 1] > 0.5:
@@ -90,7 +100,8 @@ class SlidingWindow(Segmenter):
         Returns
         -------
         np.ndarray
-            2D array of shape (n_windows, window_size) containing the segmented data.
+            2D array of shape (n_windows, window_size) containing
+            the segmented data.
 
         Raises
         ------
@@ -107,7 +118,13 @@ class SlidingWindow(Segmenter):
         if self.autocorrelation and self.window_size is None:
             self.window_size = self._ac_window_size(data)
         if len(data) < self.window_size:
-            raise ValueError("Data length must be greater than or equal to window size.")
+            raise ValueError(
+                "Data length must be greater than or"
+                " equal to window size."
+            )
         if self.differentiation:
             data = np.diff(data)
-        return np.lib.stride_tricks.sliding_window_view(data, self.window_size)[::self.step_size]
+        windows = np.lib.stride_tricks.sliding_window_view(
+            data, self.window_size
+        )
+        return windows[::self.step_size]

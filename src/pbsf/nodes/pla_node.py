@@ -49,7 +49,8 @@ class PLANode(Node):
         Draws vertical lines at breakpoints and plots the linear segments
         defined by the slopes and intercepts.
         """
-        for (x1, x2), (a, b) in zip(self.breakpoints, zip(self.slopes, self.intercepts)):
+        pairs = zip(self.slopes, self.intercepts)
+        for (x1, x2), (a, b) in zip(self.breakpoints, pairs):
             plt.axvline(x1, color="lightgrey", linestyle=":")
             plt.axvline(x2, color="lightgrey", linestyle=":")
             x = np.linspace(0, x2 - x1, 100)
@@ -76,7 +77,10 @@ class PLANode(Node):
             If nodes are not comparable (different types, depths, or thresholds).
         """
         if not isinstance(node, PLANode):
-            raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
+            raise ValueError(
+                f"Cannot compare node of type {type(self)}"
+                f" with {type(node)}."
+            )
         if self.depth != node.depth:
             raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != node.distance_threshold:
@@ -120,8 +124,11 @@ class PLANode(Node):
         Returns
         -------
         str
-            String representation showing depth, slopes, and intercepts (rounded to 2 decimals).
+            String representation showing depth, slopes,
+            and intercepts (rounded to 2 decimals).
         """
-        return f"PLANode(depth={self.depth}, " \
-               f"slopes={np.round(self.slopes, 2)}, " \
-               f"intercepts={np.round(self.intercepts, 2)})"
+        return (
+            f"PLANode(depth={self.depth}, "
+            f"slopes={np.round(self.slopes, 2)}, "
+            f"intercepts={np.round(self.intercepts, 2)})"
+        )

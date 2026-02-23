@@ -64,18 +64,30 @@ class SAXNode(Node):
         Raises
         ------
         ValueError
-            If node is not a SAXNode or has different depth, thresholds, segment lengths,
-            or number of frames.
+            If node is not a SAXNode or has different depth,
+            thresholds, segment lengths, or number of frames.
         """
         if not isinstance(node, SAXNode):
-            raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
+            raise ValueError(
+                f"Cannot compare node of type {type(self)}"
+                f" with {type(node)}."
+            )
         if self.depth != node.depth:
-            raise ValueError("Cannot compare nodes of different depths.")
+            raise ValueError(
+                "Cannot compare nodes of different depths."
+            )
         if self.distance_threshold != node.distance_threshold:
-            raise ValueError("Cannot compare nodes with different distance thresholds.")
+            raise ValueError(
+                "Cannot compare nodes with different"
+                " distance thresholds."
+            )
         if self.n != node.n or self.frames != node.frames:
-            raise ValueError(f"Cannot compare nodes with different segment lengths or number of frames: "
-                             f"segment lengths: {self.n} and {node.n}, frames: {self.frames} and {node.frames}.")
+            raise ValueError(
+                f"Cannot compare nodes with different segment"
+                f" lengths or number of frames: segment"
+                f" lengths: {self.n} and {node.n},"
+                f" frames: {self.frames} and {node.frames}."
+            )
 
     def _dist(self, s1: int, s2: int) -> float:
         """
@@ -100,7 +112,10 @@ class SAXNode(Node):
             If either symbol index is out of bounds for the alphabet size.
         """
         if s1 > self.alphabet_size - 1 or s2 > self.alphabet_size - 1:
-            raise ValueError(f"Symbol index out of bounds: {s1}, {s2} with alphabet size {self.alphabet_size}.")
+            raise ValueError(
+                f"Symbol index out of bounds: {s1}, {s2}"
+                f" with alphabet size {self.alphabet_size}."
+            )
         if abs(s1 - s2) <= 1:
             return 0.0
         return self.cut_points[max(s1, s2) - 1] - self.cut_points[min(s1, s2)]
@@ -187,5 +202,8 @@ class SAXNode(Node):
         str
             String representation showing depth, SAX symbols, and alphabet size.
         """
-        return f"SAXNode(depth={self.depth}, " \
-               f"sax={self.sax.tolist()}, alphabet_size={len(self.cut_points) + 1})"
+        return (
+            f"SAXNode(depth={self.depth}, "
+            f"sax={self.sax.tolist()}, "
+            f"alphabet_size={len(self.cut_points) + 1})"
+        )

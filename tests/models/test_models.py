@@ -129,7 +129,7 @@ class TestPatternTree(unittest.TestCase):
         self.assertEqual(model.graph.vertices[model.root]["depth"], -1)
 
     def test_update(self):
-        """Test the _chain_to_vertices method through update of a PatternTree instance."""
+        """Test _chain_to_vertices through update."""
         model = PatternTree()
         chain = [SlopeSignNode({"depth": 0, "slopes": np.array([1]),
                                 "intercepts": np.array([1]), "breakpoints": []})]
@@ -194,7 +194,7 @@ class TestPatternTree(unittest.TestCase):
             })
         ]
 
-        # Test the update method with a chain of nodes that is in the tree except for the last node:
+        # Chain is in the tree except for the last node:
         indices = model.update(chain)
         self.assertEqual(len(model.graph.vertices), 5)
         self.assertEqual(model.graph.vertices[indices[1]]["node"], chain[0])
@@ -222,7 +222,7 @@ class TestPatternTree(unittest.TestCase):
             })
         ]
 
-        # Test the update method with a chain of nodes that is in the tree except for the second-to-last node:
+        # Chain is in the tree except for the second-to-last node:
         indices = model.update(chain)
         self.assertEqual(len(model.graph.vertices), 7)
         self.assertEqual(model.graph.vertices[indices[1]]["node"], chain[0])
@@ -348,7 +348,7 @@ class TestPatternGraph(unittest.TestCase):
             })
         ]
 
-        # Test the update method with a chain of nodes that is in the graph except for the last node:
+        # Chain is in the graph except for the last node:
         indices = model.update(chain)
         self.assertEqual(len(model.graph.vertices), 4)
         self.assertEqual(model.graph.vertices[indices[0]]["node"], chain[0])
@@ -376,8 +376,8 @@ class TestPatternGraph(unittest.TestCase):
             })
         ]
 
-        # Test the update method with a chain of nodes that is in the graph except for the second-to-last node.
-        # Here, the last node should match with an existing node of the graph!
+        # Chain is in the graph except for second-to-last node.
+        # Last node should match an existing node!
         indices = model.update(chain)
         self.assertEqual(len(model.graph.vertices), 5)
         self.assertEqual(model.graph.vertices[indices[0]]["node"], chain[0])
@@ -543,18 +543,21 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(len(model.patterns.graph.vertices), 5)
         self.assertEqual(len(model.nested_words), 1)
 
-        expected_nw = NestedWord.from_tagged_sequence(['<', 0, '<', 1, '<', 2, '<', 3, 4])
+        expected_nw = NestedWord.from_tagged_sequence(
+            ['<', 0, '<', 1, '<', 2, '<', 3, 4]
+        )
         self.assertTrue(expected_nw in model.nested_words)
 
     def test_learn(self):
         """Adding a list of chains to the NestedWordSet"""
         model = NestedWordSet({"context_size": 5})
+        c = create_test_node
         chains = [
-            [create_test_node([-1.0, 1.0, 1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0])],
-            [create_test_node([1.0, -1.0, 1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0])],
-            [create_test_node([1.0, 1.0, -1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0])],
-            [create_test_node([1.0, 1.0, 1.0]), create_test_node([-1.0, 1.0]), create_test_node([1.0])],
-            [create_test_node([1.0, 1.0, 1.0]), create_test_node([1.0, 1.0]), create_test_node([-1.0])]
+            [c([-1.0, 1.0, 1.0]), c([1.0, 1.0]), c([1.0])],
+            [c([1.0, -1.0, 1.0]), c([1.0, 1.0]), c([1.0])],
+            [c([1.0, 1.0, -1.0]), c([1.0, 1.0]), c([1.0])],
+            [c([1.0, 1.0, 1.0]), c([-1.0, 1.0]), c([1.0])],
+            [c([1.0, 1.0, 1.0]), c([1.0, 1.0]), c([-1.0])],
         ]
         result = model.learn(chains)
         self.assertEqual(len(result), 1)
@@ -581,12 +584,13 @@ class TestNestedWordSet(unittest.TestCase):
     def test_contains_no_context(self):
         """Check if chain can be found with context_size 1"""
         model = NestedWordSet({"context_size": 1})
+        c = create_test_node
         chains = [
-            [create_test_node([-1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([-1.0, 1.0]), create_test_node([1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([1.0, -1.0]), create_test_node([1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([1.0, 1.0]), create_test_node([-1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0, -1.0, 1.0])]
+            [c([-1.0]), c([1.0, 1.0]), c([1.0, 1.0, 1.0])],
+            [c([1.0]), c([-1.0, 1.0]), c([1.0, 1.0, 1.0])],
+            [c([1.0]), c([1.0, -1.0]), c([1.0, 1.0, 1.0])],
+            [c([1.0]), c([1.0, 1.0]), c([-1.0, 1.0, 1.0])],
+            [c([1.0]), c([1.0, 1.0]), c([1.0, -1.0, 1.0])],
         ]
         for chain in chains:
             model.update(chain)
@@ -596,12 +600,13 @@ class TestNestedWordSet(unittest.TestCase):
     def test_contains_context(self):
         """Check if chain can be found with context_size >1"""
         model = NestedWordSet({"context_size": 5})
+        c = create_test_node
         chains = [
-            [create_test_node([-1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([-1.0, 1.0]), create_test_node([1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([1.0, -1.0]), create_test_node([1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([1.0, 1.0]), create_test_node([-1.0, 1.0, 1.0])],
-            [create_test_node([1.0]), create_test_node([1.0, 1.0]), create_test_node([1.0, -1.0, 1.0])]
+            [c([-1.0]), c([1.0, 1.0]), c([1.0, 1.0, 1.0])],
+            [c([1.0]), c([-1.0, 1.0]), c([1.0, 1.0, 1.0])],
+            [c([1.0]), c([1.0, -1.0]), c([1.0, 1.0, 1.0])],
+            [c([1.0]), c([1.0, 1.0]), c([-1.0, 1.0, 1.0])],
+            [c([1.0]), c([1.0, 1.0]), c([1.0, -1.0, 1.0])],
         ]
 
         for _ in range(10):
@@ -616,7 +621,11 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertTrue(model.contains([chains[4]] + chains[0:4]))  # 5-1-2-3-4
 
         # Test shuffled order (should be False)
-        shuffled = [chains[1], chains[0], chains[4], chains[2], chains[3]]  # 2-1-5-3-4
+        # 2-1-5-3-4
+        shuffled = [
+            chains[1], chains[0], chains[4],
+            chains[2], chains[3],
+        ]
         self.assertFalse(model.contains(shuffled))
 
     def test_contains_edge_cases(self):
@@ -631,9 +640,13 @@ class TestNestedWordSet(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.assertFalse(model.contains([]))  # No chains
         with self.assertRaises(ValueError):
-            self.assertFalse(model.contains([chain]))  # Single chain, but context_size > 1
+            # Single chain, but context_size > 1
+            self.assertFalse(model.contains([chain]))
         with self.assertRaises(ValueError):
-            self.assertFalse(model.contains([chain, chain, chain]))  # More than context_size chains
+            # More than context_size chains
+            self.assertFalse(
+                model.contains([chain, chain, chain])
+            )
 
         # Add some chains to model
         chains = [
@@ -714,10 +727,11 @@ class TestNestedWordSet(unittest.TestCase):
         model = NestedWordSet({"context_size": 3})
 
         # Create chains that will result in complex nested word combinations
-        chain1 = [create_test_node([1.0]), create_test_node([1.0, 1.0])]
-        chain2 = [create_test_node([1.0]), create_test_node([-1.0, 1.0])]  # Differs at second node
-        chain3 = [create_test_node([-1.0]), create_test_node([1.0, 1.0])]  # Differs at first node
-        chain4 = [create_test_node([-1.0]), create_test_node([-1.0, -1.0])] # Differs at first and second nodes
+        c = create_test_node
+        chain1 = [c([1.0]), c([1.0, 1.0])]
+        chain2 = [c([1.0]), c([-1.0, 1.0])]
+        chain3 = [c([-1.0]), c([1.0, 1.0])]
+        chain4 = [c([-1.0]), c([-1.0, -1.0])]
 
         # Add chains progressively
         result = model.update(chain1)
@@ -731,12 +745,18 @@ class TestNestedWordSet(unittest.TestCase):
         result = model.update(chain3)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(model.nested_words), 1)
-        self.assertEqual(result[0], NestedWord.from_tagged_sequence(["<", 0, 1, 2, 0, ">", "<", 3, 1]))
+        expected = NestedWord.from_tagged_sequence(
+            ["<", 0, 1, 2, 0, ">", "<", 3, 1]
+        )
+        self.assertEqual(result[0], expected)
 
         result = model.update(chain4)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(model.nested_words), 2)
-        self.assertEqual(result[0], NestedWord.from_tagged_sequence(["<", 0, 2, 0, ">", "<", 3, 1, 4]))
+        expected = NestedWord.from_tagged_sequence(
+            ["<", 0, 2, 0, ">", "<", 3, 1, 4]
+        )
+        self.assertEqual(result[0], expected)
 
     def test_learn_with_empty_and_invalid_chains(self):
         """Test learn method with edge cases"""

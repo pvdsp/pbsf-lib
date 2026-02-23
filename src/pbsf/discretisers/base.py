@@ -55,11 +55,17 @@ def _divide(begin: int, end: int, number: int) -> list[tuple[int, int]]:
     if number < 1:
         raise ValueError(f"Amount of frames must be greater than 0, got {number}")
     if number > end - begin:
-        raise ValueError(f"Amount of frames must be smaller than sequence length ({end - begin}), got {number}")
+        raise ValueError(
+            f"Amount of frames must be smaller than"
+            f" sequence length ({end - begin}), got {number}"
+        )
     if number == 1:
         return [(begin, end)]
     step = (end - begin) / number
-    return [(int(begin + segment * step), int(begin + (segment + 1) * step)) for segment in range(number)]
+    return [
+        (int(begin + s * step), int(begin + (s + 1) * step))
+        for s in range(number)
+    ]
 
 
 def _normalise(data: np.ndarray) -> np.ndarray:
@@ -90,7 +96,10 @@ def _normalise(data: np.ndarray) -> np.ndarray:
     return (data - np.mean(data)) / np.std(data)
 
 
-def _piecewise_linear(segment: np.ndarray, breakpoints: list[tuple[int, int]]) -> tuple[np.ndarray, np.ndarray]:
+def _piecewise_linear(
+    segment: np.ndarray,
+    breakpoints: list[tuple[int, int]],
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Compute piecewise linear approximation of a segment.
 

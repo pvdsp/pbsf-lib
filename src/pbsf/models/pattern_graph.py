@@ -7,7 +7,8 @@ from pbsf.utils.layered_digraph import LayeredDigraph
 
 class PatternGraph(Model):
     """
-    Directed acyclic graph (DAG) for representing coarse- to fine-grained discretised patterns.
+    Directed acyclic graph (DAG) for representing coarse- to
+    fine-grained discretised patterns.
 
     A PatternGraph uses a layered directed graph structure to store chains of nodes,
     where each layer corresponds to a specific depth level. Unlike PatternTree, this
@@ -84,12 +85,15 @@ class PatternGraph(Model):
         current_distance = math.inf
         for vertex in candidates:
             candidate = self.graph.vertices[vertex]["node"]
-            if (node == candidate) and ((distance := node.distance(candidate)) < current_distance):
+            distance = node.distance(candidate)
+            if node == candidate and distance < current_distance:
                 current_match = vertex
                 current_distance = distance
         return current_match
 
-    def _find_matching_vertex(self, node: Node, depth: int, parent: int | None = None) -> int | None:
+    def _find_matching_vertex(
+        self, node: Node, depth: int, parent: int | None = None,
+    ) -> int | None:
         """
         Find a vertex in the graph that matches the given node at the specified depth.
 
@@ -103,7 +107,8 @@ class PatternGraph(Model):
         depth : int
             Depth level to search in.
         parent : int | None, default=None
-            Optional parent vertex identifier to prioritise searching among its children.
+            Optional parent vertex identifier to prioritise
+            searching among its children.
 
         Returns
         -------
@@ -123,7 +128,8 @@ class PatternGraph(Model):
             if (match := match_strategy(node, candidates)) is not None:
                 return match
 
-        # If no parent provided (or no match found), check all vertices at the current depth:
+        # If no parent provided (or no match found), check all
+        # vertices at the current depth:
         candidates = self.graph.get_layer(depth)
         if (match := match_strategy(node, candidates)) is not None:
             return match
@@ -153,7 +159,9 @@ class PatternGraph(Model):
         children = self.graph.outgoing(v1)
         return v2 in children
 
-    def chain_to_vertices(self, chain: list[Node]) -> tuple[list[int | None], list[bool]]:
+    def chain_to_vertices(
+        self, chain: list[Node],
+    ) -> tuple[list[int | None], list[bool]]:
         """
         Convert a chain of nodes to vertex identifiers and their connection status.
 
@@ -182,7 +190,9 @@ class PatternGraph(Model):
             if matched_vertex_id is not None:
                 if len(traversal) > 0:
                     parent_id = traversal[-1]
-                    connection.append(self._check_connection(parent_id, matched_vertex_id))
+                    connection.append(
+                        self._check_connection(parent_id, matched_vertex_id)
+                    )
                 traversal.append(matched_vertex_id)
             else:
                 if len(traversal) > 0:
@@ -260,7 +270,10 @@ class PatternGraph(Model):
             raise ValueError("Chains must be a list.")
         if not all(isinstance(chain, list) for chain in chains):
             raise ValueError("Chains must contain only lists of Nodes.")
-        if not all(all(isinstance(node, Node) for node in chain) for chain in chains):
+        if not all(
+            all(isinstance(node, Node) for node in chain)
+            for chain in chains
+        ):
             raise ValueError("Chains must contain only nodes.")
         return [self.update(chain) for chain in chains]
 
@@ -292,7 +305,8 @@ class PatternGraph(Model):
         Returns
         -------
         str
-            String representation showing the number of vertices and edges in the graph.
+            String representation showing the number of vertices
+            and edges in the graph.
         """
         num_edges = sum(len(self.graph.outgoing(v)) for v in self.graph.vertices)
         return f"PatternGraph(vertices={len(self.graph.vertices)}, edges={num_edges})"

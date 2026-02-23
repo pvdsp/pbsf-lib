@@ -44,7 +44,8 @@ class SlopeSignNode(Node):
         colour indicating slope direction: green for positive/zero slopes,
         crimson for negative slopes. Fills the area between the line and zero.
         """
-        for (x1, x2), (a, b) in zip(self.breakpoints, zip(self.slopes, self.intercepts)):
+        pairs = zip(self.slopes, self.intercepts)
+        for (x1, x2), (a, b) in zip(self.breakpoints, pairs):
             plt.axvline(x1, color="lightgrey", linestyle=":")
             plt.axvline(x2, color="lightgrey", linestyle=":")
             x = np.linspace(0, x2 - x1, 100)
@@ -71,7 +72,10 @@ class SlopeSignNode(Node):
             If node is not a SlopeSignNode or has a different depth.
         """
         if not isinstance(node, SlopeSignNode):
-            raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
+            raise ValueError(
+                f"Cannot compare node of type {type(self)}"
+                f" with {type(node)}."
+            )
         if self.depth != node.depth:
             raise ValueError("Cannot compare nodes of different depths.")
 
@@ -114,7 +118,8 @@ class SlopeSignNode(Node):
         Returns
         -------
         bool
-            True if nodes are equivalent (same depth and matching slope signs), False otherwise.
+            True if nodes are equivalent (same depth and matching
+            slope signs), False otherwise.
         """
         if not isinstance(node, SlopeSignNode):
             return False
@@ -131,7 +136,8 @@ class SlopeSignNode(Node):
         str
             String representation showing depth and slope signs ('+' or '-').
         """
-        return f"SlopeSignNode(depth={self.depth}, slopes={['+' if s >= 0 else '-' for s in self.slopes]})"
+        signs = ['+' if s >= 0 else '-' for s in self.slopes]
+        return f"SlopeSignNode(depth={self.depth}, slopes={signs})"
 
     def __hash__(self) -> int:
         """
@@ -140,6 +146,9 @@ class SlopeSignNode(Node):
         Returns
         -------
         int
-            Hash value computed from the tuple of slope signs (1 for positive, -1 for negative).
+            Hash value computed from the tuple of slope signs
+            (1 for positive, -1 for negative).
         """
-        return tuple(1 if slope >= 0 else -1 for slope in self.slopes).__hash__()
+        return hash(
+            tuple(1 if s >= 0 else -1 for s in self.slopes)
+        )

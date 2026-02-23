@@ -7,7 +7,8 @@ from pbsf.utils.nested_word import NestedWord
 
 class NestedWordSet(Model):
     """
-    Model that maintains a set of nested words representing observed hierarchical patterns.
+    Model that maintains a set of nested words representing
+    observed hierarchical patterns.
 
     Nested words are formed by combining a fixed number (context size) of consecutive
     discretisation chains, creating structured representations of temporal sequences
@@ -111,10 +112,11 @@ class NestedWordSet(Model):
             return nw2
         if (nw1, nw2) in self._combined_cache:
             return self._combined_cache[(nw1, nw2)]
-        p1 = sorted(nw1.matching.get_pending_calls())  # position of pending calls in nw1
-        p2 = sorted(nw2.matching.get_pending_calls())  # position of pending calls in nw2
-        s1 = [nw1.word[position] for position in p1]  # symbols of pending call positions of nw1
-        s2 = [nw2.word[position] for position in p2]  # symbols of pending call positions of nw2
+        # Positions and symbols of pending calls:
+        p1 = sorted(nw1.matching.get_pending_calls())
+        p2 = sorted(nw2.matching.get_pending_calls())
+        s1 = [nw1.word[position] for position in p1]
+        s2 = [nw2.word[position] for position in p2]
         nw = NestedWord() + nw1
         for depth, (c1, c2) in enumerate(zip(s1, s2)):
             if c1 != c2:
@@ -170,7 +172,11 @@ class NestedWordSet(Model):
         elif self.pattern_model == PatternTree:
             vertices = self.patterns.chain_to_vertices(chain)
         else:
-            raise ValueError(f"Unsupported pattern model: {self.pattern_model}. Use PatternGraph or PatternTree.")
+            raise ValueError(
+                f"Unsupported pattern model:"
+                f" {self.pattern_model}."
+                f" Use PatternGraph or PatternTree."
+            )
         nw = NestedWord()
         if len(vertices) > 1:
             nw.add_calls(vertices[:-1])
@@ -260,7 +266,10 @@ class NestedWordSet(Model):
             match the context size.
         """
         if not all(isinstance(chain, list) for chain in chains):
-            raise ValueError(f"NestedWordSet expects a list of {self.context_size} discretisation chains.")
+            raise ValueError(
+                f"NestedWordSet expects a list of"
+                f" {self.context_size} discretisation chains."
+            )
         if len(chains) != self.context_size:
             raise ValueError(f"Expected {self.context_size} chains, got {len(chains)}.")
         nws = [self._chain_to_nw(chain) for chain in chains]
@@ -276,6 +285,10 @@ class NestedWordSet(Model):
         Returns
         -------
         str
-            String representation showing context size and number of learned nested words.
+            String representation showing context size and number
+            of learned nested words.
         """
-        return f"NestedWordSet(context_size={self.context_size}, nested_words={len(self.nested_words)})"
+        return (
+            f"NestedWordSet(context_size={self.context_size},"
+            f" nested_words={len(self.nested_words)})"
+        )

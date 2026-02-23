@@ -67,9 +67,14 @@ class TestStructuralProminenceNode(unittest.TestCase):
         })
 
         structural_actual = n1.structural_distance(n2)
-        structural_expected = ((n1.slopes[0] - n2.slopes[0] + n1.intercepts[0] - n2.intercepts[0]) +
-                               (n1.slopes[1] - n2.slopes[1] + n1.intercepts[1] - n2.intercepts[1]) +
-                               (n1.slopes[2] - n2.slopes[2] + n1.intercepts[2] - n2.intercepts[2])) / 3
+        structural_expected = (
+            (n1.slopes[0] - n2.slopes[0]
+             + n1.intercepts[0] - n2.intercepts[0])
+            + (n1.slopes[1] - n2.slopes[1]
+               + n1.intercepts[1] - n2.intercepts[1])
+            + (n1.slopes[2] - n2.slopes[2]
+               + n1.intercepts[2] - n2.intercepts[2])
+        ) / 3
         prominence_actual = n1.prominence_distance(n2)
         prominence_expected = max(n1.std, n2.std) / min(n1.std, n2.std) - 1.0
 

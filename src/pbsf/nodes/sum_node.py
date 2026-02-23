@@ -57,7 +57,10 @@ class SumNode(Node):
             If nodes are not comparable (different types, depths, or thresholds).
         """
         if not isinstance(other, SumNode):
-            raise ValueError(f"Cannot compare node of type {type(self)} with {type(other)}.")
+            raise ValueError(
+                f"Cannot compare node of type {type(self)}"
+                f" with {type(other)}."
+            )
         if self.depth != other.depth:
             raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != other.distance_threshold:

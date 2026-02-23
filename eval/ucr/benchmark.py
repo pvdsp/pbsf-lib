@@ -32,14 +32,19 @@ def get_ucr(path: str):
     anomaly_range : tuple[int, int]
         Start and end indices of the ground-truth anomaly in the test data.
     """
-    for file in sorted(os.listdir(path), key=lambda x: os.path.getsize(os.path.join(path, x))):
+    files = sorted(
+        os.listdir(path),
+        key=lambda x: os.path.getsize(os.path.join(path, x)),
+    )
+    for file in files:
         if file.endswith(".txt"):
             # Extract information on UCR time series from filename:
             split_filename = file.split("_")  # Split filename by underscores
             identifier = split_filename[0]  # Identifier of the UCR time series
             training = int(split_filename[-3])  # Training size of the UCR time series
-            start_anomaly = int(split_filename[-2])  # Start of ground-truth anomaly in test data
-            end_anomaly = int(split_filename[-1].split(".")[0])  # End of ground-truth anomaly in test data
+            # Start/end of ground-truth anomaly in test data
+            start_anomaly = int(split_filename[-2])
+            end_anomaly = int(split_filename[-1].split(".")[0])
 
             # Load the data, split into training and testing sets:
             data = np.loadtxt(os.path.join(path, file))
@@ -113,11 +118,16 @@ def evaluate_configurations(
                     segmenter.segment(data=train)
                     window_size = segmenter.window_size
 
-                # Apply the algorithm, find the minimum anomaly score, and create a suspected anomaly region
+                # Apply the algorithm and find the minimum score
                 func = params["function"]
                 scores = func(train, test, params)
                 if len(scores) < window_size * 2:
-                    print(f"\nWarning: Scores length {len(scores)} is less than two times window size {window_size}. Skipping.")
+                    print(
+                        f"\nWarning: Scores length"
+                        f" {len(scores)} is less than two"
+                        f" times window size"
+                        f" {window_size}. Skipping."
+                    )
                     results.append(False)
                     continue
 
@@ -128,9 +138,9 @@ def evaluate_configurations(
                     np.save(scores_path, scores)
                 min_idx = np.argmin(scores[window_size:-window_size]) + window_size
 
-                # Check if the suspected anomaly region overlaps with the ground-truth anomaly region
+                # Check overlap with ground-truth anomaly
                 anomaly_length = end_anomaly - start_anomaly + 1
-                # Define acceptable range: either anomaly_length margin or 100 points, whichever is larger
+                # Acceptable range: anomaly_length or 100
                 margin = max(anomaly_length, 100)
                 min_anomaly = start_anomaly - margin
                 max_anomaly = end_anomaly + margin
@@ -149,28 +159,56 @@ def evaluate_configurations(
                     test_x = np.arange(len(train), len(train) + len(test))
 
                     # First subplot: Training and testing data
-                    ax1.plot(train_x, train, '--', color='gray', alpha=0.7, label='Training data')
+                    ax1.plot(
+                        train_x, train, '--',
+                        color='gray', alpha=0.7,
+                        label='Training data',
+                    )
                     ax1.plot(test_x, test, color='#223F7A', label='Testing data')
-                    ax1.axvspan(start_anomaly, end_anomaly, color='crimson', alpha=0.4, label='Ground truth anomaly')
-                    ax1.axvline(x=min_anomaly, color='crimson', linestyle=':', alpha=0.25, label='')
-                    ax1.axvline(x=max_anomaly, color='crimson', linestyle=':', alpha=0.25, label='')
+                    ax1.axvspan(
+                        start_anomaly, end_anomaly,
+                        color='crimson', alpha=0.4,
+                        label='Ground truth anomaly',
+                    )
+                    ax1.axvline(
+                        x=min_anomaly, color='crimson',
+                        linestyle=':', alpha=0.25,
+                    )
+                    ax1.axvline(
+                        x=max_anomaly, color='crimson',
+                        linestyle=':', alpha=0.25,
+                    )
                     ax1.set_title(title)
                     ax1.legend()
                     ax1.grid(True, alpha=0.3)
 
                     # Second subplot: Anomaly scores aligned with test data
                     ax2.plot(test_x, scores, color='crimson', label='Scores')
-                    ax2.plot(min_idx + len(train), scores[min_idx], 'X', markerfacecolor='crimson',
-                             markersize=5, markeredgewidth=1, markeredgecolor='black', label='Center of suspected anomaly')
+                    ax2.plot(
+                        min_idx + len(train),
+                        scores[min_idx], 'X',
+                        markerfacecolor='crimson',
+                        markersize=5, markeredgewidth=1,
+                        markeredgecolor='black',
+                        label='Center of suspected anomaly',
+                    )
                     ax2.axvspan(start_anomaly, end_anomaly, color='crimson', alpha=0.4)
-                    ax2.axvline(x=min_anomaly, color='crimson', linestyle=':', alpha=0.25, label='')
-                    ax2.axvline(x=max_anomaly, color='crimson', linestyle=':', alpha=0.25, label='')
+                    ax2.axvline(
+                        x=min_anomaly, color='crimson',
+                        linestyle=':', alpha=0.25,
+                    )
+                    ax2.axvline(
+                        x=max_anomaly, color='crimson',
+                        linestyle=':', alpha=0.25,
+                    )
                     ax2.set_ylabel('Anomaly Score')
                     ax2.legend()
                     ax2.grid(True, alpha=0.3)
 
                     plt.tight_layout()
-                    plot_filename = os.path.join(results_dir, f"{identifier}-{name}.png")
+                    plot_filename = os.path.join(
+                        results_dir, f"{identifier}-{name}.png"
+                    )
                     plt.savefig(plot_filename, dpi=150, bbox_inches='tight')
                     plt.close()
 

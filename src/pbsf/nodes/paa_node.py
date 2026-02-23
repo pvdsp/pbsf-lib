@@ -65,7 +65,10 @@ class PAANode(Node):
             If nodes are not comparable (different types, depths, or thresholds).
         """
         if not isinstance(other, PAANode):
-            raise ValueError(f"Cannot compare node of type {type(self)} with {type(other)}.")
+            raise ValueError(
+                f"Cannot compare node of type {type(self)}"
+                f" with {type(other)}."
+            )
         if self.depth != other.depth:
             raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != other.distance_threshold:
@@ -144,5 +147,8 @@ class PAANode(Node):
             String representation showing depth, PAA values (rounded to 2 decimals),
             and distance threshold.
         """
-        return f"PAANode(depth={self.depth}, " \
-               f"paa={np.round(self.paa, 2)}, distance_threshold={self.distance_threshold})"
+        return (
+            f"PAANode(depth={self.depth}, "
+            f"paa={np.round(self.paa, 2)}, "
+            f"distance_threshold={self.distance_threshold})"
+        )

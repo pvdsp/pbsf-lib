@@ -10,7 +10,8 @@ from pbsf.utils import has_required
 
 class PiecewiseLinear(Discretiser):
     """
-    Discretise contiguous subsequences in increasing granularity using Piecewise Linear Approximation.
+    Discretise contiguous subsequences in increasing granularity
+    using Piecewise Linear Approximation.
 
     Parameters
     ----------
@@ -40,7 +41,8 @@ class PiecewiseLinear(Discretiser):
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment in increasing granularity using Piecewise Linear Approximation.
+        Discretise a segment in increasing granularity using
+        Piecewise Linear Approximation.
 
         Parameters
         ----------

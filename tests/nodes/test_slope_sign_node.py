@@ -19,7 +19,7 @@ class TestSlopeSignNode(unittest.TestCase):
         self.assertTrue(np.array_equal(node.slopes, np.array([1, 2, 3])))
         self.assertTrue(np.array_equal(node.intercepts, np.array([1, 2, 3])))
 
-        # Test the creation of a SlopeSignNode instance with properties that should be ignored:
+        # Test creation with properties that should be ignored:
         node = SlopeSignNode({
             "depth": 0,
             "slopes": np.array([1, 2, 3]),
@@ -32,7 +32,7 @@ class TestSlopeSignNode(unittest.TestCase):
         self.assertTrue(np.array_equal(node.intercepts, np.array([1, 2, 3])))
         self.assertFalse(hasattr(node, "random_property"))
 
-        # Test the creation of a SlopeSignNode instance with properties of the wrong type:
+        # Test creation with properties of the wrong type:
         with self.assertRaises(ValueError):
             SlopeSignNode({
                 "depth": "abc",
@@ -65,7 +65,7 @@ class TestSlopeSignNode(unittest.TestCase):
         })
         self.assertEqual(n1, n2)
 
-        # Test the equivalence of two different SlopeSignNode instances with same slope signs:
+        # Test equivalence with same slope signs:
         n1 = SlopeSignNode({
             "depth": 0,
             "slopes": np.array([10, -2, 3]),
@@ -80,7 +80,7 @@ class TestSlopeSignNode(unittest.TestCase):
         })
         self.assertEqual(n1, n2)
 
-        # Test the equivalence of two different SlopeSignNode instances with different slope signs:
+        # Test equivalence with different slope signs:
         n1 = SlopeSignNode({
             "depth": 0,
             "slopes": np.array([1, 2, 3]),
@@ -95,7 +95,7 @@ class TestSlopeSignNode(unittest.TestCase):
         })
         self.assertNotEqual(n1, n2)
 
-        # Test the equivalence of two different SlopeSignNode instances with different depths:
+        # Test equivalence with different depths:
         n1 = SlopeSignNode({
             "depth": 0,
             "slopes": np.array([1, 2, 3]),

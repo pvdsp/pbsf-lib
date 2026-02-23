@@ -10,7 +10,8 @@ from pbsf.utils import has_required
 
 class StructuralProminenceNode(Node):
     """
-    Node representing a piecewise linear approximation using structural and prominence distances.
+    Node representing a piecewise linear approximation using
+    structural and prominence distances.
 
     This node uses slopes and intercepts to represent segment discretisations via
     Piecewise Linear Approximation (PLA). Two distance metrics are used for comparison:
@@ -82,16 +83,28 @@ class StructuralProminenceNode(Node):
         Raises
         ------
         ValueError
-            If node is not a StructuralProminenceNode or has different depth or thresholds.
+            If node is not a StructuralProminenceNode or has
+            different depth or thresholds.
         """
         if not isinstance(node, StructuralProminenceNode):
-            raise ValueError(f"Cannot compare node of type {type(self)} with {type(node)}.")
+            raise ValueError(
+                f"Cannot compare node of type {type(self)}"
+                f" with {type(node)}."
+            )
         if self.depth != node.depth:
-            raise ValueError("Cannot compare nodes of different depths.")
+            raise ValueError(
+                "Cannot compare nodes of different depths."
+            )
         if self.structural_threshold != node.structural_threshold:
-            raise ValueError("Cannot compare nodes with different structural thresholds.")
+            raise ValueError(
+                "Cannot compare nodes with different"
+                " structural thresholds."
+            )
         if self.prominence_threshold != node.prominence_threshold:
-            raise ValueError("Cannot compare nodes with different prominence thresholds.")
+            raise ValueError(
+                "Cannot compare nodes with different"
+                " prominence thresholds."
+            )
 
     def structural_distance(self, node: 'StructuralProminenceNode') -> float:
         """
@@ -148,7 +161,8 @@ class StructuralProminenceNode(Node):
         Draws vertical lines at breakpoints and plots the linear segments
         defined by the slopes and intercepts.
         """
-        for (x1, x2), (a, b) in zip(self.breakpoints, zip(self.slopes, self.intercepts)):
+        pairs = zip(self.slopes, self.intercepts)
+        for (x1, x2), (a, b) in zip(self.breakpoints, pairs):
             plt.axvline(x1, color="lightgrey", linestyle=":")
             plt.axvline(x2, color="lightgrey", linestyle=":")
             x = np.linspace(0, x2 - x1, 100)
@@ -219,8 +233,12 @@ class StructuralProminenceNode(Node):
         Returns
         -------
         str
-            String representation showing depth, std, slopes, and intercepts (rounded to 2 decimals).
+            String representation showing depth, std, slopes,
+            and intercepts (rounded to 2 decimals).
         """
-        return f"StructuralProminenceNode(depth={self.depth}, std={round(self.std, 2)}, " \
-               f"slopes={np.round(self.slopes, 2)}, " \
-               f"intercepts={np.round(self.intercepts, 2)})"
+        return (
+            f"StructuralProminenceNode(depth={self.depth},"
+            f" std={round(self.std, 2)},"
+            f" slopes={np.round(self.slopes, 2)},"
+            f" intercepts={np.round(self.intercepts, 2)})"
+        )

@@ -47,7 +47,8 @@ class Node(ABC):
         """
         Visualise the node.
 
-        This method should draw a visual representation of the approximation, if applicable.
+        This method should draw a visual representation of the
+        approximation, if applicable.
         """
         pass
 

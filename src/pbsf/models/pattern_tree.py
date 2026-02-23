@@ -7,7 +7,8 @@ from pbsf.utils.digraph import Digraph
 
 class PatternTree(Model):
     """
-    Rooted tree-like structure for representing coarse- to fine-grained discretised data.
+    Rooted tree-like structure for representing coarse- to
+    fine-grained discretised data.
 
     A PatternTree stores chains of nodes in a directed graph structure, enabling
     efficient pattern matching and learning from discretised sequences. The tree
@@ -89,14 +90,16 @@ class PatternTree(Model):
         current_distance = math.inf
         for vertex in candidates:
             candidate = self.graph.vertices[vertex]["node"]
-            if (node == candidate) and ((distance := node.distance(candidate)) < current_distance):
+            distance = node.distance(candidate)
+            if node == candidate and distance < current_distance:
                 current_match = vertex
                 current_distance = distance
         return current_match
 
     def chain_to_vertices(self, chain: list[Node]) -> list[int]:
         """
-        Convert a chain of nodes to a list of existing vertex identifiers in the PatternTree.
+        Convert a chain of nodes to a list of existing vertex
+        identifiers in the PatternTree.
 
         Traverses the tree from the root, matching each node in the chain to an
         existing vertex. At the first mismatch, the traversal stops and returns
@@ -191,7 +194,10 @@ class PatternTree(Model):
             raise ValueError("Data must be a list.")
         if not all(isinstance(chain, list) for chain in chains):
             raise ValueError("Data must contain only lists of Nodes.")
-        if not all(all(isinstance(node, Node) for node in chain) for chain in chains):
+        if not all(
+            all(isinstance(node, Node) for node in chain)
+            for chain in chains
+        ):
             raise ValueError("Data must contain only nodes.")
         return [self.update(chain) for chain in chains]
 

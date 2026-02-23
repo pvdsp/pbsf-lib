@@ -12,7 +12,8 @@ from pbsf.utils import has_required
 
 class SymbolicAggregate(Discretiser):
     """
-    Discretise contiguous subsequences in increasing granularity using Symbolic Aggregate Approximation.
+    Discretise contiguous subsequences in increasing granularity
+    using Symbolic Aggregate Approximation.
 
     SAX converts a time series into a symbolic representation by first applying
     PAA (Piecewise Aggregate Approximation) and then discretising the resulting
@@ -65,17 +66,25 @@ class SymbolicAggregate(Discretiser):
             If alphabet_size is less than 2.
         """
         if self.alphabet_size < 2:
-            raise ValueError(f"Alphabet size must be at least 2, got {self.alphabet_size}")
+            raise ValueError(
+                f"Alphabet size must be at least 2,"
+                f" got {self.alphabet_size}"
+            )
         if self.alphabet_size == 2:
             cut_points = np.array([0.0])
         else:
-            quantiles = np.linspace(1 / self.alphabet_size, 1 - 1 / self.alphabet_size, self.alphabet_size - 1)
+            quantiles = np.linspace(
+                1 / self.alphabet_size,
+                1 - 1 / self.alphabet_size,
+                self.alphabet_size - 1,
+            )
             cut_points = scipy.stats.norm.ppf(quantiles)
         return cut_points
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment in increasing granularity using Symbolic Aggregate Approximation.
+        Discretise a segment in increasing granularity using
+        Symbolic Aggregate Approximation.
 
         First applies PAA to reduce dimensionality, then converts PAA values to
         symbols using the pre-calculated cut points.

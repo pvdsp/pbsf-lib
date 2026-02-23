@@ -5,19 +5,34 @@ from typing import Any, Iterator
 
 def _validate_indices(i: int | None, j: int | None) -> None:
     if i is None and j is None:
-        raise ValueError(f"At least one position in match ({i}, {j}) must be an actual position.")
+        raise ValueError(
+            f"At least one position in match ({i}, {j})"
+            f" must be an actual position."
+        )
 
 
 def _validate_order(i: int | None, j: int | None) -> None:
     if i is not None and j is not None:
         if i == j:
-            raise ValueError(f"Position {i} in match ({i}, {j}) cannot be both call and return.")
+            raise ValueError(
+                f"Position {i} in match ({i}, {j})"
+                f" cannot be both call and return."
+            )
         if i >= j:
-            raise ValueError(f"Nestings only go forward, but position {j} precedes position {i}.")
+            raise ValueError(
+                f"Nestings only go forward, but position"
+                f" {j} precedes position {i}."
+            )
 
 
-def _raise_crossing_error(c1: int | None, r1: int | None, c2: int | None, r2: int | None) -> None:
-    raise ValueError(f"Match ({c1}, {r1}) crosses with existing match ({c2}, {r2}).")
+def _raise_crossing_error(
+    c1: int | None, r1: int | None,
+    c2: int | None, r2: int | None,
+) -> None:
+    raise ValueError(
+        f"Match ({c1}, {r1}) crosses with"
+        f" existing match ({c2}, {r2})."
+    )
 
 
 class MatchingRelation:
@@ -25,7 +40,11 @@ class MatchingRelation:
     Represents a matching relation.
     """
 
-    def __init__(self, length: int, matching: set[tuple[int | None, int | None]] | None = None) -> None:
+    def __init__(
+        self,
+        length: int,
+        matching: set[tuple[int | None, int | None]] | None = None,
+    ) -> None:
         """
         Initialise a matching relation.
 
@@ -104,18 +123,25 @@ class MatchingRelation:
         Returns
         -------
         bool
-            True if the position is a pending call or return position, False otherwise.
+            True if the position is a pending call or return
+            position, False otherwise.
         """
         return ((self._return_successors[i] is None) or
                 (self._call_predecessors[i] is None))
 
     def _validate_position(self, pos: int) -> None:
         if not isinstance(pos, int):
-            raise ValueError(f"Position {pos} must be an integer, got {type(pos).__name__}.")
+            raise ValueError(
+                f"Position {pos} must be an integer,"
+                f" got {type(pos).__name__}."
+            )
         if pos < 0:
             raise ValueError(f"Position {pos} must be non-negative.")
         if pos >= self._length:
-            raise ValueError(f"Position {pos} is out of bounds for length {self._length}.")
+            raise ValueError(
+                f"Position {pos} is out of bounds"
+                f" for length {self._length}."
+            )
 
     def _validate_crossing(self, i: int | None, j: int | None) -> None:
         for call, ret in self.get_matches():
@@ -155,7 +181,9 @@ class MatchingRelation:
                 self._validate_position(pos)
         self._validate_crossing(i, j)
 
-    def set_match(self, call: int | None, ret: int | None) -> tuple[int | None, int | None]:
+    def set_match(
+        self, call: int | None, ret: int | None,
+    ) -> tuple[int | None, int | None]:
         """
         Set a match between a call and return position.
 
@@ -191,7 +219,8 @@ class MatchingRelation:
         -------
         tuple[int | None, int | None] | None
             The return successor or call predecessor for the given position.
-            Returns (i, None) or (None, i) if the call or return is pending, respectively.
+            Returns (i, None) or (None, i) if the call or return
+            is pending, respectively.
             Returns None if position is an internal position.
 
         Raises
@@ -200,7 +229,10 @@ class MatchingRelation:
             If position is out of bounds.
         """
         if not (0 <= i < self._length):
-            raise ValueError(f"Position {i} is out of bounds for length {self._length}.")
+            raise ValueError(
+                f"Position {i} is out of bounds"
+                f" for length {self._length}."
+            )
         if self.is_call(i):
             return i, self._return_successors[i]
         if self.is_return(i):
@@ -216,7 +248,13 @@ class MatchingRelation:
         set[tuple[int | None, int | None]]
             A set of all matches in the matching relation.
         """
-        return set(match for match in (self.get_match(i) for i in range(self._length)) if match is not None)
+        return set(
+            match
+            for match in (
+                self.get_match(i) for i in range(self._length)
+            )
+            if match is not None
+        )
 
     def get_pending(self) -> set[tuple[int | None, int | None]]:
         """
@@ -227,7 +265,10 @@ class MatchingRelation:
         set[tuple[int | None, int | None]]
             Set of all pending positions.
         """
-        return {(i, j) for i, j in self.get_matches() if i is None or j is None}
+        return {
+            (i, j) for i, j in self.get_matches()
+            if i is None or j is None
+        }
 
     def get_pending_calls(self) -> set[int]:
         """
@@ -322,32 +363,41 @@ class MatchingRelation:
         Returns
         -------
         bool
-            True if the matching relation is equal to the other object, False otherwise.
+            True if the matching relation is equal to the other
+            object, False otherwise.
         """
         if not isinstance(other, MatchingRelation):
             return False
         return (self._return_successors == other._return_successors and
                 self._call_predecessors == other._call_predecessors)
 
-    def __getitem__(self, key: int | slice) -> 'MatchingRelation' | tuple[int | None, int | None]:
+    def __getitem__(
+        self, key: int | slice,
+    ) -> 'MatchingRelation' | tuple[int | None, int | None]:
         """
-        Get the match at the given index, or the matching relation from start to stop position.
+        Get the match at the given index, or the matching relation
+        from start to stop position.
 
         Parameters
         ----------
         key : int | slice
-            The index to retrieve the match, or the slice to retrieve the matching relation.
+            The index to retrieve the match, or the slice to
+            retrieve the matching relation.
 
         Returns
         -------
         MatchingRelation | tuple[int | None, int | None]
-            The match at the given index, or the matching relation from start to stop position.
+            The match at the given index, or the matching relation
+            from start to stop position.
         """
         if isinstance(key, slice):
             start = key.start if key.start is not None else 0
             stop = key.stop if key.stop is not None else self._length
             if start < 0 or stop > self._length or start > stop:
-                raise ValueError(f"Slice {key} is out of bounds for length {self._length}.")
+                raise ValueError(
+                    f"Slice {key} is out of bounds"
+                    f" for length {self._length}."
+                )
             length = stop - start
             submatch = MatchingRelation(length)
             for pos in range(start, stop):
@@ -382,7 +432,11 @@ class NestedWord:
         matching: The matching relation of the nested word.
     """
 
-    def __init__(self, word: list[Any] | None = None, matching: MatchingRelation | None = None) -> None:
+    def __init__(
+        self,
+        word: list[Any] | None = None,
+        matching: MatchingRelation | None = None,
+    ) -> None:
         """
         Initialise a nested word.
 
@@ -424,7 +478,10 @@ class NestedWord:
         """
         stack = []
         counter = 0
-        word = [symbol for symbol in tagged_sequence if (symbol != "<" and symbol != ">")]
+        word = [
+            s for s in tagged_sequence
+            if s != "<" and s != ">"
+        ]
         matching = MatchingRelation(len(word))
         for symbol in tagged_sequence:
             if symbol == "<":
@@ -487,7 +544,8 @@ class NestedWord:
 
     def add_calls(self, symbols: list[Any]) -> None:
         """
-        Extend the nested word with a list of pending call positions labelled by `symbols`.
+        Extend the nested word with a list of pending call
+        positions labelled by `symbols`.
 
         Parameters
         ----------
@@ -561,7 +619,9 @@ class NestedWord:
         """
         return len(self.word)
 
-    def __getitem__(self, key: int | slice) -> tuple[Any, tuple[int | None, int | None] | None] | 'NestedWord':
+    def __getitem__(
+        self, key: int | slice,
+    ) -> tuple[Any, tuple[int | None, int | None] | None] | 'NestedWord':
         """
         If key is int, returns the symbol and matching relation at the given index.
         If key is slice, returns the nested subword from start to stop position.
@@ -574,7 +634,8 @@ class NestedWord:
         Returns
         -------
         tuple[Any, tuple[int | None, int | None] | None] | NestedWord
-            A tuple of the symbol and matching relation at the given index, or a nested subword.
+            A tuple of the symbol and matching relation at the
+            given index, or a nested subword.
         """
         if isinstance(key, slice):
             return NestedWord(self.word[key], self.matching[key])
@@ -615,11 +676,15 @@ class NestedWord:
         Returns
         -------
         bool
-            True if the nested word is equal to the other object, False otherwise.
+            True if the nested word is equal to the other object,
+            False otherwise.
         """
         if not isinstance(other, NestedWord):
             return False
-        return self.word == other.word and self.matching == other.matching
+        return (
+            self.word == other.word
+            and self.matching == other.matching
+        )
 
     def __ne__(self, other: Any) -> bool:
         """
@@ -663,7 +728,8 @@ class NestedWord:
         NestedWord
             A new nested word that is the concatenation of the two nested words.
         """
-        return NestedWord.from_tagged_sequence(self.to_tagged() + other.to_tagged())
+        combined = self.to_tagged() + other.to_tagged()
+        return NestedWord.from_tagged_sequence(combined)
 
     def __hash__(self) -> int:
         """
@@ -674,4 +740,4 @@ class NestedWord:
         int
             Hash value of the nested word.
         """
-        return tuple(self.to_tagged()).__hash__()
+        return hash(tuple(self.to_tagged()))

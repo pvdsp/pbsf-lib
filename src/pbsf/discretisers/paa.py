@@ -10,7 +10,8 @@ from pbsf.utils import has_required
 
 class PiecewiseAggregate(Discretiser):
     """
-    Discretise contiguous subsequences in increasing granularity using Piecewise Aggregate Approximation.
+    Discretise contiguous subsequences in increasing granularity
+    using Piecewise Aggregate Approximation.
 
     PAA reduces dimensionality by dividing a segment into frames and representing
     each frame by its mean value.
@@ -41,7 +42,8 @@ class PiecewiseAggregate(Discretiser):
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment in increasing granularity using Piecewise Aggregate Approximation.
+        Discretise a segment in increasing granularity using
+        Piecewise Aggregate Approximation.
 
         Parameters
         ----------

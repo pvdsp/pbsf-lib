@@ -40,7 +40,8 @@ class TestSAXNode(unittest.TestCase):
         self.assertEqual(n2.distance(n1), 0.0)
 
         n2.sax = np.array([2, 1, 2])
-        self.assertAlmostEqual(n1.distance(n2), np.sqrt(n1.n / n1.frames) * n1._dist(0, 2))
+        expected = np.sqrt(n1.n / n1.frames) * n1._dist(0, 2)
+        self.assertAlmostEqual(n1.distance(n2), expected)
         n2.sax = np.array([2, 2, 3])
         self.assertEqual(n1.distance(n2), np.sqrt(n1.n / n1.frames) * n1._dist(0, 2))
         n2.sax = np.array([1, 1, 1])

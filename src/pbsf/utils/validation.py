@@ -1,7 +1,10 @@
 from typing import Any
 
 
-def has_required(properties: dict[str, Any], required: list[tuple[str, type | list]]) -> None:
+def has_required(
+    properties: dict[str, Any],
+    required: list[tuple[str, type | list]],
+) -> None:
     """
     Validate that required properties exist and have correct types.
 
@@ -23,6 +26,12 @@ def has_required(properties: dict[str, Any], required: list[tuple[str, type | li
             raise ValueError(f"Required property {req} not found in properties.")
         if isinstance(req_type, list):
             if properties[req] not in req_type:
-                raise ValueError(f"Property {req} should be one of {req_type}, got {properties[req]} instead.")
+                raise ValueError(
+                    f"Property {req} should be one of"
+                    f" {req_type}, got {properties[req]} instead."
+                )
         elif not isinstance(properties[req], req_type):
-            raise ValueError(f"Property {req} should be of type {req_type}, got {type(properties[req])} instead.")
+            raise ValueError(
+                f"Property {req} should be of type {req_type},"
+                f" got {type(properties[req])} instead."
+            )
