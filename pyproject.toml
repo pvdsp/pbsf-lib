@@ -5,6 +5,7 @@ description = "A Python framework for pattern-based sequence learning using hier
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
+    "bidict>=0.23.1",
     "graphviz>=0.21",
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
