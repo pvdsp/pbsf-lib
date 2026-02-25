@@ -20,7 +20,27 @@ class biDFA(DFA):
         self.right: set[int] = set()
 
     def add_state(self, state: Optional[Any] = None) -> int:
-        """Add object as a left state of the biDFA."""
+        """
+        Add object as a left state of the biDFA.
+
+        If no specific object is given in case of an abstract state,
+        the internal integer identifier is used as the state object.
+
+        Parameters
+        ----------
+        state : Optional[Any]
+            Optional object to associate with the new state.
+
+        Returns
+        -------
+        int
+            Identifier of the state.
+
+        Raises
+        ------
+        ValueError
+            State is already part of the biDFA.
+        """
         return self.add_left(state)
 
     def add_states(self, states: Iterable[Any]) -> list[int]:
