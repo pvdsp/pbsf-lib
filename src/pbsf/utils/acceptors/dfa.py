@@ -13,7 +13,7 @@ class DFA(FiniteAcceptor):
     DFAs describe regular languages, and thus recognise all sequences
     of symbols that are part of their language.
     """
-    def __init__(self, name: Optional[str]):
+    def __init__(self, name: Optional[str] = None):
         self.name: Optional[str] = name
         self.states: bidict[Any, int] = bidict({None: 0})
         self.alphabet: bidict[Any, int] = bidict()
@@ -268,7 +268,7 @@ class DFA(FiniteAcceptor):
             state_set = self.step(state, symbol)
             if not state_set:
                 return set()
-            state = state_set.pop()
+            state = next(iter(state_set))
         return {state}
 
     def accept(self, sequence: Iterable[int]) -> bool:
@@ -296,5 +296,5 @@ class DFA(FiniteAcceptor):
             state_set = self.step(state, symbol)
             if not state_set:  # no matching transition
                 return False
-            state = state_set.pop()
+            state = next(iter(state_set))
         return state in self.final
