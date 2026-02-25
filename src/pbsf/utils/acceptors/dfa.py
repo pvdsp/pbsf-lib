@@ -55,7 +55,7 @@ class DFA(FiniteAcceptor):
         transitions = sum(len(t) for t in self.transitions.values())
         return states, transitions
 
-    def add_symbol(self, symbol: Optional[Any]) -> int:
+    def add_symbol(self, symbol: Optional[Any] = None) -> int:
         """
         Add object as a symbol in the DFA's alphabet.
         If no specific object is given in case of an abstract symbol,
