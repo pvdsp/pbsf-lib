@@ -27,4 +27,7 @@ dev = [
 ]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I"]
+select = ["E", "F", "W", "I", "D407", "D409"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
