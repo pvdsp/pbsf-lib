@@ -285,9 +285,18 @@ class DFA(FiniteAcceptor):
         -------
         bool
             Acceptance of the given sequence.
+
+        Raises
+        ------
+        TypeError
+            If one of the provided symbol identifiers is not an integer.
         """
         sequence = list(sequence)
         for symbol in set(sequence):
+            if not isinstance(symbol, int):
+                raise TypeError(
+                    f"Symbol identifier must be int, got {type(symbol).__name__}"
+                )
             if symbol not in self.alphabet.inverse:
                 return False
 
