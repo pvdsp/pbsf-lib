@@ -44,7 +44,30 @@ class biDFA(DFA):
         return self.add_left(state)
 
     def add_states(self, states: Iterable[Any]) -> list[int]:
-        """Add a collection of objects as distinct left states of the biDFA."""
+        """
+        Add a collection of objects as distinct left states of the biDFA.
+
+        Each object in ``states`` is associated with a new left state.
+        The order of the resulting state identifiers matches the order
+        of the input objects.
+
+        Parameters
+        ----------
+        states : Iterable[Any]
+            Iterable of objects to associate with new left states.
+
+        Returns
+        -------
+        list[int]
+            List of integer identifiers for the newly added left states,
+            in the same order as the input ``states`` iterable.
+
+        Raises
+        ------
+        ValueError
+            If any object in ``states`` is already associated to an
+            existing state in the biDFA.
+        """
         states = list(states)
         for state in states:
             if state in self.states:
