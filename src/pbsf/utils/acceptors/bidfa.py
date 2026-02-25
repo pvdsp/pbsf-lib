@@ -19,6 +19,12 @@ class biDFA(DFA):
         self.left: set[int] = {0}
         self.right: set[int] = set()
 
+    def __validate_state(self, state: int) -> None:
+        if not isinstance(state, int):
+            raise TypeError(f"State identifier {state} should be an integer.")
+        if state not in self.states.inverse:
+            raise ValueError(f"State {state} is not a valid state.")
+
     def add_state(self, state: Optional[Any] = None) -> int:
         """Add object as a left state of the biDFA."""
         return self.add_left(state)
@@ -137,6 +143,7 @@ class biDFA(DFA):
             If provided state of one of the symbol identifiers in
             the sequence is respectively not a valid state or symbol.
         """
+        self.__validate_state(state)
         symbols = list(sequence)
         while len(symbols) > 0:
             index = 0 if state in self.left else -1
