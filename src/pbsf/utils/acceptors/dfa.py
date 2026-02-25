@@ -23,12 +23,12 @@ class DFA(FiniteAcceptor):
         self.__free_identifier = 0
 
     def __next_free_identifier(self) -> int:
-        id = self.__free_identifier
-        while ((id in self.states.inverse) or
-               (id in self.alphabet.inverse)):
-            id += 1
-        self.__free_identifier = id
-        return id
+        identifier = self.__free_identifier
+        while ((identifier in self.states.inverse) or
+               (identifier in self.alphabet.inverse)):
+            identifier += 1
+        self.__free_identifier = identifier
+        return identifier
 
     def __validate_symbol(self, symbol: int) -> None:
         if not isinstance(symbol, int):
@@ -76,15 +76,15 @@ class DFA(FiniteAcceptor):
         ValueError
             Symbol is already part of the DFA's alphabet.
         """
-        id = self.__next_free_identifier()
+        identifier = self.__next_free_identifier()
         if symbol is not None:
             if symbol not in self.alphabet:
-                self.alphabet[symbol] = id
+                self.alphabet[symbol] = identifier
             else:
                 raise ValueError(f"Symbol {symbol} is already part of the alphabet.")
         else:
-            self.alphabet[id] = id
-        return id
+            self.alphabet[identifier] = identifier
+        return identifier
 
     def add_symbols(self, symbols: Iterable[Any]) -> list[int]:
         """
@@ -132,15 +132,15 @@ class DFA(FiniteAcceptor):
         ValueError
             State is already part of the DFA.
         """
-        id = self.__next_free_identifier()
+        identifier = self.__next_free_identifier()
         if state is not None:
             if state not in self.states:
-                self.states[state] = id
+                self.states[state] = identifier
             else:
                 raise ValueError(f"{state} is already associated to a state.")
         else:
-            self.states[id] = id
-        return id
+            self.states[identifier] = identifier
+        return identifier
 
     def add_states(self, states: Iterable[Any]) -> list[int]:
         """
