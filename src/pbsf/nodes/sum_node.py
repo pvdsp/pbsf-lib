@@ -1,3 +1,5 @@
+"""Summation-based node for demonstration purposes."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -9,8 +11,7 @@ from pbsf.utils import has_required
 
 class SumNode(Node):
     """
-    Node representing a segment by splitting it into multiple frames,
-    and approximating each frame using their sum.
+    Node approximating a segment by its frame sums.
 
     This node uses the mean absolute difference of frame sums as the distance metric.
     Nodes are considered equivalent if their distance is within a given threshold.
@@ -27,6 +28,7 @@ class SumNode(Node):
         - distance_threshold (Callable): Function that returns the distance
           threshold at a given depth.
     """
+
     def __init__(self, properties: dict[str, Any]) -> None:
         has_required(properties, [
             ("sums", np.ndarray),

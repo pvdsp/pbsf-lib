@@ -1,3 +1,5 @@
+"""Symbolic Aggregate Approximation discretiser."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -12,8 +14,7 @@ from pbsf.utils import has_required
 
 class SymbolicAggregate(Discretiser):
     """
-    Discretise contiguous subsequences in increasing granularity
-    using Symbolic Aggregate Approximation.
+    Discretise subsequences using Symbolic Aggregate Approximation.
 
     SAX converts a time series into a symbolic representation by first applying
     PAA (Piecewise Aggregate Approximation) and then discretising the resulting
@@ -33,6 +34,7 @@ class SymbolicAggregate(Discretiser):
         - node_type (type): The type of node to use for the chain. Must be SAXNode.
         - node_params (dict): The parameters to pass to the node constructor.
     """
+
     def __init__(self, params: dict[str, Any] | None = None) -> None:
         has_required(params, [
             ("max_depth", Callable),
@@ -83,8 +85,7 @@ class SymbolicAggregate(Discretiser):
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment in increasing granularity using
-        Symbolic Aggregate Approximation.
+        Discretise a segment using Symbolic Aggregate Approximation.
 
         First applies PAA to reduce dimensionality, then converts PAA values to
         symbols using the pre-calculated cut points.

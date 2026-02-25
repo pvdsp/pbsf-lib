@@ -1,3 +1,5 @@
+"""Deterministic Finite Automaton implementation."""
+
 from typing import Any, Iterable, Optional
 
 from bidict import bidict
@@ -7,12 +9,13 @@ from .acceptors import FiniteAcceptor
 
 class DFA(FiniteAcceptor):
     """
-    Implementation of the Deterministic Finite Automaton (DFA).
-    Automaton states and symbols can be linked to any object.
+    Deterministic Finite Automaton (DFA).
 
+    Automaton states and symbols can be linked to any object.
     DFAs describe regular languages, and thus recognise all sequences
     of symbols that are part of their language.
     """
+
     def __init__(self, name: Optional[str] = None):
         self.name: Optional[str] = name
         self.states: bidict[Any, int] = bidict({None: 0})
@@ -58,6 +61,7 @@ class DFA(FiniteAcceptor):
     def add_symbol(self, symbol: Optional[Any] = None) -> int:
         """
         Add object as a symbol in the DFA's alphabet.
+
         If no specific object is given in case of an abstract symbol,
         the internal integer identifier is used as the symbol object.
 
@@ -114,6 +118,7 @@ class DFA(FiniteAcceptor):
     def add_state(self, state: Optional[Any] = None) -> int:
         """
         Add object as a state of the DFA.
+
         If no specific object is given in case of an abstract state,
         the internal integer identifier is used as the state object.
 
@@ -169,8 +174,7 @@ class DFA(FiniteAcceptor):
 
     def set_transition(self, s1: int, s2: int, symbol: int) -> None:
         """
-        Set a transition from state with identifier `s1` to state with
-        identifier `s2` labelled with symbol `symbol`.
+        Set a transition from `s1` to `s2` labelled with `symbol`.
 
         Parameters
         ----------
@@ -200,8 +204,7 @@ class DFA(FiniteAcceptor):
 
     def step(self, state: int, symbol: int) -> set[int]:
         """
-        Get the state reachable from a state and symbol
-        given their identifier.
+        Get the state reachable from a state and symbol.
 
         DFAs return a singleton set with the reachable state if
         there is a relevant transition, otherwise return the empty set.
@@ -234,8 +237,7 @@ class DFA(FiniteAcceptor):
 
     def follow(self, state: int, sequence: Iterable[int]) -> set[int]:
         """
-        Get the state reachable from a given start state and
-        a sequence of symbols given their identifier.
+        Get the state reachable from a start state and symbol sequence.
 
         DFAs return a singleton set with the reachable state if
         each symbol in the sequence corresponds to a relevant transition,
@@ -273,8 +275,7 @@ class DFA(FiniteAcceptor):
 
     def accept(self, sequence: Iterable[int]) -> bool:
         """
-        Returns whether the DFA accepts the given sequence of symbols
-        given an iterable with their identifiers.
+        Return whether the DFA accepts the given symbol sequence.
 
         Parameters
         ----------

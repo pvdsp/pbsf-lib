@@ -7,7 +7,7 @@ from pbsf.nodes import StructuralProminenceNode
 
 class TestStructuralProminenceNode(unittest.TestCase):
     def test_creation(self):
-        """Test the creation of a StructuralProminenceNode"""
+        """Test the creation of a StructuralProminenceNode."""
         node = StructuralProminenceNode({
             "depth": 0,
             "std": 0.5,
@@ -26,7 +26,7 @@ class TestStructuralProminenceNode(unittest.TestCase):
         self.assertEqual(node.prominence_threshold, 0.2)
 
     def test_equality(self):
-        """"""
+        """Test equality comparison between nodes."""
         n1 = StructuralProminenceNode({
             "depth": 0,
             "std": 0.5,

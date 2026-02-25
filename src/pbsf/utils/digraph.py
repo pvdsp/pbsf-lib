@@ -1,3 +1,6 @@
+"""Simple directed graph implementation."""
+
+
 class Digraph:
     """
     A simple directed graph implementation.
@@ -9,6 +12,7 @@ class Digraph:
     edges : list[set[int]]
         List storing sets of outgoing edge vertex IDs for each vertex.
     """
+
     def __init__(self) -> None:
         self.vertices = []
         self.edges = []

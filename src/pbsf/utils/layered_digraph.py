@@ -1,3 +1,5 @@
+"""Layered directed graph with depth-enforced edge constraints."""
+
 from pbsf.utils.digraph import Digraph
 
 
@@ -17,6 +19,7 @@ class LayeredDigraph(Digraph):
     max_depth : int
         Maximum depth (number of layers) in the graph.
     """
+
     def __init__(self) -> None:
         super().__init__()
         self._layers = [set()]  # Initialize with the root layer

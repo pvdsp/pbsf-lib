@@ -1,3 +1,5 @@
+"""Structural and prominence distance node for piecewise linear approximations."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -10,8 +12,7 @@ from pbsf.utils import has_required
 
 class StructuralProminenceNode(Node):
     """
-    Node representing a piecewise linear approximation using
-    structural and prominence distances.
+    Node using structural and prominence distances for PLA.
 
     This node uses slopes and intercepts to represent segment discretisations via
     Piecewise Linear Approximation (PLA). Two distance metrics are used for comparison:
@@ -53,6 +54,7 @@ class StructuralProminenceNode(Node):
             ...
         })
     """
+
     def __init__(self, properties: dict[str, Any]) -> None:
         has_required(properties, [
             ("depth", int),

@@ -1,3 +1,5 @@
+"""Abstract base class for discretisation nodes."""
+
 from abc import ABC, abstractmethod
 
 

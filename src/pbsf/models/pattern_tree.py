@@ -1,3 +1,5 @@
+"""Tree-based model for storing coarse-to-fine discretised patterns."""
+
 import math
 
 from pbsf.models.base import Model
@@ -7,8 +9,7 @@ from pbsf.utils.digraph import Digraph
 
 class PatternTree(Model):
     """
-    Rooted tree-like structure for representing coarse- to
-    fine-grained discretised data.
+    Rooted tree for coarse-to-fine discretised patterns.
 
     A PatternTree stores chains of nodes in a directed graph structure, enabling
     efficient pattern matching and learning from discretised sequences. The tree
@@ -32,6 +33,7 @@ class PatternTree(Model):
     params : dict
         Configuration parameters.
     """
+
     def __init__(self, params: dict | None = None) -> None:
         self.params = params
         if self.params is None:
@@ -98,8 +100,7 @@ class PatternTree(Model):
 
     def chain_to_vertices(self, chain: list[Node]) -> list[int]:
         """
-        Convert a chain of nodes to a list of existing vertex
-        identifiers in the PatternTree.
+        Convert a chain of nodes to existing vertex identifiers.
 
         Traverses the tree from the root, matching each node in the chain to an
         existing vertex. At the first mismatch, the traversal stops and returns

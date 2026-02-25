@@ -1,3 +1,5 @@
+"""Piecewise Linear Approximation node."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -28,6 +30,7 @@ class PLANode(Node):
         - distance_threshold (Callable): Function that returns the distance
           threshold for the PLA distance measure at a given depth.
     """
+
     def __init__(self, properties: dict[str, Any]) -> None:
         has_required(properties, [
             ("depth", int),

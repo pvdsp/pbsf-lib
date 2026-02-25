@@ -1,3 +1,5 @@
+"""Hierarchical Pattern Matching anomaly detection algorithm."""
+
 import numpy as np
 
 from pbsf.discretisers import PiecewiseLinear
@@ -8,7 +10,7 @@ from pbsf.segmenters import SlidingWindow
 
 def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> np.ndarray:
     """
-    Implementation of the Hierarchical Pattern Matching Anomaly Detection algorithm.
+    Hierarchical Pattern Matching-based anomaly detection.
 
     Parameters
     ----------

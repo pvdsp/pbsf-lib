@@ -1,3 +1,5 @@
+"""UCR benchmark runner for anomaly detection evaluation."""
+
 import os
 import time
 from typing import Any
@@ -14,7 +16,7 @@ from pbsf.segmenters import SlidingWindow
 
 def get_ucr(path: str):
     """
-    Generator that returns UCR datasets from the specified path, sorted by file size.
+    Yield UCR datasets from the specified path, sorted by file size.
 
     Parameters
     ----------

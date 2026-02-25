@@ -1,3 +1,5 @@
+"""Abstract base class for pattern storage models."""
+
 from abc import ABC, abstractmethod
 
 
@@ -12,6 +14,7 @@ class Model(ABC):
     Subclasses must implement methods for learning patterns, updating the model with
     new data, and checking pattern membership.
     """
+
     @abstractmethod
     def update(self, data: list) -> list:
         """

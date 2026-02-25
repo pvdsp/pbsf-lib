@@ -1,3 +1,5 @@
+"""Piecewise Aggregate Approximation discretiser."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -10,8 +12,7 @@ from pbsf.utils import has_required
 
 class PiecewiseAggregate(Discretiser):
     """
-    Discretise contiguous subsequences in increasing granularity
-    using Piecewise Aggregate Approximation.
+    Discretise subsequences using Piecewise Aggregate Approximation.
 
     PAA reduces dimensionality by dividing a segment into frames and representing
     each frame by its mean value.
@@ -28,6 +29,7 @@ class PiecewiseAggregate(Discretiser):
         - node_type (type): The type of node to use for the chain. Must be PAANode.
         - node_params (dict): The parameters to pass to the node constructor.
     """
+
     def __init__(self, params: dict[str, Any] | None = None) -> None:
         has_required(params, [
             ("max_depth", Callable),
@@ -42,8 +44,7 @@ class PiecewiseAggregate(Discretiser):
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment in increasing granularity using
-        Piecewise Aggregate Approximation.
+        Discretise a segment using Piecewise Aggregate Approximation.
 
         Parameters
         ----------

@@ -433,14 +433,14 @@ class TestPatternGraph(unittest.TestCase):
 
 class TestNestedWordSet(unittest.TestCase):
     def test_creation(self):
-        """Creation of an empty NestedWordSet"""
+        """Creation of an empty NestedWordSet."""
         model = NestedWordSet()
         self.assertEqual(len(model.patterns.graph.vertices), 0)
         self.assertEqual(len(model.nested_words), 0)
         self.assertEqual(model.context_size, 2)
 
     def test_creation_custom_context_size(self):
-        """Creation of an empty NestedWordSet with custom context size"""
+        """Creation of an empty NestedWordSet with custom context size."""
         model = NestedWordSet({"context_size": 5})
         self.assertEqual(len(model.patterns.graph.vertices), 0)
         self.assertEqual(len(model.nested_words), 0)
@@ -452,13 +452,13 @@ class TestNestedWordSet(unittest.TestCase):
             NestedWordSet({"context_size": -1})
 
     def test_update_empty_chain(self):
-        """Updating with an empty chain should raise ValueError"""
+        """Updating with an empty chain should raise ValueError."""
         model = NestedWordSet({"context_size": 2})
         with self.assertRaises(ValueError):
             model.update([])
 
     def test_update_short_chains(self):
-        """Adding chain of length 1 to an empty NestedWord"""
+        """Adding chain of length 1 to an empty NestedWord."""
         model = NestedWordSet({"context_size": 2})
         chain1 = [create_test_node([1.0])]
         model.update(chain1)
@@ -474,7 +474,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(list(model.nested_words)[0], expected_nw)
 
     def test_update_duplicate_short_chains(self):
-        """Adding duplicate chain of length 1 to an empty NestedWord"""
+        """Adding duplicate chain of length 1 to an empty NestedWord."""
         model = NestedWordSet({"context_size": 2})
         chain = [create_test_node([1.0])]
         model.update(chain)
@@ -489,7 +489,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(list(model.nested_words)[0], expected_nw)
 
     def test_update_regular_chains(self):
-        """Adding chain of length >1 to an empty NestedWord"""
+        """Adding chain of length >1 to an empty NestedWord."""
         model = NestedWordSet({"context_size": 4})
 
         # First chain
@@ -528,7 +528,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(len(model.nested_words), 1)
 
     def test_update_duplicate_regular_chain(self):
-        """Adding duplicate chain of >1 to an empty NestedWord"""
+        """Adding duplicate chain of >1 to an empty NestedWord."""
         model = NestedWordSet({"context_size": 2})
         chain = [create_test_node([1.0]),
                  create_test_node([1.0, 1.0]),
@@ -549,7 +549,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertTrue(expected_nw in model.nested_words)
 
     def test_learn(self):
-        """Adding a list of chains to the NestedWordSet"""
+        """Adding a list of chains to the NestedWordSet."""
         model = NestedWordSet({"context_size": 5})
         c = create_test_node
         chains = [
@@ -582,7 +582,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertTrue(model.contains([chain]))
 
     def test_contains_no_context(self):
-        """Check if chain can be found with context_size 1"""
+        """Check if chain can be found with context_size 1."""
         model = NestedWordSet({"context_size": 1})
         c = create_test_node
         chains = [
@@ -598,7 +598,7 @@ class TestNestedWordSet(unittest.TestCase):
             self.assertTrue(model.contains([chain]))
 
     def test_contains_context(self):
-        """Check if chain can be found with context_size >1"""
+        """Check if chain can be found with context_size >1."""
         model = NestedWordSet({"context_size": 5})
         c = create_test_node
         chains = [
@@ -629,7 +629,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertFalse(model.contains(shuffled))
 
     def test_contains_edge_cases(self):
-        """Test contains method with edge cases"""
+        """Test contains method with edge cases."""
         model = NestedWordSet({"context_size": 2})
 
         # Test contains with empty model
@@ -672,7 +672,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertFalse(model.contains(mixed_chains))
 
     def test_context_queue_boundary_conditions(self):
-        """Test context queue behavior at boundaries"""
+        """Test context queue behavior at boundaries."""
         # Test with context_size = 1
         model = NestedWordSet({"context_size": 1})
         chain1 = [create_test_node([1.0])]
@@ -709,7 +709,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(len(model.nested_words), 2)  # Should have 2 total
 
     def test_invalid_constructor_parameters(self):
-        """Test constructor with invalid parameters"""
+        """Test constructor with invalid parameters."""
         # Test with None parameters (should use defaults)
         model = NestedWordSet(None)
         self.assertEqual(model.context_size, 2)
@@ -723,7 +723,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(model.context_size, 1000)
 
     def test_nesting_scenarios(self):
-        """Test scenarios with multiple chain interactions"""
+        """Test scenarios with multiple chain interactions."""
         model = NestedWordSet({"context_size": 3})
 
         # Create chains that will result in complex nested word combinations
@@ -759,7 +759,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(result[0], expected)
 
     def test_learn_with_empty_and_invalid_chains(self):
-        """Test learn method with edge cases"""
+        """Test learn method with edge cases."""
         model = NestedWordSet({"context_size": 2})
 
         # Test learn with empty list
@@ -772,7 +772,7 @@ class TestNestedWordSet(unittest.TestCase):
             model.learn([[], [create_test_node([1.0])]])
 
     def test_learn_with_duplicate_context(self):
-        """Test learn method with duplicate context chains"""
+        """Test learn method with duplicate context chains."""
         model = NestedWordSet({"context_size": 2})
         chains = [
             [create_test_node([1.0])],

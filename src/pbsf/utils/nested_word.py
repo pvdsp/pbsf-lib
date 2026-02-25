@@ -1,3 +1,5 @@
+"""Nested word and matching relation data structures."""
+
 from __future__ import annotations
 
 from typing import Any, Iterator
@@ -36,9 +38,7 @@ def _raise_crossing_error(
 
 
 class MatchingRelation:
-    """
-    Represents a matching relation.
-    """
+    """Represents a matching relation."""
 
     def __init__(
         self,
@@ -375,8 +375,7 @@ class MatchingRelation:
         self, key: int | slice,
     ) -> 'MatchingRelation' | tuple[int | None, int | None]:
         """
-        Get the match at the given index, or the matching relation
-        from start to stop position.
+        Get the match at a position, or a subrelation from a slice.
 
         Parameters
         ----------
@@ -427,7 +426,8 @@ class NestedWord:
     """
     Represents a nested word.
 
-    Attributes:
+    Attributes
+    ----------
         word: The word of the nested word.
         matching: The matching relation of the nested word.
     """
@@ -544,8 +544,7 @@ class NestedWord:
 
     def add_calls(self, symbols: list[Any]) -> None:
         """
-        Extend the nested word with a list of pending call
-        positions labelled by `symbols`.
+        Extend the nested word with pending call positions.
 
         Parameters
         ----------
@@ -623,8 +622,7 @@ class NestedWord:
         self, key: int | slice,
     ) -> tuple[Any, tuple[int | None, int | None] | None] | 'NestedWord':
         """
-        If key is int, returns the symbol and matching relation at the given index.
-        If key is slice, returns the nested subword from start to stop position.
+        Get the symbol and match at a position, or a nested subword from a slice.
 
         Parameters
         ----------

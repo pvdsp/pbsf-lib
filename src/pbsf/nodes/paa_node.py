@@ -1,3 +1,5 @@
+"""Piecewise Aggregate Approximation node."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -29,6 +31,7 @@ class PAANode(Node):
         - distance_threshold (Callable): Function that returns the distance
           threshold at a given depth.
     """
+
     def __init__(self, properties: dict[str, Any]) -> None:
         has_required(properties, [
             ("depth", int),

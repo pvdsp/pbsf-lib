@@ -1,3 +1,5 @@
+"""Node types representing segment approximations at various granularities."""
+
 from .base import Node
 from .paa_node import PAANode
 from .pla_node import PLANode

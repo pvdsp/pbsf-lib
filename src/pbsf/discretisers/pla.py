@@ -1,3 +1,5 @@
+"""Piecewise Linear Approximation discretiser."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -10,8 +12,7 @@ from pbsf.utils import has_required
 
 class PiecewiseLinear(Discretiser):
     """
-    Discretise contiguous subsequences in increasing granularity
-    using Piecewise Linear Approximation.
+    Discretise subsequences using Piecewise Linear Approximation.
 
     Parameters
     ----------
@@ -26,6 +27,7 @@ class PiecewiseLinear(Discretiser):
           of SlopeSignNode, StructuralProminenceNode, or PLANode.
         - node_params (dict): The parameters to pass to the node constructor.
     """
+
     def __init__(self, params: dict[str, Any] | None = None) -> None:
         has_required(params, [
             ("max_depth", Callable),
@@ -41,8 +43,7 @@ class PiecewiseLinear(Discretiser):
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment in increasing granularity using
-        Piecewise Linear Approximation.
+        Discretise a segment using Piecewise Linear Approximation.
 
         Parameters
         ----------

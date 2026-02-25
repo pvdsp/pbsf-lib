@@ -1,3 +1,5 @@
+"""Summation-based discretiser for demonstration purposes."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -10,8 +12,7 @@ from pbsf.utils import has_required
 
 class Summation(Discretiser):
     """
-    Discretise contiguous subsequences by summing the values of an increasing
-    number of frames.
+    Discretise subsequences by summing frame values.
 
     This is a toy Discretiser implementation example for demonstration purposes.
 
@@ -28,6 +29,7 @@ class Summation(Discretiser):
           SumNode.
         - node_params (dict): The parameters to pass to the node constructor.
     """
+
     def __init__(self, params: dict[str, Any] | None = None) -> None:
         has_required(params, [
             ("max_depth", Callable),
@@ -42,8 +44,7 @@ class Summation(Discretiser):
 
     def discretise(self, segment: np.ndarray) -> list:
         """
-        Discretise a segment by splitting it in a number of frames and summing
-        the frame values.
+        Discretise a segment by splitting into frames and summing values.
 
         Parameters
         ----------

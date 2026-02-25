@@ -1,3 +1,5 @@
+"""Set-based model for tracking unique patterns at various depths."""
+
 from pbsf.models.base import Model
 from pbsf.nodes import Node
 
@@ -28,6 +30,7 @@ class PatternSet(Model):
     Nodes added to the PatternSet must implement `__hash__` and `__eq__` to
     support set membership operations.
     """
+
     def __init__(self, params: dict | None = None) -> None:
         self.params = params
         if self.params is None:

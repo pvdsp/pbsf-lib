@@ -1,3 +1,5 @@
+"""Slope sign node for comparing segment slope directions."""
+
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -24,6 +26,7 @@ class SlopeSignNode(Node):
         - intercepts (np.ndarray): Array of intercepts of the linear segments.
         - breakpoints (list): List of (start, end) tuples defining the segments.
     """
+
     def __init__(self, properties: dict[str, Any]) -> None:
         has_required(properties, [
             ("depth", int),

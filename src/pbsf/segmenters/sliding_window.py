@@ -1,3 +1,5 @@
+"""Sliding window segmenter for partitioning time series data."""
+
 from typing import Any
 
 import numpy as np
@@ -22,6 +24,7 @@ class SlidingWindow(Segmenter):
         - autocorrelation (bool, optional): Whether to determine window size
           using autocorrelation. Default: False.
     """
+
     def __init__(self, params: dict[str, Any] | None = None) -> None:
         self.autocorrelation = params.get("autocorrelation", False)
         self.differentiation = params.get("differentiation", False)

@@ -1,3 +1,5 @@
+"""Shared utilities including graph structures, nested words, and validation."""
+
 from .digraph import Digraph
 from .layered_digraph import LayeredDigraph
 from .nested_word import MatchingRelation, NestedWord

@@ -1,3 +1,5 @@
+"""Abstract base class for segmentation algorithms."""
+
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -11,6 +13,7 @@ class Segmenter(ABC):
     into contiguous subsequences. Subclasses must implement the segment()
     method to define their specific segmentation strategy.
     """
+
     @abstractmethod
     def segment(self, data: np.ndarray) -> np.ndarray:
         """

@@ -1,3 +1,5 @@
+"""Validation helpers for checking required properties and types."""
+
 from typing import Any
 
 

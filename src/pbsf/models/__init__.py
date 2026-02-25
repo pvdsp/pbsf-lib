@@ -1,3 +1,5 @@
+"""Pattern storage models for learning and matching discretised sequences."""
+
 from .base import Model
 from .nw_set import NestedWordSet
 from .pattern_graph import PatternGraph

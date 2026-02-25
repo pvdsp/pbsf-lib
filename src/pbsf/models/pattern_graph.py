@@ -1,3 +1,5 @@
+"""Directed acyclic graph model for storing discretised patterns."""
+
 import math
 
 from pbsf.models.base import Model
@@ -7,8 +9,7 @@ from pbsf.utils.layered_digraph import LayeredDigraph
 
 class PatternGraph(Model):
     """
-    Directed acyclic graph (DAG) for representing coarse- to
-    fine-grained discretised patterns.
+    Directed acyclic graph for coarse-to-fine discretised patterns.
 
     A PatternGraph uses a layered directed graph structure to store chains of nodes,
     where each layer corresponds to a specific depth level. Unlike PatternTree, this

@@ -1,3 +1,5 @@
+"""Abstract base class for discretisation algorithms."""
+
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -11,6 +13,7 @@ class Discretiser(ABC):
     into discrete representations. Subclasses must implement the discretise()
     method to define their specific discretisation strategy.
     """
+
     @abstractmethod
     def discretise(self, segment: np.ndarray) -> np.ndarray:
         """

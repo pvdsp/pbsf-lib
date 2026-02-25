@@ -1,3 +1,5 @@
+"""Graphviz-based visualisation for nested words and pattern models."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

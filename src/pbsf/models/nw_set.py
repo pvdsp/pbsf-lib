@@ -1,3 +1,5 @@
+"""Nested word set model for hierarchical pattern matching."""
+
 from pbsf.models.base import Model
 from pbsf.models.pattern_graph import PatternGraph
 from pbsf.models.pattern_tree import PatternTree
@@ -7,8 +9,7 @@ from pbsf.utils.nested_word import NestedWord
 
 class NestedWordSet(Model):
     """
-    Model that maintains a set of nested words representing
-    observed hierarchical patterns.
+    Model maintaining a set of nested words representing observed patterns.
 
     Nested words are formed by combining a fixed number (context size) of consecutive
     discretisation chains, creating structured representations of temporal sequences
@@ -42,6 +43,7 @@ class NestedWordSet(Model):
     ValueError
         If context_size is not positive.
     """
+
     def __init__(self, params: dict | None = None) -> None:
         self.params = params
         if self.params is None:
