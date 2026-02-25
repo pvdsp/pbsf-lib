@@ -118,7 +118,7 @@ class DFA(FiniteAcceptor):
         the internal integer identifier is used as the state object.
 
         Parameters
-        ---------
+        ----------
         state : Optional[Any]
             Optional object to associate with the new state.
 
