@@ -229,7 +229,8 @@ class DFA(FiniteAcceptor):
         self.__validate_state(state)
         self.__validate_symbol(symbol)
         transitions = self.transitions.get(state, {})
-        return transitions.get(symbol, set())
+        # Return a defensive copy to prevent external mutation of internal state
+        return set(transitions.get(symbol, set()))
 
     def follow(self, state: int, sequence: Iterable[int]) -> set[int]:
         """
