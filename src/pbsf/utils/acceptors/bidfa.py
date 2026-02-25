@@ -218,13 +218,7 @@ class biDFA(DFA):
             if symbol not in self.alphabet.inverse:
                 return False
 
-        state = self.initial
-        symbols = list(sequence)
-        while len(symbols) > 0:
-            index = 0 if state in self.left else -1
-            current = symbols.pop(index)
-            state_set = self.step(state, current)
-            if not state_set:
-                return False
-            state = next(iter(state_set))
-        return state in self.final
+        state_set = self.follow(self.initial, sequence)
+        if not state_set:
+            return False
+        return any(state in self.final for state in state_set)
