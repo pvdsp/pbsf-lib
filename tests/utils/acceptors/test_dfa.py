@@ -294,3 +294,6 @@ class TestDFA(unittest.TestCase):
         # Set transition with non-int symbol
         with self.assertRaises(TypeError):
             d.set_transition(0, s1, "a")
+        # Accept with non-int symbol
+        with self.assertRaises(TypeError):
+            d.accept(("a",))
