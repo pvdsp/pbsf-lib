@@ -1,3 +1,3 @@
-from pbsf.utils.acceptors.acceptors import FiniteAcceptor
+from .acceptors import FiniteAcceptor, DFA
 
-__all__ = ["FiniteAcceptor"]
+__all__ = ["FiniteAcceptor", "DFA"]
