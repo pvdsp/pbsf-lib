@@ -2,7 +2,7 @@ from typing import Any, Iterable, Optional
 
 from bidict import bidict
 
-from pbsf.utils.acceptors import FiniteAcceptor
+from .acceptors import FiniteAcceptor
 
 
 class DFA(FiniteAcceptor):
