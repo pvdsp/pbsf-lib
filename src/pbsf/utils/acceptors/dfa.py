@@ -263,9 +263,8 @@ class DFA(FiniteAcceptor):
         """
         self.__validate_state(state)
         sequence = list(sequence)
-        for symbol in set(sequence):
-            self.__validate_symbol(symbol)
         for symbol in sequence:
+            self.__validate_symbol(symbol)
             state_set = self.step(state, symbol)
             if not state_set:
                 return set()
