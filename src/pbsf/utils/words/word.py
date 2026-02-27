@@ -59,10 +59,6 @@ class Word:
         return f"Word({self._sequence})"
 
     def __add__(self, other: 'Word') -> 'Word':
-        """Return the concatenation of two words."""
-        if not isinstance(other, Word):
-            raise TypeError(
-                f"Can only concatenate Word (not {type(other).__name__}) to Word"
         """
         Concatenate this word with another word.
 
@@ -77,7 +73,11 @@ class Word:
             A new word whose sequence is the concatenation of this word's
             sequence with ``other``'s sequence.
         """
-        return Word(self.sequence + other.sequence)
+        if not isinstance(other, Word):
+            raise TypeError(
+                f"Can only concatenate Word (not {type(other).__name__}) to Word"
+            )
+        return Word(self._sequence + other.sequence)
 
     def __mul__(self, n: int) -> 'Word':
         """
