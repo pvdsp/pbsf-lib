@@ -13,6 +13,15 @@ class Word:
     """
 
     def __init__(self, sequence: Iterable[Any] | None = None):
+        """
+        Initialize a word from an optional sequence of symbols.
+
+        Parameters
+        ----------
+        sequence : Iterable[Any] | None, optional
+            Iterable whose items form the symbols of the word. If ``None``, the
+            empty word is created.
+        """
         self.sequence = tuple(sequence) if sequence is not None else ()
 
     def __len__(self):
