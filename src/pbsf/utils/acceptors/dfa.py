@@ -86,6 +86,8 @@ class DFA(FiniteAcceptor):
                     raise ValueError("Initial state identifier expected after 'initial'.")
                 if len(states) > 1:
                     raise ValueError("DFA can only have one initial state.")
+                if dfa.initial is not None:
+                    raise ValueError("DFA initial state already set; multiple 'initial' lines are not allowed.")
                 q = states[0]
                 if q not in dfa.states:
                     dfa.add_state(q)
