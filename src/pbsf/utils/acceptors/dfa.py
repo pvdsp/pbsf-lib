@@ -73,6 +73,9 @@ class DFA(FiniteAcceptor):
         # Go over description line by line
         for line in lines:
             parts = line.split()
+            if not parts:
+                # Skip empty or whitespace-only lines
+                continue
 
             # Setting initial state
             if parts[0] == 'initial':
