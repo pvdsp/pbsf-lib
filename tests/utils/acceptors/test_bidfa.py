@@ -53,15 +53,15 @@ class TestBiDFA(unittest.TestCase):
         with self.assertRaises(ValueError):
             bidfa.biDFA.from_description("empty\n    right 0\n    left 0")
 
-        # biDFA with non-existant initial state should raise error
+        # biDFA with non-existent initial state should raise error
         with self.assertRaises(ValueError):
             bidfa.biDFA.from_description("empty\n    left 0\n    initial 1")
 
-        # biDFA with non-existant final state should raise error
+        # biDFA with non-existent final state should raise error
         with self.assertRaises(ValueError):
             bidfa.biDFA.from_description("empty\n    left 0\n    final 1")
 
-        # biDFA with transition from or to non-existant state should raise error
+        # biDFA with transition from or to non-existent state should raise error
         with self.assertRaises(ValueError):
             bidfa.biDFA.from_description("empty\n    left 0\n    right 1\n    0 2 a")
         with self.assertRaises(ValueError):
