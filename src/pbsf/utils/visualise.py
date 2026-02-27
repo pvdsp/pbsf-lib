@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import graphviz
 
 from pbsf.utils.digraph import Digraph
-from pbsf.utils.nested_word import NestedWord
+from pbsf.utils.words.nested_word import NestedWord
 
 if TYPE_CHECKING:
     from pbsf.models import PatternGraph, PatternTree

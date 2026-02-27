@@ -4,6 +4,8 @@ from typing import Any, Iterable, Optional
 
 from bidict import bidict
 
+from pbsf.utils.words import Word
+
 from .acceptors import FiniteAcceptor
 
 
@@ -12,8 +14,8 @@ class DFA(FiniteAcceptor):
     Deterministic Finite Automaton (DFA).
 
     Automaton states and symbols can be linked to any object.
-    DFAs describe regular languages, and thus recognise all sequences
-    of symbols that are part of their language.
+    DFAs describe regular languages, and thus recognise all words
+    that are part of their language.
     """
 
     def __init__(self, name: Optional[str] = None):
@@ -33,7 +35,9 @@ class DFA(FiniteAcceptor):
         self.__free_identifier = identifier
         return identifier
 
-    def __validate_symbol(self, symbol: int) -> None:
+    def __validate_symbol(self, symbol: int | None) -> None:
+        if symbol is None:
+            raise ValueError("Symbol is not in the alphabet")
         if not isinstance(symbol, int):
             raise TypeError(f"Symbol identifier {symbol} should be an integer.")
         if symbol not in self.alphabet.inverse:
@@ -235,76 +239,76 @@ class DFA(FiniteAcceptor):
         # Return a defensive copy to prevent external mutation of internal state
         return set(transitions.get(symbol, set()))
 
-    def follow(self, state: int, sequence: Iterable[int]) -> set[int]:
+    def follow(self, state: int, word: Word) -> set[int]:
         """
-        Get the state reachable from a start state and symbol sequence.
+        Get the state reachable from a start state and word.
 
         DFAs return a singleton set with the reachable state if
-        each symbol in the sequence corresponds to a relevant transition,
+        each symbol in the word corresponds to a relevant transition,
         otherwise returns the empty set.
 
         Parameters
         ----------
         state : int
             Integer identifier of a specific state.
-        sequence : Iterable[int]
-            Iterable of integer symbol identifiers.
+        word : Word
+            Sequence of symbols.
 
         Returns
         -------
         set[int]
             Singleton set with integer identifier of reachable state
             or empty set if there is no outgoing transition somewhere
-            along the path of followed transitions.
+            along the path of visited states.
 
         Raises
         ------
         ValueError
-            If provided state of one of the symbol identifiers in
-            the sequence is respectively not a valid state or symbol.
+            If provided state identifier or one of the symbols in the word
+            is respectively not a valid state or symbol.
         """
         self.__validate_state(state)
-        sequence = list(sequence)
+        if not isinstance(word, Word):
+            raise TypeError(f"Expected Word, received {type(word).__name__}.")
+
+        sequence = list(word)
         for symbol in sequence:
-            self.__validate_symbol(symbol)
-            state_set = self.step(state, symbol)
+            sid = self.alphabet.get(symbol)
+            self.__validate_symbol(sid)
+            state_set = self.step(state, sid)
             if not state_set:
                 return set()
             state = next(iter(state_set))
         return {state}
 
-    def accept(self, sequence: Iterable[int]) -> bool:
+    def accept(self, word: Word) -> bool:
         """
-        Return whether the DFA accepts the given symbol sequence.
+        Return whether the DFA accepts the given word.
 
         Parameters
         ----------
-        sequence : Iterable[int]
-            An iterable of integer symbol identifiers
+        word : Word
+            Sequence of symbols.
 
         Returns
         -------
         bool
-            Acceptance of the given sequence.
+            Acceptance of the given word.
 
         Raises
         ------
         TypeError
-            If one of the provided symbol identifiers is not an integer.
+            If the provided word is not a Word.
         """
-        sequence = list(sequence)
-        for symbol in set(sequence):
-            if not isinstance(symbol, int):
-                raise TypeError(
-                    f"Symbol identifier must be int, got {type(symbol).__name__}"
-                )
-            if symbol not in self.alphabet.inverse:
+        if not isinstance(word, Word):
+            raise TypeError(f"Expected Word, received {type(word).__name__}.")
+
+        symbols = list(word)
+        for symbol in set(symbols):
+            if symbol not in self.alphabet:
                 return False
 
-        state = self.initial
-        for symbol in sequence:
-            state_set = self.step(state, symbol)
-            if not state_set:  # no matching transition
-                return False
-            state = next(iter(state_set))
-        return state in self.final
+        state_set = self.follow(self.initial, word)
+        if not state_set:
+            return False
+        return any(state in self.final for state in state_set)

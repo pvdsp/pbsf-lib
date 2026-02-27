@@ -1,6 +1,7 @@
 import unittest
 
 from pbsf.utils.acceptors import bidfa
+from pbsf.utils.words import Word
 
 
 class TestBiDFA(unittest.TestCase):
@@ -183,16 +184,13 @@ class TestBiDFA(unittest.TestCase):
         d.set_transition(q2, q2, a)
         d.set_transition(q2, q2, b)
         # Check that follow([]) results in state 0
-        self.assertEqual(d.follow(d.initial, []), {d.initial})
+        self.assertEqual(d.follow(d.initial, Word()), {d.initial})
         # Check that follow("aaaabbbb") results in state 0
-        seq = [d.alphabet[s] for s in "aaaabbbb"]
-        self.assertEqual(d.follow(d.initial, seq), {d.initial})
+        self.assertEqual(d.follow(d.initial, Word("aaaabbbb")), {d.initial})
         # Check that follow("aaaabbb") results in state q1
-        seq = [d.alphabet[s] for s in "aaaabbb"]
-        self.assertEqual(d.follow(d.initial, seq), {q1})
+        self.assertEqual(d.follow(d.initial, Word("aaaabbb")), {q1})
         # Check that follow("abababb") results in state q2
-        seq = [d.alphabet[s] for s in "abababb"]
-        self.assertEqual(d.follow(d.initial, seq), {q2})
+        self.assertEqual(d.follow(d.initial, Word("abababb")), {q2})
 
     def test_accept(self):
         # Repeat biDFA setup from test_follow
@@ -210,12 +208,12 @@ class TestBiDFA(unittest.TestCase):
         d.final.add(d.initial)
         # Check if a^{n} b^{n} for n >= 0 is accepted
         for n in range(20):
-            seq = [a] * n + [b] * n
+            seq = Word('a') * n + Word('b') * n
             self.assertTrue(d.accept(seq))
         # Check that everything else is rejected
-        self.assertFalse(d.accept([a]))
-        self.assertFalse(d.accept([b]))
-        self.assertFalse(d.accept([a, a, b]))
-        self.assertFalse(d.accept([a, b, b]))
-        self.assertFalse(d.accept([b, a]))
-        self.assertFalse(d.accept([b, a, b, a]))
+        self.assertFalse(d.accept(Word("a")))
+        self.assertFalse(d.accept(Word("b")))
+        self.assertFalse(d.accept(Word("aab")))
+        self.assertFalse(d.accept(Word("abb")))
+        self.assertFalse(d.accept(Word("ba")))
+        self.assertFalse(d.accept(Word("baba")))

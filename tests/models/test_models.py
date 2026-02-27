@@ -4,7 +4,7 @@ import numpy as np
 
 from pbsf.models import NestedWordSet, PatternGraph, PatternSet, PatternTree
 from pbsf.nodes import SlopeSignNode
-from pbsf.utils.nested_word import NestedWord
+from pbsf.utils.words.nested_word import NestedWord
 
 
 def create_test_node(slopes):

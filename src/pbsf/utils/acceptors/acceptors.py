@@ -1,7 +1,8 @@
 """Abstract base class for finite acceptors."""
 
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+
+from pbsf.utils.words import Word
 
 
 class FiniteAcceptor(ABC):
@@ -9,8 +10,8 @@ class FiniteAcceptor(ABC):
     Abstract base class for finite acceptors.
 
     Subclasses must implement methods that return their size,
-    the result of a transition given a state and symbol or sequence,
-    and the result of acceptance of rejection given a Sequence.
+    the result of a transition given a state and symbol or word,
+    and the result of acceptance or rejection given a word.
     """
 
     @abstractmethod
@@ -46,38 +47,38 @@ class FiniteAcceptor(ABC):
         pass
 
     @abstractmethod
-    def follow(self, state: int, sequence: Iterable[int]) -> set[int]:
+    def follow(self, state: int, word: Word) -> set[int]:
         """
-        Get the set of states reachable from a start state and sequence.
+        Get the set of states reachable from a start state and word.
 
         Parameters
         ----------
         state : int
             Integer identifier of a specific start state.
-        sequence : Iterable[int]
-            An iterable of integer symbol identifiers.
+        word : Word
+            Sequence of symbols.
 
         Returns
         -------
         set[int]
             Set of the integer identifiers of states reachable from
-            the given start state and sequence of symbols.
+            the given start state and word.
         """
         pass
 
     @abstractmethod
-    def accept(self, sequence: Iterable[int]) -> bool:
+    def accept(self, word: Word) -> bool:
         """
-        Return whether the acceptor accepts the given symbol sequence.
+        Return whether the acceptor accepts the given word.
 
         Parameters
         ----------
-        sequence : Iterable[int]
-            An iterable of integer symbol identifiers
+        word : Word
+            Sequence of symbols.
 
         Returns
         -------
         bool
-            Acceptance of the given sequence.
+            Acceptance of the given word.
         """
         pass
