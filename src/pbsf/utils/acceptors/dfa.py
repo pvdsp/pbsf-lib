@@ -36,10 +36,10 @@ class DFA(FiniteAcceptor):
         -------
         ```
         name of automaton
-            initial [identifier of initial state]
-            final [identifier(s) of final state(s)]
-            [id from] [id to] [character]
-            [id from] [id to] [character]
+            initial <identifier of initial state>
+            final <identifier(s) of final state(s)>
+            <id from> <id to> <character>
+            <id from> <id to> <character>
             ...
         ```
 
