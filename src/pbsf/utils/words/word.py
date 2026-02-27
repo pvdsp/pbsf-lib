@@ -29,7 +29,7 @@ class Word:
         """Return the underlying tuple of symbols."""
         return self._sequence
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return number of symbols in the word."""
         return len(self._sequence)
 
