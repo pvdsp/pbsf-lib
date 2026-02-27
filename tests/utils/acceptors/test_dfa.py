@@ -23,6 +23,91 @@ class TestDFA(unittest.TestCase):
         self.assertEqual(len(d.transitions), 0)
         self.assertEqual(d.size(), (1, 0))
 
+    def test_from_description(self):
+        # Empty DFA with initial state
+        d = dfa.DFA.from_description("empty\n    initial 0")
+        self.assertEqual(d.name, "empty")
+        self.assertEqual(d.size(), (1, 0))
+        self.assertNotIn(None, d.states)
+
+        # Empty DFA with no initial state should raise error
+        with self.assertRaises(ValueError):
+            dfa.DFA.from_description("empty\n    final 0")
+
+        # 'initial' keyword with no state identifier should raise error
+        with self.assertRaises(ValueError):
+            dfa.DFA.from_description("empty\n    initial")
+
+        # Empty DFA with >1 initial state should raise error
+        with self.assertRaises(ValueError):
+            dfa.DFA.from_description("empty\n    initial 0 1")
+
+        # Empty and whitespace-only lines should be skipped
+        d = dfa.DFA.from_description(
+            "a1\n"
+            "\n"
+            "    initial 0\n"
+            "    \n"
+            "    final 0\n"
+            "\n"
+            "    0 1 a\n"
+            "    1 0 a"
+        )
+        self.assertEqual(d.name, "a1")
+        self.assertEqual(d.size(), (2, 2))
+
+        # Valid DFA
+        d = dfa.DFA.from_description(
+            "a1\n"
+            "    initial 0\n"
+            "    final 0\n"
+            "    0 1 a\n"
+            "    1 0 a\n"
+            "    0 0 b\n"
+            "    1 1 b"
+        )
+        self.assertEqual(d.name, "a1")
+        self.assertEqual(d.size(), (2, 4))
+        self.assertNotIn(None, d.states)
+        self.assertIn('a', d.alphabet)
+        self.assertIn('b', d.alphabet)
+        self.assertIn('0', d.states)
+        self.assertIn('1', d.states)
+        self.assertEqual(d.states['0'], d.initial)
+        self.assertIn(d.initial, d.final)
+
+        # Valid words
+        self.assertTrue(d.accept(Word()))
+        self.assertTrue(d.accept(Word("aa")))
+        self.assertTrue(d.accept(Word("aa") * 3))
+        self.assertTrue(d.accept(Word("bb")))
+        self.assertTrue(d.accept(Word("baab")))
+        self.assertTrue(d.accept(Word("abba")))
+        self.assertTrue(d.accept(Word("aabb")))
+        self.assertTrue(d.accept(Word("bbaa")))
+        self.assertTrue(d.accept(Word("bbaabb")))
+
+        # Invalid words
+        self.assertFalse(d.accept(Word("a")))
+        self.assertFalse(d.accept(Word("a") * 9))
+        self.assertFalse(d.accept(Word("ba")))
+        self.assertFalse(d.accept(Word("ab")))
+        self.assertFalse(d.accept(Word("bab") * 5))
+        self.assertFalse(d.accept(Word("abbb")))
+
+        # Unrecognised line should raise error
+        with self.assertRaises(ValueError):
+            dfa.DFA.from_description(
+                "a1\n"
+                "    initial 0\n"
+                "    final 0\n"
+                "    0 1 a\n"
+                "    1 0 a\n"
+                "    0 0 b\n"
+                "    1 1 b\n"
+                "    invalid line"
+            )
+
     def test_add_symbol(self):
         # Create an empty DFA
         d = dfa.DFA()
