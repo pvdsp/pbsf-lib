@@ -71,7 +71,7 @@ class TestBiDFA(unittest.TestCase):
         with self.assertRaises(ValueError):
             bidfa.biDFA.from_description("empty\n    left 0")
 
-        # biDFA from with >1 initial state should raise error
+        # biDFA with >1 initial state should raise error
         with self.assertRaises(ValueError):
             bidfa.biDFA.from_description("empty\n    left 0 1\n    initial 0 1")
 
