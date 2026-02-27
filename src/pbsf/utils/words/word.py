@@ -53,6 +53,10 @@ class Word:
             return Word(self._sequence[key])
         elif isinstance(key, int):
             return self._sequence[key]
+        else:
+            raise TypeError(
+                f"Word indices must be integers or slices, not {type(key).__name__}"
+            )
 
     def __repr__(self) -> str:
         """Return string representation of the word."""

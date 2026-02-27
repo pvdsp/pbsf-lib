@@ -91,6 +91,9 @@ class TestWord(unittest.TestCase):
         self.assertEqual(word[0:2], Word("wo"))
         self.assertEqual(word[1:3], Word("or"))
         self.assertEqual(word[2:4], Word("rd"))
+        # Invalid key type
+        with self.assertRaises(TypeError):
+            word["a"]
 
     def test_representation(self):
         # Empty word
