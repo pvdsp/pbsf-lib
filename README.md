@@ -1,11 +1,10 @@
 # Pattern-Based Series Framework
 
-A Python module for **pattern-based sequence learning** using **hierarchical piecewise approximation**.  
-This library implements the concepts presented in the paper:
+A Python module for **pattern-based sequence learning** using **hierarchical piecewise approximation**. This library implements the concepts presented in the following conference paper:
 
-> [**A Hierarchical Piecewise Approximation Framework for Pattern-Based Sequence Learning** ](https://bnaic2025.unamur.be/accepted-submissions/accepted_poster/072%20-%20A%20Hierarchical%20Piecewise%20Approximation%20Framework%20for%20Pattern-Based%20Sequence%20Learning.pdf)  
-> *Patrick Van der Spiegel, Johan Loeckx*  
-> Vrije Universiteit Brussel (VUB) – Artificial Intelligence Lab – Applied Research Team  
+> [**A Hierarchical Piecewise Approximation Framework for Pattern-Based Sequence Learning** ](https://bnaic2025.unamur.be/accepted-submissions/accepted_poster/072%20-%20A%20Hierarchical%20Piecewise%20Approximation%20Framework%20for%20Pattern-Based%20Sequence%20Learning.pdf)
+> *Patrick Van der Spiegel, Johan Loeckx*
+> Vrije Universiteit Brussel (VUB) – Artificial Intelligence Lab – Applied Research Team
 > BNAIC/BeNeLearn 2025: 37th Benelux Conference on Artificial Intelligence and the 34th Belgian Dutch Conference on Machine Learning. 2025.
 
 
@@ -30,15 +29,9 @@ This library implements the concepts presented in the paper:
 
 ## Introduction
 
-The **Pattern-Based Series Framework (`pbsf`)** provides a Python module for designing, testing, and evaluating algorithms that operate on **sequential data**.  
-It is particularly suited for sequence learning tasks such as:
+The **Pattern-Based Series Framework (`pbsf`)** provides a Python module for designing, testing, and evaluating algorithms that operate on **sequential data**. It is particularly suited for sequence learning tasks such as **pattern discovery**, **anomaly detection**, and **sequence classification**.
 
-- Pattern discovery  
-- Anomaly detection  
-- Sequence classification  
-
-The framework implements the approach, currently focused on anomaly detection, described in the accompanying paper.  
-This method represents sequences using models containing subsequence approximations that capture local and global trends at multiple scales.
+The framework currently focused on anomaly detection, and implements the approach described in the accompanying paper. This approach represents sequences using models containing subsequence approximations that capture local and global trends at multiple scales.
 
 ---
 
@@ -52,7 +45,7 @@ This method represents sequences using models containing subsequence approximati
    - Encapsulate each local pattern as a ``Node`` that encodes the approximation.
 
 3. **Aggregation**  
-   - Combine discretised subsequences into an aggregate ``Model`` (e.g., a `PatternTree`) that captures pattern relationships and recurrences over time.
+   - Combine discretised subsequences into an aggregate ``Model`` (e.g., a `PatternTree`) that captures pattern relationships and recurrences.
 
 ---
 
@@ -60,10 +53,10 @@ This method represents sequences using models containing subsequence approximati
 
 | Component | Description                                                                                                                                          |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Segmenters** | Divide series data into contiguous subsequences.                                                                                                     |
-| **Discretisers** | Convert continuous subsequences into coarse- to fine-grained representations using piecewise models.                                                 |
+| **Segmenters** | Divide series data into contiguous subsequences or segments.                                                                                                     |
+| **Discretisers** | Convert segments into coarse- to fine-grained representations using piecewise models.                                                 |
 | **Nodes** | Basic representational units that store results of the approximation (such as slopes and intercepts), and parameters (such as a distance threshold). |
-| **Models** | Graph-based or tree-based aggregations of nodes capturing relationships between recurring patterns.                                                  |
+| **Models** | Graph-based, tree-based, or automaton-based aggregations of nodes capturing relationships between recurring patterns.                                                  |
 | **Algorithms** | Higher-level methods that combine segmentation, discretisation, and aggregation for sequence learning tasks such as anomaly detection.               |
 
 ---
@@ -73,7 +66,7 @@ This method represents sequences using models containing subsequence approximati
 ### Requirements
 
 - Python 3.10 or higher
-- NumPy (for numerical computations)
+- NumPy
 - Matplotlib (for visualisation in benchmarking)
 - Graphviz (for visualising models – _optional_)
 
@@ -126,7 +119,7 @@ Below are short examples showing how to use the main components of `pbsf`.
 
 ### Segmenters
 
-Segmenters divide sequence data into overlapping or non-overlapping windows.
+Segmenters divide sequence data into overlapping or non-overlapping segments.
 
 ```python
 import numpy as np
