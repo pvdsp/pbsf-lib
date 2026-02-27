@@ -1,7 +1,7 @@
 import unittest
 
 from pbsf.utils.acceptors import dfa
-from pbsf.utils.words.word import Word
+from pbsf.utils.words import Word
 
 
 class TestDFA(unittest.TestCase):

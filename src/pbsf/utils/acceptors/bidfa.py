@@ -2,7 +2,7 @@
 
 from typing import Any, Iterable, Optional
 
-from pbsf.utils.words.word import Word
+from pbsf.utils.words import Word
 
 from .dfa import DFA
 

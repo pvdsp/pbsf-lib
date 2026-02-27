@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from pbsf.utils.words.word import Word
+from pbsf.utils.words import Word
 
 
 class FiniteAcceptor(ABC):

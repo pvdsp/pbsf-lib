@@ -1,6 +1,6 @@
 import unittest
 
-from pbsf.utils.words.word import Word
+from pbsf.utils.words import Word
 
 
 class TestWord(unittest.TestCase):

@@ -4,7 +4,7 @@ from typing import Any, Iterable, Optional
 
 from bidict import bidict
 
-from pbsf.utils.words.word import Word
+from pbsf.utils.words import Word
 
 from .acceptors import FiniteAcceptor
 
