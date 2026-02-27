@@ -1,16 +1,18 @@
-"""Shared utilities including graph structures, nested words, and validation."""
+"""Shared utilities including graph structures, words, and validation."""
 
 from .digraph import Digraph
 from .layered_digraph import LayeredDigraph
-from .words.nested_word import MatchingRelation, NestedWord
 from .validation import has_required
 from .visualise import show
+from .words import Word
+from .words.nested_word import MatchingRelation, NestedWord
 
 __all__ = [
     "has_required",
     "Digraph",
     "LayeredDigraph",
-    "NestedWord",
     "MatchingRelation",
+    "NestedWord",
+    "Word",
     "show",
 ]
