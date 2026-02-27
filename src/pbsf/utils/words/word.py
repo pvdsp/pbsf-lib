@@ -60,6 +60,10 @@ class Word:
 
     def __add__(self, other: 'Word') -> 'Word':
         """Return the concatenation of two words."""
+        if not isinstance(other, Word):
+            raise TypeError(
+                f"Can only concatenate Word (not {type(other).__name__}) to Word"
+            )
         return Word(self._sequence + other.sequence)
 
     def __mul__(self, n: int) -> 'Word':
