@@ -27,6 +27,94 @@ class DFA(FiniteAcceptor):
         self.transitions: dict[int, dict[int, set[int]]] = {}
         self.__free_identifier = 0
 
+    @classmethod
+    def from_description(cls, description: str) -> 'DFA':
+        """
+        Create a DFA from a textual description.
+
+        Example
+        -------
+        ```
+        name of automaton
+            initial [identifier of initial state]
+            final [identifier(s) of final state(s)]
+            [id from] [id to] [character]
+            [id from] [id to] [character]
+            ...
+        ```
+
+        ```
+        a1
+            initial 0
+            final 0 1
+            0 1 a
+            1 0 b
+        ```
+
+        Parameters
+        ----------
+        description : str
+            Textual description of the DFA.
+
+        Returns
+        -------
+        DFA
+            DFA built from the textual description.
+        """
+        # Parse the description
+        lines = description.strip().split('\n')
+        name = lines.pop(0)
+
+        # Create instance of DFA
+        dfa = cls(name=name)
+        dfa.states.clear()
+        dfa.initial = None
+
+        # Go over description line by line
+        for line in lines:
+            parts = line.split()
+
+            # Setting initial state
+            if parts[0] == 'initial':
+                states = parts[1:]
+                if len(states) > 1:
+                    raise ValueError("DFA can only have one initial state.")
+                if (q := states[0]) not in dfa.states:
+                    dfa.add_state(q)
+                dfa.initial = dfa.states[q]
+
+            # Setting final states
+            elif parts[0] == 'final':
+                states = parts[1:]
+                for state in states:
+                    if state not in dfa.states:
+                        dfa.add_state(state)
+                    state_id = dfa.states[state]
+                    dfa.final.add(state_id)
+
+            # Setting transitions
+            elif len(parts) == 3:
+                q1, q2, symbol = parts
+                if q1 not in dfa.states:
+                    dfa.add_state(q1)
+                if q2 not in dfa.states:
+                    dfa.add_state(q2)
+                if symbol not in dfa.alphabet:
+                    dfa.add_symbol(symbol)
+                q1_id = dfa.states[q1]
+                q2_id = dfa.states[q2]
+                sym_id = dfa.alphabet[symbol]
+                dfa.set_transition(q1_id, q2_id, sym_id)
+
+            # Raise error for unrecognised lines
+            else:
+                raise ValueError(f"Unrecognised line: {line}")
+
+        # Raise error if there is no initial state set
+        if dfa.initial is None:
+            raise ValueError("DFA expects exactly one initial state.")
+        return dfa
+
     def __next_free_identifier(self) -> int:
         identifier = self.__free_identifier
         while ((identifier in self.states.inverse) or
