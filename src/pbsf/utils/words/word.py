@@ -59,4 +59,8 @@ class Word:
 
     def __mul__(self, n: int) -> 'Word':
         """Return the concatenation of the word with n times itself."""
+        if not isinstance(n, int):
+            raise TypeError(
+                f"Word can only be multiplied by an int, got {type(n).__name__} instead"
+            )
         return Word(self.sequence * n)
