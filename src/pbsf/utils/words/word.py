@@ -47,7 +47,7 @@ class Word:
         """Return the hash of the word."""
         return hash(self._sequence)
 
-    def __getitem__(self, key: int | slice) -> Any:
+    def __getitem__(self, key: int | slice) -> 'Word | Any':
         """Return the symbol at a position, or get a subword from a slice."""
         if isinstance(key, slice):
             return Word(self._sequence[key])
