@@ -34,6 +34,10 @@ class TestDFA(unittest.TestCase):
         with self.assertRaises(ValueError):
             dfa.DFA.from_description("empty\n    final 0")
 
+        # 'initial' keyword with no state identifier should raise error
+        with self.assertRaises(ValueError):
+            dfa.DFA.from_description("empty\n    initial")
+
         # Empty DFA with >1 initial state should raise error
         with self.assertRaises(ValueError):
             dfa.DFA.from_description("empty\n    initial 0 1")
