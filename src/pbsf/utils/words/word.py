@@ -12,7 +12,7 @@ class Word:
     Words are used as input for FiniteAcceptors.
     """
 
-    def __init__(self, sequence: Iterable[Any] | None):
+    def __init__(self, sequence: Iterable[Any] | None = None):
         self.sequence = tuple(sequence) if sequence is not None else ()
 
     def __len__(self):

@@ -6,7 +6,7 @@ from pbsf.utils.words.word import Word
 class TestWord(unittest.TestCase):
     def test_creation(self):
         # Empty word
-        empty = Word(None)
+        empty = Word()
         self.assertEqual(empty.sequence, ())
         # Word from string
         from_str = Word("word")
@@ -20,7 +20,7 @@ class TestWord(unittest.TestCase):
 
     def test_length(self):
         # Empty word
-        empty = Word(None)
+        empty = Word()
         self.assertEqual(len(empty), 0)
         # Singleton word
         singleton = Word('w')
@@ -31,7 +31,7 @@ class TestWord(unittest.TestCase):
 
     def test_iter(self):
         # Empty word
-        empty = Word(None)
+        empty = Word()
         self.assertEqual(list(empty), [])
         # Word from string
         word = Word("word")
@@ -39,8 +39,8 @@ class TestWord(unittest.TestCase):
 
     def test_equality(self):
         # Two empty words are equal
-        w1 = Word(None)
-        w2 = Word(None)
+        w1 = Word()
+        w2 = Word()
         self.assertEqual(w1, w2)
         # Two identical words are equal
         w3 = Word("word")
@@ -67,11 +67,11 @@ class TestWord(unittest.TestCase):
 
     def test_indexing(self):
         # Empty word: index raises IndexError
-        empty = Word(None)
+        empty = Word()
         with self.assertRaises(IndexError):
             empty[0]
         # Empty word: empty slice
-        self.assertEqual(empty[0:0], Word(None))
+        self.assertEqual(empty[0:0], Word())
         # Positive indexing
         word = Word("word")
         self.assertEqual(word[0], 'w')
@@ -88,7 +88,7 @@ class TestWord(unittest.TestCase):
 
     def test_representation(self):
         # Empty word
-        empty = Word(None)
+        empty = Word()
         self.assertEqual(repr(empty), "Word(())")
         # Word from string
         word = Word("word")
@@ -96,8 +96,8 @@ class TestWord(unittest.TestCase):
 
     def test_concatenation(self):
         # Empty + empty = empty
-        empty = Word(None)
-        self.assertEqual(empty + empty, Word(None))
+        empty = Word()
+        self.assertEqual(empty + empty, Word())
         # Word + empty = word
         word = Word("word")
         self.assertEqual(word + empty, word)
@@ -108,15 +108,15 @@ class TestWord(unittest.TestCase):
 
     def test_multiplication(self):
         # Empty word multiplied
-        empty = Word(None)
-        self.assertEqual(empty * 1, Word(None))
-        self.assertEqual(empty * 10, Word(None))
+        empty = Word()
+        self.assertEqual(empty * 1, Word())
+        self.assertEqual(empty * 10, Word())
         # Word * 0 = empty
         word = Word("word")
-        self.assertEqual(word * 0, Word(None))
+        self.assertEqual(word * 0, Word())
         # Word * 1 = word
         self.assertEqual(word * 1, word)
         # Word * 3
         self.assertEqual(word * 3, Word("wordwordword"))
         # Negative multiplier = empty
-        self.assertEqual(word * -1, Word(None))
+        self.assertEqual(word * -1, Word())
