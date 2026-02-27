@@ -20,6 +20,7 @@ This library implements the concepts presented in the paper:
    - [Discretisers](#discretisers)
    - [Nodes](#nodes)
    - [Models](#models)
+   - [Utilities](#utilities)
    - [Algorithms](#algorithms)
 5. [Benchmarking](#benchmarking)
 6. [Available Components](#available-components)
@@ -390,6 +391,14 @@ Visualisations of anomaly scores and detected anomalies are saved in `ucr/result
 - **`PatternTree`**: Tree-based hierarchical pattern relationships
 - **`PatternGraph`**: Graph-based hierarchical pattern relationships
 - **`NestedWordSet`**: Nested word representation of both linear order and hierarchy of patterns
+
+### Utilities
+- **`Word`**: Immutable finite sequence of symbols, used as input for finite acceptors
+- **`NestedWord`**: A word paired with a matching relation, capturing both linear order and hierarchical nesting of symbols
+- **`DFA`**: Deterministic Finite Automaton that recognises regular languages over words
+- **`biDFA`**: Bidirectional DFA with states partitioned into left and right sets, recognising symmetric languages
+- **`Digraph`**: Simple directed graph with vertex properties and adjacency-based edge storage
+- **`LayeredDigraph`**: Directed acyclic graph enforcing a layered structure where vertices of layer *n* can only point to vertices in layer *n+1*
 
 ### Algorithms
 - **Hierarchical Pattern Matching (`HPM`)**: Anomaly detection using hierarchical pattern matching against learned normal patterns
