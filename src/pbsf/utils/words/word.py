@@ -100,3 +100,7 @@ class Word:
                 f"Word can only be multiplied by an int, got {type(n).__name__} instead"
             )
         return Word(self._sequence * n)
+
+    def __rmul__(self, n: int) -> 'Word':
+        """Support multiplication with the integer on the left: n * word."""
+        return self.__mul__(n)
