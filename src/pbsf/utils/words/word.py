@@ -13,6 +13,15 @@ class Word:
     """
 
     def __init__(self, sequence: Iterable[Any] | None = None):
+        """
+        Initialize a word from an optional sequence of symbols.
+
+        Parameters
+        ----------
+        sequence : Iterable[Any] | None, optional
+            Iterable whose items form the symbols of the word. If ``None``, the
+            empty word is created.
+        """
         self._sequence = tuple(sequence) if sequence is not None else ()
 
     @property
@@ -55,4 +64,8 @@ class Word:
 
     def __mul__(self, n: int) -> 'Word':
         """Return the concatenation of the word with n times itself."""
+        if not isinstance(n, int):
+            raise TypeError(
+                f"Word can only be multiplied by an int, got {type(n).__name__} instead"
+            )
         return Word(self._sequence * n)
