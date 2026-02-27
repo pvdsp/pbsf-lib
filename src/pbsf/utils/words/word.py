@@ -13,41 +13,46 @@ class Word:
     """
 
     def __init__(self, sequence: Iterable[Any] | None = None):
-        self.sequence = tuple(sequence) if sequence is not None else ()
+        self._sequence = tuple(sequence) if sequence is not None else ()
+
+    @property
+    def sequence(self) -> tuple[Any, ...]:
+        """Return the underlying tuple of symbols."""
+        return self._sequence
 
     def __len__(self):
         """Return number of symbols in the word."""
-        return len(self.sequence)
+        return len(self._sequence)
 
     def __iter__(self) -> Iterator[Any]:
         """Iterate over the symbols of the word."""
-        return iter(self.sequence)
+        return iter(self._sequence)
 
     def __eq__(self, other: Any) -> bool:
         """Check if the word is equal to another object."""
         if not isinstance(other, Word):
             return False
-        return self.sequence == other.sequence
+        return self._sequence == other.sequence
 
     def __hash__(self):
         """Return the hash of the word."""
-        return hash(self.sequence)
+        return hash(self._sequence)
 
     def __getitem__(self, key: int | slice) -> Any:
         """Return the symbol at a position, or get a subword from a slice."""
         if isinstance(key, slice):
-            return Word(self.sequence[key])
+            return Word(self._sequence[key])
         elif isinstance(key, int):
-            return self.sequence[key]
+            return self._sequence[key]
 
     def __repr__(self) -> str:
         """Return string representation of the word."""
-        return f"Word({self.sequence})"
+        return f"Word({self._sequence})"
 
     def __add__(self, other: 'Word') -> 'Word':
         """Return the concatenation of two words."""
-        return Word(self.sequence + other.sequence)
+        return Word(self._sequence + other.sequence)
 
     def __mul__(self, n: int) -> 'Word':
         """Return the concatenation of the word with n times itself."""
-        return Word(self.sequence * n)
+        return Word(self._sequence * n)
