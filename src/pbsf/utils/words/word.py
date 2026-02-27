@@ -63,11 +63,38 @@ class Word:
         if not isinstance(other, Word):
             raise TypeError(
                 f"Can only concatenate Word (not {type(other).__name__}) to Word"
-            )
-        return Word(self._sequence + other.sequence)
+        """
+        Concatenate this word with another word.
+
+        Parameters
+        ----------
+        other : Word
+            The word to be concatenated to the right of this word.
+
+        Returns
+        -------
+        Word
+            A new word whose sequence is the concatenation of this word's
+            sequence with ``other``'s sequence.
+        """
+        return Word(self.sequence + other.sequence)
 
     def __mul__(self, n: int) -> 'Word':
-        """Return the concatenation of the word with n times itself."""
+        """
+        Repeat this word a given number of times.
+
+        Parameters
+        ----------
+        n : int
+            The number of repetitions. Follows Python sequence repetition
+            semantics for integers.
+
+        Returns
+        -------
+        Word
+            A new word whose sequence is this word's sequence repeated
+            ``n`` times.
+        """
         if not isinstance(n, int):
             raise TypeError(
                 f"Word can only be multiplied by an int, got {type(n).__name__} instead"
