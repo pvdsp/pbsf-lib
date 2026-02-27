@@ -34,7 +34,7 @@ class TestDFA(unittest.TestCase):
         with self.assertRaises(ValueError):
             dfa.DFA.from_description("empty\n    final 0")
 
-        # Empty DFA from with >1 initial state should raise error
+        # Empty DFA with >1 initial state should raise error
         with self.assertRaises(ValueError):
             dfa.DFA.from_description("empty\n    initial 0 1")
 
