@@ -43,7 +43,7 @@ class Word:
             return False
         return self._sequence == other.sequence
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Return the hash of the word."""
         return hash(self._sequence)
 
