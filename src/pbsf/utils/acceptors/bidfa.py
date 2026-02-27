@@ -81,7 +81,7 @@ class biDFA(DFA):
                 states = parts[1:]
                 for state in states:
                     if state in d.states:
-                        raise ValueError(f"State {state} is already defined; {d.states}.")
+                        raise ValueError(f"State {state} is already defined.")
                     d.add_left(state)
 
             # Adding right states
