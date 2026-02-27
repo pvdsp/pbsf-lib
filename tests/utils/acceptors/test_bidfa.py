@@ -28,6 +28,123 @@ class TestBiDFA(unittest.TestCase):
         self.assertEqual(len(d.transitions), 0)
         self.assertEqual(d.size(), (1, 0))
 
+    def test_from_description(self):
+        # biDFA with no state identifier for initial
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0\n    initial")
+
+        # biDFA with left initial state
+        d = bidfa.biDFA.from_description("empty\n    left 0\n    initial 0")
+        self.assertEqual(d.name, "empty")
+        self.assertEqual(d.size(), (1, 0))
+        self.assertIn(d.initial, d.left)
+        self.assertEqual(len(d.right), 0)
+        self.assertNotIn(None, d.states)
+
+        # biDFA with right initial state
+        d = bidfa.biDFA.from_description("empty\n    right 0\n    initial 0")
+        self.assertEqual(d.name, "empty")
+        self.assertEqual(d.size(), (1, 0))
+        self.assertIn(d.initial, d.right)
+        self.assertEqual(len(d.left), 0)
+        self.assertNotIn(None, d.states)
+
+        # biDFA with left and right state, raises error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    right 0\n    left 0")
+
+        # biDFA with non-existant initial state should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0\n    initial 1")
+
+        # biDFA with non-existant final state should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0\n    final 1")
+
+        # biDFA with transition from or to non-existant state should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0\n    right 1\n    0 2 a")
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0\n    right 1\n    2 0 a")
+
+        # biDFA with no initial state should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0")
+
+        # biDFA from with >1 initial state should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description("empty\n    left 0 1\n    initial 0 1")
+
+        # Duplicate initial lines should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description(
+                "empty\n    left 0 1\n    initial 0\n    initial 1"
+            )
+
+        # Empty and whitespace-only lines should be skipped
+        d = bidfa.biDFA.from_description(
+            "a1\n"
+            "\n"
+            "    left 0\n"
+            "    \n"
+            "    right 1\n"
+            "\n"
+            "    initial 0\n"
+            "    final 0\n"
+            "    0 1 a\n"
+            "    1 0 b"
+        )
+        self.assertEqual(d.name, "a1")
+        self.assertEqual(d.size(), (2, 2))
+
+        # Valid biDFA
+        d = bidfa.biDFA.from_description(
+            "a1\n"
+            "    left 0\n"
+            "    right 1\n"
+            "    initial 0\n"
+            "    final 0\n"
+            "    0 1 a\n"
+            "    1 0 b"
+        )
+        self.assertEqual(d.name, "a1")
+        self.assertEqual(d.size(), (2, 2))
+        self.assertNotIn(None, d.states)
+        self.assertIn('a', d.alphabet)
+        self.assertIn('b', d.alphabet)
+        self.assertIn('0', d.states)
+        self.assertIn('1', d.states)
+        self.assertIn(d.states['0'], d.left)
+        self.assertIn(d.states['1'], d.right)
+        self.assertEqual(d.states['0'], d.initial)
+        self.assertIn(d.initial, d.final)
+
+        # Valid words
+        self.assertTrue(d.accept(Word()))
+        self.assertTrue(d.accept(Word("aabb")))
+        self.assertTrue(d.accept(Word('a') * 10 + Word('b') * 10))
+
+        # Invalid words
+        self.assertFalse(d.accept(Word("a")))
+        self.assertFalse(d.accept(Word("ba")))
+        self.assertFalse(d.accept(Word("abb")))
+        self.assertFalse(d.accept(Word("aabb") * 5))
+
+        # Unrecognised line should raise error
+        with self.assertRaises(ValueError):
+            bidfa.biDFA.from_description(
+                "a1\n"
+                "    left 0\n"
+                "    right 1\n"
+                "    initial 0\n"
+                "    final 0\n"
+                "    0 1 a\n"
+                "    1 0 a\n"
+                "    0 0 b\n"
+                "    1 1 b\n"
+                "    invalid line"
+            )
+
     def test_add_left(self):
         # Create an empty biDFA
         d = bidfa.biDFA()

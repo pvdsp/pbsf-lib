@@ -21,6 +21,123 @@ class biDFA(DFA):
         self.left: set[int] = {0}
         self.right: set[int] = set()
 
+    @classmethod
+    def from_description(cls, description: str) -> 'biDFA':
+        """
+        Create a biDFA from a textual description.
+
+        All states should first explicitly be defined as left or right state.
+
+        Example
+        -------
+        ```
+        <name of automaton>
+            left <identifier(s) of left state(s)>
+            right <identifier(s) of right state(s)>
+            initial <identifier of initial state>
+            final <identifier(s) of final state(s)>
+            <id from> <id to> <symbol>
+            <id from> <id to> <symbol>
+        ```
+
+        ```
+        a1
+            left 0
+            right 1
+            initial 0
+            final 0
+            0 1 a
+            1 0 b
+        ```
+
+        Parameters
+        ----------
+        description : str
+            Textual description of the biDFA.
+
+        Returns
+        -------
+        biDFA
+            biDFA built from the textual description.
+        """
+        # Parse the description
+        lines = description.strip().split('\n')
+        name = lines.pop(0)
+
+        # Create instance of biDFA
+        d = cls(name=name)
+        d.states.clear()
+        d.left = set()
+        d.initial = None
+
+        # Go over the description line by line
+        for line in lines:
+            parts = line.split()
+            if not parts:
+                continue
+
+            # Adding left states
+            if parts[0] == 'left':
+                states = parts[1:]
+                for state in states:
+                    if state in d.states:
+                        raise ValueError(f"State {state} is already defined; {d.states}.")
+                    d.add_left(state)
+
+            # Adding right states
+            elif parts[0] == 'right':
+                states = parts[1:]
+                for state in states:
+                    if state in d.states:
+                        raise ValueError(f"State {state} is already defined.")
+                    d.add_right(state)
+
+            # Setting initial state
+            elif parts[0] == 'initial':
+                states = parts[1:]
+                if not states:
+                    raise ValueError("State expected after 'initial'.")
+                if len(states) > 1:
+                    raise ValueError("biDFA can only have one initial state.")
+                if d.initial is not None:
+                    raise ValueError(f"biDFA initial state already set as {d.initial};"
+                                     f" multiple 'initial' lines not allowed.")
+                if (q := states[0]) not in d.states:
+                    raise ValueError(f"State {q} should first be defined"
+                                     f" as a left or right state.")
+                d.initial = d.states[q]
+
+            # Setting final states
+            elif parts[0] == 'final':
+                states = parts[1:]
+                for state in states:
+                    if state not in d.states:
+                        raise ValueError(f"State {state} should first be defined"
+                                         f" as a left or right state.")
+                    d.final.add(d.states[state])
+
+            # Setting transitions
+            elif len(parts) == 3:
+                q1, q2, symbol = parts
+                if (q1 not in d.states) or (q2 not in d.states):
+                    raise ValueError("States should first be defined"
+                                     " as a left or right state.")
+                if symbol not in d.alphabet:
+                    d.add_symbol(symbol)
+                q1_id = d.states[q1]
+                q2_id = d.states[q2]
+                sym_id = d.alphabet[symbol]
+                d.set_transition(q1_id, q2_id, sym_id)
+
+            # Raise error for unrecognised lines
+            else:
+                raise ValueError(f"Unrecognised line: {line}")
+
+        # Raise error if there is no initial state set
+        if d.initial is None:
+            raise ValueError("biDFA expects exactly one initial state.")
+        return d
+
     def __validate_symbol(self, symbol: int | None) -> None:
         if symbol is None:
             raise ValueError("Symbol is not in the alphabet")
