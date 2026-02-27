@@ -74,22 +74,19 @@ class DFA(FiniteAcceptor):
         for line in lines:
             parts = line.split()
             if not parts:
-                # Skip empty or whitespace-only lines
-                continue
-            if not parts:
                 continue
 
             # Setting initial state
             if parts[0] == 'initial':
                 states = parts[1:]
                 if not states:
-                    raise ValueError("Initial state identifier expected after 'initial'.")
+                    raise ValueError("State expected after 'initial'.")
                 if len(states) > 1:
                     raise ValueError("DFA can only have one initial state.")
                 if dfa.initial is not None:
-                    raise ValueError("DFA initial state already set; multiple 'initial' lines are not allowed.")
-                q = states[0]
-                if q not in dfa.states:
+                    raise ValueError(f"DFA initial state already set as {dfa.initial};"
+                                     f" multiple 'initial' lines not allowed.")
+                if (q := states[0]) not in dfa.states:
                     dfa.add_state(q)
                 dfa.initial = dfa.states[q]
 
