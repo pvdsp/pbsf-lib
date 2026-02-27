@@ -1,6 +1,6 @@
 """Data structure related to a word."""
 
-from typing import Any, Iterable
+from typing import Any, Iterable, Iterator
 
 
 class Word:
@@ -19,7 +19,7 @@ class Word:
         """Return number of symbols in the word."""
         return len(self.sequence)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         """Iterate over the symbols of the word."""
         return iter(self.sequence)
 
