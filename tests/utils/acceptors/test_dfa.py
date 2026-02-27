@@ -1,6 +1,7 @@
 import unittest
 
 from pbsf.utils.acceptors import dfa
+from pbsf.utils.words.word import Word
 
 
 class TestDFA(unittest.TestCase):
@@ -204,26 +205,24 @@ class TestDFA(unittest.TestCase):
         d.set_transition(0, s1, a)
         d.set_transition(s1, s2, b)
         d.set_transition(s2, 0, a)
-        # Test that [a, b, a] -> {0}
-        self.assertEqual(d.follow(0, [a, b, a]), {0})
-        # Test that (a, b, a) -> {0}
-        self.assertEqual(d.follow(0, (a, b, a)), {0})
-        # Test that (a, b, a) * 10 -> {0}
-        self.assertEqual(d.follow(0, (a, b, a) * 10), {0})
-        # Test that (b, a, b) -> {}
-        self.assertEqual(d.follow(0, (b, a, b)), set())
-        # Test that (a, b, b) -> {}
-        self.assertEqual(d.follow(0, (a, b, b)), set())
+        # Test that "aba" -> {0}
+        self.assertEqual(d.follow(0, Word("aba")), {0})
+        # Test that "aba" * 10 -> {0}
+        self.assertEqual(d.follow(0, Word("aba") * 10), {0})
+        # Test that "bab" -> {}
+        self.assertEqual(d.follow(0, Word("bab")), set())
+        # Test that "abb" -> {}
+        self.assertEqual(d.follow(0, Word("abb")), set())
         # Test with invalid state, catch ValueError
         with self.assertRaises(ValueError):
-            d.follow(999, (a, b, a))
+            d.follow(999, Word("abba"))
         # Test with invalid symbol, catch ValueError
         with self.assertRaises(ValueError):
-            d.follow(0, (a, b, 999))
+            d.follow(0, Word(('a', 'b', 999)))
         # Empty sequence from state 0 returns {0}
-        self.assertEqual(d.follow(0, []), {0})
+        self.assertEqual(d.follow(0, Word()), {0})
         # Empty sequence from state s1 returns {s1}
-        self.assertEqual(d.follow(s1, []), {s1})
+        self.assertEqual(d.follow(s1, Word()), {s1})
 
     def test_size(self):
         # Create an empty DFA
@@ -253,19 +252,19 @@ class TestDFA(unittest.TestCase):
         # Add state 0 as accepting state
         d.final.add(0)
         # Confirm acceptance of empty word
-        self.assertTrue(d.accept([]))
-        # Confirm acceptance of (a, b, a)
-        self.assertTrue(d.accept((a, b, a)))
+        self.assertTrue(d.accept(Word()))
+        # Confirm acceptance of "aba"
+        self.assertTrue(d.accept(Word("aba")))
         # Confirm acceptance of (a, b, a) * 10
-        self.assertTrue(d.accept((a, b, a) * 10))
+        self.assertTrue(d.accept(Word("aba") * 10))
         # Confirm rejection of other sequences
-        self.assertFalse(d.accept((a,)))
-        self.assertFalse(d.accept((b,)))
-        self.assertFalse(d.accept((a, b)))
-        self.assertFalse(d.accept((a, b, b)))
-        self.assertFalse(d.accept((b, a, b)))
+        self.assertFalse(d.accept(Word("a")))
+        self.assertFalse(d.accept(Word("b")))
+        self.assertFalse(d.accept(Word("ab")))
+        self.assertFalse(d.accept(Word("abb")))
+        self.assertFalse(d.accept(Word("bab")))
         # Confirm rejection with invalid symbols
-        self.assertFalse(d.accept((999,)))
+        self.assertFalse(d.accept(Word((999,))))
 
     def test_type_errors(self):
         # Build a small DFA to test against
@@ -281,10 +280,10 @@ class TestDFA(unittest.TestCase):
             d.step(0, "a")
         # Follow with non-int state
         with self.assertRaises(TypeError):
-            d.follow("q1", (a,))
-        # Follow with non-int symbol
+            d.follow("q1", Word('a'))
+        # Follow with non-word
         with self.assertRaises(TypeError):
-            d.follow(0, ("a",))
+            d.follow(0, a)
         # Set transition with non-int s1
         with self.assertRaises(TypeError):
             d.set_transition("q1", s1, a)
@@ -294,6 +293,6 @@ class TestDFA(unittest.TestCase):
         # Set transition with non-int symbol
         with self.assertRaises(TypeError):
             d.set_transition(0, s1, "a")
-        # Accept with non-int symbol
+        # Accept with non-word
         with self.assertRaises(TypeError):
             d.accept(("a",))
