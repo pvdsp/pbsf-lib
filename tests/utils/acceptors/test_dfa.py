@@ -42,6 +42,20 @@ class TestDFA(unittest.TestCase):
         with self.assertRaises(ValueError):
             dfa.DFA.from_description("empty\n    initial 0 1")
 
+        # Empty and whitespace-only lines should be skipped
+        d = dfa.DFA.from_description(
+            "a1\n"
+            "\n"
+            "    initial 0\n"
+            "    \n"
+            "    final 0\n"
+            "\n"
+            "    0 1 a\n"
+            "    1 0 a"
+        )
+        self.assertEqual(d.name, "a1")
+        self.assertEqual(d.size(), (2, 2))
+
         # Valid DFA
         d = dfa.DFA.from_description(
             "a1\n"
