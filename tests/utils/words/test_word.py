@@ -18,6 +18,12 @@ class TestWord(unittest.TestCase):
         from_range = Word(range(5))
         self.assertEqual(from_range.sequence, (0, 1, 2, 3, 4))
 
+    def test_immutability(self):
+        # Reassigning sequence raises AttributeError
+        word = Word("word")
+        with self.assertRaises(AttributeError):
+            word.sequence = ('a', 'b', 'c')
+
     def test_length(self):
         # Empty word
         empty = Word()
