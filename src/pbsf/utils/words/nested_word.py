@@ -387,7 +387,7 @@ class MatchingRelation:
             return self.get_match(key)
 
 
-class NestedWord:
+class NestedWord(Word):
     """
     Represents a nested word.
 
@@ -423,8 +423,9 @@ class NestedWord:
             matching = MatchingRelation(len(word))
         elif len(word) != len(matching):
             raise ValueError("Word and matching relation must have the same length.")
-        self._word = word
-        self._matching = matching
+        super().__init__(word.sequence)
+        self._word: Word = word
+        self._matching: MatchingRelation = matching
         self._tagged: tuple[Any, ...] | None = None
 
     @property
@@ -442,11 +443,11 @@ class NestedWord:
         """The tagged representation of the nested word."""
         if self._tagged is None:
             tagged = []
-            for i, symbol in enumerate(self._word):
-                if self._matching.is_call(i):
+            for i, symbol in enumerate(self.word):
+                if self.matching.is_call(i):
                     tagged.append("<")
                 tagged.append(symbol)
-                if self._matching.is_return(i):
+                if self.matching.is_return(i):
                     tagged.append(">")
             self._tagged = tuple(tagged)
         return self._tagged
@@ -485,17 +486,6 @@ class NestedWord:
         nw._tagged = tagged
         return nw
 
-    def __len__(self) -> int:
-        """
-        Return the length of the nested word.
-
-        Returns
-        -------
-        int
-            The length of the nested word.
-        """
-        return len(self._word)
-
     def __getitem__(
         self, key: int | slice,
     ) -> tuple[Any, tuple[int | None, int | None] | None] | 'NestedWord':
@@ -514,9 +504,14 @@ class NestedWord:
             given index, or a nested subword.
         """
         if isinstance(key, slice):
-            return NestedWord(self._word[key], self._matching[key])
+            return type(self)(self.word[key], self.matching[key])
         elif isinstance(key, int):
-            return self._word[key], self._matching.get_match(key)
+            return self.sequence[key], self.matching.get_match(key)
+        else:
+            raise TypeError(
+                f"NestedWord indices must be integers or slices,"
+                f" not {type(key).__name__}"
+            )
 
     def __str__(self) -> str:
         """
@@ -538,7 +533,7 @@ class NestedWord:
         str
             The string representation of the nested word.
         """
-        return f"NestedWord({self._word}, {self._matching})"
+        return f"NestedWord({self.word}, {self.matching})"
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -558,37 +553,9 @@ class NestedWord:
         if not isinstance(other, NestedWord):
             return False
         return (
-            self._word == other._word
-            and self._matching == other._matching
+            self.sequence == other.sequence
+            and self.matching == other.matching
         )
-
-    def __ne__(self, other: Any) -> bool:
-        """
-        Check if the nested word is not equal to another object.
-
-        Parameters
-        ----------
-        other : Any
-            The object to compare.
-
-        Returns
-        -------
-        bool
-            True if the nested word is not equal to the other object, False otherwise.
-        """
-        return not self == other
-
-    def __iter__(self) -> Iterator[tuple[int, Any]]:
-        """
-        Iterate over the nested word, yielding (index, symbol) tuples.
-
-        Yields
-        ------
-        tuple[int, Any]
-            Tuples of (position index, symbol) for each position in the word.
-        """
-        for index, symbol in enumerate(self._word):
-            yield index, symbol
 
     def __add__(self, other: 'NestedWord') -> 'NestedWord':
         """
@@ -604,7 +571,7 @@ class NestedWord:
         NestedWord
             A new nested word that is the concatenation of the two nested words.
         """
-        return NestedWord.from_tagged(self.tagged + other.tagged)
+        return type(self).from_tagged(self.tagged + other.tagged)
 
     def __hash__(self) -> int:
         """

@@ -289,6 +289,9 @@ class TestNestedWord(unittest.TestCase):
         symbol = 'b'
         matching = (0, 2)
         self.assertEqual(nw1[2], (symbol, matching))
+        # Invalid key type raises TypeError
+        with self.assertRaises(TypeError):
+            nw1["a"]
 
     def test_concatenation(self):
         nw1 = NestedWord()
@@ -302,12 +305,9 @@ class TestNestedWord(unittest.TestCase):
     def test_iter(self):
         # Empty NW yields nothing
         self.assertEqual(list(NestedWord()), [])
-        # Yields (index, symbol) pairs
+        # Yields symbols
         nw = NestedWord.from_tagged("<abb><ab>")
-        self.assertEqual(
-            list(nw),
-            [(0, 'a'), (1, 'b'), (2, 'b'), (3, 'a'), (4, 'b')],
-        )
+        self.assertEqual(list(nw), ['a', 'b', 'b', 'a', 'b'])
 
     def test_hash(self):
         # Equal NWs have the same hash
