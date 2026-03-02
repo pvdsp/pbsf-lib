@@ -1,6 +1,6 @@
 import unittest
 
-from pbsf.utils.words import MatchingRelation, NestedWord
+from pbsf.utils.words import MatchingRelation, NestedWord, Word
 
 
 class TestMatchingRelation(unittest.TestCase):
@@ -177,3 +177,117 @@ class TestMatchingRelation(unittest.TestCase):
         self.assertEqual(sub[3], (None, 3))  # pending return unchanged
         self.assertEqual(sub[4], (4, None))  # call becomes pending
         self.assertIsNone(sub[5])
+
+class TestNestedWord(unittest.TestCase):
+    def test_creation(self):
+        # Empty NW
+        nw = NestedWord()
+        self.assertEqual(nw.word, Word())
+        self.assertEqual(nw.matching, MatchingRelation(0))
+        self.assertEqual(nw.tagged, ())
+        self.assertEqual(len(nw), 0)
+        self.assertEqual(str(nw), "NestedWord(())")
+        # Singleton word
+        nw = NestedWord(Word('a'), MatchingRelation(1))
+        self.assertEqual(nw.word, Word('a'))
+        self.assertEqual(nw.matching, MatchingRelation(1))
+        self.assertEqual(nw.tagged, ('a',))
+        self.assertEqual(len(nw), 1)
+        self.assertEqual(str(nw), "NestedWord(('a',))")
+        # Length mismatch raises ValueError
+        with self.assertRaises(ValueError):
+            NestedWord(Word('a'), MatchingRelation(2))
+
+    def test_from_tagged(self):
+        # Empty NW
+        nw1 = NestedWord.from_tagged("")
+        nw2 = NestedWord()
+        self.assertEqual(nw1, nw2)
+        # Singleton NW
+        nw1 = NestedWord.from_tagged("a")
+        nw2 = NestedWord(Word("a"), MatchingRelation(1))
+        self.assertEqual(nw1, nw2)
+        # Long NW
+        nw1 = NestedWord.from_tagged("<abb><ab>")
+        nw2 = NestedWord(Word("abbab"),
+                         MatchingRelation(5, {(0, 2), (3, 4)}))
+        self.assertEqual(nw1, nw2)
+        # Call and return at same position raises ValueError
+        with self.assertRaises(ValueError):
+            NestedWord.from_tagged("<a>")
+
+    def test_tagged(self):
+        # Check creation of tagged word representation
+        nw = NestedWord(Word("abbab"),
+                        MatchingRelation(5, {(0, 2), (3, 4)}))
+        self.assertEqual(nw.tagged, ('<', 'a', 'b', 'b', '>', '<', 'a', 'b', '>'))
+
+    def test_repr(self):
+        # Check representation of empty NW
+        nw = NestedWord()
+        self.assertEqual(repr(nw), "NestedWord(Word(()), MatchingRelation(set()))")
+        # Check representation of NW
+        nw = NestedWord.from_tagged("<abb><ab>")
+        self.assertEqual(repr(nw),
+                         "NestedWord(Word(('a', 'b', 'b', 'a', 'b')),"
+                         " MatchingRelation({(0, 2), (3, 4)}))")
+
+    def test_equal(self):
+        nw1 = NestedWord.from_tagged("")
+        nw2 = NestedWord()
+        nw3 = NestedWord.from_tagged("<abb><ab>")
+        # Empty NWs are equal
+        self.assertTrue(nw1 == nw2)
+        # Non-equal NWs are not equal
+        self.assertTrue(nw1 != nw3)
+        # NWs are only equal to NWs
+        self.assertTrue(nw3 != "<abb><ab>")
+
+    def test_length(self):
+        # Empty NW
+        self.assertEqual(len(NestedWord()), 0)
+        # Singleton NW
+        self.assertEqual(len(NestedWord(Word('a'), MatchingRelation(1))), 1)
+        # Longer NW
+        self.assertEqual(len(NestedWord.from_tagged("<abb><ab>")), 5)
+
+    def test_indexing(self):
+        # Well-matched slicing
+        nw1 = NestedWord.from_tagged("<abb><ab>")
+        nw2 = NestedWord.from_tagged("<abb>")
+        self.assertEqual(nw1[0:3], nw2)
+        # General slicing
+        nw2 = NestedWord.from_tagged("b><a")
+        self.assertEqual(nw1[2:4], nw2)
+        # Indexing
+        symbol = 'b'
+        matching = (0, 2)
+        self.assertEqual(nw1[2], (symbol, matching))
+
+    def test_concatenation(self):
+        nw1 = NestedWord()
+        nw2 = NestedWord.from_tagged("<abb>")
+        nw3 = NestedWord.from_tagged("<ab>")
+        nw4 = NestedWord.from_tagged("aa>")
+        nw5 = NestedWord.from_tagged("<bb")
+        sum = NestedWord.from_tagged("<bb<abb><ab>aa>")
+        self.assertEqual(nw1 + nw5 + nw2 + nw3 + nw4, sum)
+
+    def test_iter(self):
+        # Empty NW yields nothing
+        self.assertEqual(list(NestedWord()), [])
+        # Yields (index, symbol) pairs
+        nw = NestedWord.from_tagged("<abb><ab>")
+        self.assertEqual(
+            list(nw),
+            [(0, 'a'), (1, 'b'), (2, 'b'), (3, 'a'), (4, 'b')],
+        )
+
+    def test_hash(self):
+        # Equal NWs have the same hash
+        nw1 = NestedWord.from_tagged("<abb><ab>")
+        nw2 = NestedWord(Word("abbab"), MatchingRelation(5, {(0, 2), (3, 4)}))
+        self.assertEqual(hash(nw1), hash(nw2))
+        # Different NWs have different hashes
+        nw3 = NestedWord.from_tagged("<abb>")
+        self.assertNotEqual(hash(nw1), hash(nw3))

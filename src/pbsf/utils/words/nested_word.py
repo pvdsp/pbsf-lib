@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterator
+from typing import Any, Iterable, Iterator
+
+from pbsf.utils.words.word import Word
 
 
 def _validate_indices(i: int | None, j: int | None) -> None:
@@ -323,6 +325,17 @@ class MatchingRelation:
         """
         return hash((self.__length, frozenset(self.__matches)))
 
+    def __repr__(self) -> str:
+        """
+        Return the string representation of the matching relation.
+
+        Returns
+        -------
+        str
+            String representation of the matching relation.
+        """
+        return f"MatchingRelation({self.__matches})"
+
     def __getitem__(
         self, key: int | slice,
     ) -> 'MatchingRelation' | tuple[int | None, int | None]:
@@ -386,7 +399,7 @@ class NestedWord:
 
     def __init__(
         self,
-        word: list[Any] | None = None,
+        word: Word | None = None,
         matching: MatchingRelation | None = None,
     ) -> None:
         """
@@ -394,8 +407,8 @@ class NestedWord:
 
         Parameters
         ----------
-        word : list[Any] | None, default=None
-            The word of the nested word.
+        word : Word | None, default=None
+            The word of the nested word. Defaults to an empty Word.
         matching : MatchingRelation | None, default=None
             The matching relation of the nested word. Defaults to an empty matching.
 
@@ -405,22 +418,47 @@ class NestedWord:
             If word and matching relation have different lengths.
         """
         if word is None:
-            word = []
+            word = Word()
         if matching is None:
             matching = MatchingRelation(len(word))
         elif len(word) != len(matching):
             raise ValueError("Word and matching relation must have the same length.")
-        self.word = word
-        self.matching = matching
+        self._word = word
+        self._matching = matching
+        self._tagged: tuple[Any, ...] | None = None
+
+    @property
+    def word(self) -> Word:
+        """The word of the nested word."""
+        return self._word
+
+    @property
+    def matching(self) -> MatchingRelation:
+        """The matching relation of the nested word."""
+        return self._matching
+
+    @property
+    def tagged(self) -> tuple[Any, ...]:
+        """The tagged representation of the nested word."""
+        if self._tagged is None:
+            tagged = []
+            for i, symbol in enumerate(self._word):
+                if self._matching.is_call(i):
+                    tagged.append("<")
+                tagged.append(symbol)
+                if self._matching.is_return(i):
+                    tagged.append(">")
+            self._tagged = tuple(tagged)
+        return self._tagged
 
     @classmethod
-    def from_tagged_sequence(cls, tagged_sequence: list[Any]) -> 'NestedWord':
+    def from_tagged(cls, tagged: Iterable[Any]) -> 'NestedWord':
         """
         Create a nested word from a tagged sequence.
 
         Parameters
         ----------
-        tagged_sequence : list[Any]
+        tagged : Iterable[Any]
             The tagged sequence to create the nested word from.
 
         Returns
@@ -428,14 +466,12 @@ class NestedWord:
         NestedWord
             A nested word created from the tagged sequence.
         """
+        tagged = tuple(tagged)
         stack = []
         counter = 0
-        word = [
-            s for s in tagged_sequence
-            if s != "<" and s != ">"
-        ]
+        word = [s for s in tagged if s != "<" and s != ">"]
         matches = set()
-        for symbol in tagged_sequence:
+        for symbol in tagged:
             if symbol == "<":
                 stack.append(counter)
             elif symbol == ">":
@@ -445,119 +481,9 @@ class NestedWord:
                 counter += 1
         while len(stack) > 0:
             matches.add((stack.pop(), None))
-        return cls(list(word), MatchingRelation(len(word), matches))
-
-    @classmethod
-    def from_tagged_word(cls, tagged_word: str) -> 'NestedWord':
-        """
-        Create a nested word from a tagged word.
-
-        Parameters
-        ----------
-        tagged_word : str
-            The tagged word to create the nested word from.
-
-        Returns
-        -------
-        NestedWord
-            A nested word created from the tagged word.
-        """
-        return cls.from_tagged_sequence(list(tagged_word))
-
-    def to_tagged(self) -> list[Any]:
-        """
-        Convert the nested word to a tagged word.
-
-        Returns
-        -------
-        list[Any]
-            The tagged word representation of the nested word.
-        """
-        tagged = []
-        for i, symbol in enumerate(self.word):
-            if self.matching.is_call(i):
-                tagged.append("<")
-            tagged.append(symbol)
-            if self.matching.is_return(i):
-                tagged.append(">")
-        return tagged
-
-    def add_internals(self, symbols: list[Any]) -> None:
-        """
-        Extend the nested word with a list of internal positions labelled by `symbols`.
-
-        Parameters
-        ----------
-        symbols : list[Any]
-            A list of symbols to add as internal positions.
-        """
-        self.word.extend(symbols)
-        self.matching.extend(len(symbols))
-
-    def add_calls(self, symbols: list[Any]) -> None:
-        """
-        Extend the nested word with pending call positions.
-
-        Parameters
-        ----------
-        symbols : list[Any]
-            A list of symbols to add as pending positions.
-        """
-        self.add_internals(symbols)
-        for pos in range(1, len(symbols) + 1):
-            self.matching.set_match(len(self.word) - pos, None)
-
-    def add_returns(self, symbols: list[Any]) -> None:
-        """
-        Extend the nested word with a list of return positions labelled by `symbols`.
-
-        Matches pending calls with the new return positions in order, starting with
-        the most recent pending calls.
-
-        Parameters
-        ----------
-        symbols : list[Any]
-            A list of symbols to add as return positions.
-        """
-        self.add_internals(symbols)
-        pending = sorted(self.matching.get_pending_calls(), reverse=True)
-        for i in range(len(symbols)):
-            call = pending[i] if i < len(pending) else None
-            ret = len(self.word) - len(symbols) + i
-            self.matching.set_match(call, ret)
-
-    def add_internal(self, symbol: Any) -> None:
-        """
-        Extend the nested word with an internal position labelled `symbol`.
-
-        Parameters
-        ----------
-        symbol : Any
-            Symbol to add as an internal position.
-        """
-        self.add_internals([symbol])
-
-    def add_call(self, symbol: Any) -> None:
-        """
-        Extend the nested word with a pending call position labelled `symbol`.
-
-        Parameters
-        ----------
-        symbol : Any
-            Symbol to add as a pending call position.
-        """
-        self.add_calls([symbol])
-
-    def add_return(self, symbol: Any) -> None:
-        """
-        Extend the nested word with a return position labelled `symbol`.
-
-        Parameters
-        ----------
-        symbol : Any
-            Symbol to add as a return position.
-        """
-        self.add_returns([symbol])
+        nw = cls(Word(word), MatchingRelation(len(word), matches))
+        nw._tagged = tagged
+        return nw
 
     def __len__(self) -> int:
         """
@@ -568,7 +494,7 @@ class NestedWord:
         int
             The length of the nested word.
         """
-        return len(self.word)
+        return len(self._word)
 
     def __getitem__(
         self, key: int | slice,
@@ -588,9 +514,9 @@ class NestedWord:
             given index, or a nested subword.
         """
         if isinstance(key, slice):
-            return NestedWord(self.word[key], self.matching[key])
+            return NestedWord(self._word[key], self._matching[key])
         elif isinstance(key, int):
-            return self.word[key], self.matching.get_match(key)
+            return self._word[key], self._matching.get_match(key)
 
     def __str__(self) -> str:
         """
@@ -601,7 +527,7 @@ class NestedWord:
         str
             The string representation of the nested word.
         """
-        return f"NestedWord({self.to_tagged()})"
+        return f"NestedWord({self.tagged})"
 
     def __repr__(self) -> str:
         """
@@ -612,7 +538,7 @@ class NestedWord:
         str
             The string representation of the nested word.
         """
-        return f"NestedWord({self.word}, {self.matching})"
+        return f"NestedWord({self._word}, {self._matching})"
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -632,8 +558,8 @@ class NestedWord:
         if not isinstance(other, NestedWord):
             return False
         return (
-            self.word == other.word
-            and self.matching == other.matching
+            self._word == other._word
+            and self._matching == other._matching
         )
 
     def __ne__(self, other: Any) -> bool:
@@ -661,7 +587,7 @@ class NestedWord:
         tuple[int, Any]
             Tuples of (position index, symbol) for each position in the word.
         """
-        for index, symbol in enumerate(self.word):
+        for index, symbol in enumerate(self._word):
             yield index, symbol
 
     def __add__(self, other: 'NestedWord') -> 'NestedWord':
@@ -678,8 +604,7 @@ class NestedWord:
         NestedWord
             A new nested word that is the concatenation of the two nested words.
         """
-        combined = self.to_tagged() + other.to_tagged()
-        return NestedWord.from_tagged_sequence(combined)
+        return NestedWord.from_tagged(self.tagged + other.tagged)
 
     def __hash__(self) -> int:
         """
@@ -690,4 +615,4 @@ class NestedWord:
         int
             Hash value of the nested word.
         """
-        return hash(tuple(self.to_tagged()))
+        return hash(self.tagged)

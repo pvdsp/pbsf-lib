@@ -470,7 +470,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(len(model.patterns.graph.vertices), 2)
         self.assertEqual(len(model.nested_words), 1)
 
-        expected_nw = NestedWord.from_tagged_sequence([0, 1])
+        expected_nw = NestedWord.from_tagged([0, 1])
         self.assertEqual(list(model.nested_words)[0], expected_nw)
 
     def test_update_duplicate_short_chains(self):
@@ -485,7 +485,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(len(model.patterns.graph.vertices), 1)
         self.assertEqual(len(model.nested_words), 1)
 
-        expected_nw = NestedWord.from_tagged_sequence([0])
+        expected_nw = NestedWord.from_tagged([0])
         self.assertEqual(list(model.nested_words)[0], expected_nw)
 
     def test_update_regular_chains(self):
@@ -543,7 +543,7 @@ class TestNestedWordSet(unittest.TestCase):
         self.assertEqual(len(model.patterns.graph.vertices), 5)
         self.assertEqual(len(model.nested_words), 1)
 
-        expected_nw = NestedWord.from_tagged_sequence(
+        expected_nw = NestedWord.from_tagged(
             ['<', 0, '<', 1, '<', 2, '<', 3, 4]
         )
         self.assertTrue(expected_nw in model.nested_words)
@@ -570,7 +570,7 @@ class TestNestedWordSet(unittest.TestCase):
 
         self.assertFalse(model.contains([chain]))
         vertices = model.update(chain)
-        self.assertEqual(vertices[0], NestedWord.from_tagged_sequence([0]))
+        self.assertEqual(vertices[0], NestedWord.from_tagged([0]))
         self.assertTrue(model.contains([chain]))
 
         chain = [create_test_node([1]),
@@ -578,7 +578,7 @@ class TestNestedWordSet(unittest.TestCase):
 
         self.assertFalse(model.contains([chain]))
         vertices = model.update(chain)
-        self.assertEqual(vertices[0], NestedWord.from_tagged_sequence(["<", 0, 1]))
+        self.assertEqual(vertices[0], NestedWord.from_tagged(["<", 0, 1]))
         self.assertTrue(model.contains([chain]))
 
     def test_contains_no_context(self):
@@ -745,7 +745,7 @@ class TestNestedWordSet(unittest.TestCase):
         result = model.update(chain3)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(model.nested_words), 1)
-        expected = NestedWord.from_tagged_sequence(
+        expected = NestedWord.from_tagged(
             ["<", 0, 1, 2, 0, ">", "<", 3, 1]
         )
         self.assertEqual(result[0], expected)
@@ -753,7 +753,7 @@ class TestNestedWordSet(unittest.TestCase):
         result = model.update(chain4)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(model.nested_words), 2)
-        expected = NestedWord.from_tagged_sequence(
+        expected = NestedWord.from_tagged(
             ["<", 0, 2, 0, ">", "<", 3, 1, 4]
         )
         self.assertEqual(result[0], expected)

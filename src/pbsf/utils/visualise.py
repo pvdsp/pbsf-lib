@@ -55,7 +55,7 @@ def _show_nested_word(nw: NestedWord) -> graphviz.Digraph:
     graph.edge_attr["arrowhead"] = "normal"
 
     # Set graph styling attributes
-    _apply_styling(graph, label=f"Nested Word: {nw.to_tagged()}")
+    _apply_styling(graph, label=f"Nested Word: {nw.tagged}")
     graph.graph_attr["rankdir"] = "LR"
     graph.node_attr["shape"] = "circle"
     graph.node_attr["style"] = "filled"
