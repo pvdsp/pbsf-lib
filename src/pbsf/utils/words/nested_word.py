@@ -75,10 +75,10 @@ class MatchingRelation:
 
     def __validate_properties(self, i: int | None, j: int | None) -> None:
         _validate_indices(i, j)
-        _validate_order(i, j)
         for pos in (i, j):
             if pos is not None:
                 self.__validate_position(pos)
+        _validate_order(i, j)
         if i is not None and self.is_call(i):
             raise ValueError(f"Position {i} is already a call position.")
         if j is not None and self.is_return(j):

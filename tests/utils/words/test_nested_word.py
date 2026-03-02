@@ -14,7 +14,19 @@ class TestMatchingRelation(unittest.TestCase):
             MatchingRelation(-1)
         # Crossing matches raise ValueError
         with self.assertRaises(ValueError):
-            MatchingRelation(10, {(0, 6), (4, 9)})
+            MatchingRelation(10, {(None, 6), (3, None)})
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(None, 6), (3, 9)})
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(3, None), (None, 9)})
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(3, None), (2, 9)})
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(3, 6), (None, 5)})
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(3, 6), (4, None)})
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(3, 6), (4, 9)})
         # Duplicate call position raises ValueError
         with self.assertRaises(ValueError):
             MatchingRelation(10, {(0, 6), (0, 7)})
@@ -33,6 +45,12 @@ class TestMatchingRelation(unittest.TestCase):
         # Out-of-bounds position raises ValueError
         with self.assertRaises(ValueError):
             MatchingRelation(10, {(0, 10)})
+        # Both positions None raises ValueError
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {(None, None)})
+        # Non-integer position raises ValueError
+        with self.assertRaises(ValueError):
+            MatchingRelation(10, {("a", 5)})
 
     def test_length(self):
         for length in range(0, 26, 5):
@@ -103,6 +121,9 @@ class TestMatchingRelation(unittest.TestCase):
         self.assertEqual(mr.get_match(7), (7, None))
         # All matches
         self.assertEqual(mr.get_matches(), {(None, 3), (4, 6), (7, None)})
+        # Out-of-bounds position raises ValueError
+        with self.assertRaises(ValueError):
+            mr.get_match(10)
 
     def test_equal(self):
         # Same length, no matches
@@ -122,6 +143,8 @@ class TestMatchingRelation(unittest.TestCase):
             MatchingRelation(10, matches),
             MatchingRelation(12, matches)
         )
+        # Not equal to non-MatchingRelation
+        self.assertNotEqual(MatchingRelation(5), "foo")
 
     def test_iter(self):
         # Length 0: yields nothing
@@ -177,6 +200,9 @@ class TestMatchingRelation(unittest.TestCase):
         self.assertEqual(sub[3], (None, 3))  # pending return unchanged
         self.assertEqual(sub[4], (4, None))  # call becomes pending
         self.assertIsNone(sub[5])
+        # Out-of-bounds slice raises ValueError
+        with self.assertRaises(ValueError):
+            mr[0:11]
 
 class TestNestedWord(unittest.TestCase):
     def test_creation(self):
