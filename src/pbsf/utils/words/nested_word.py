@@ -385,8 +385,10 @@ class MatchingRelation:
             return MatchingRelation(length, matches)
         elif isinstance(key, int):
             return self.get_match(key)
-
-
+        else:
+            raise TypeError(
+                f"Indices must be integers or slices, not {type(key).__name__}."
+            )
 class NestedWord(Word):
     """
     Represents a nested word.
