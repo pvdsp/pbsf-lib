@@ -299,8 +299,8 @@ class TestNestedWord(unittest.TestCase):
         nw3 = NestedWord.from_tagged("<ab>")
         nw4 = NestedWord.from_tagged("aa>")
         nw5 = NestedWord.from_tagged("<bb")
-        sum = NestedWord.from_tagged("<bb<abb><ab>aa>")
-        self.assertEqual(nw1 + nw5 + nw2 + nw3 + nw4, sum)
+        expected_concat = NestedWord.from_tagged("<bb<abb><ab>aa>")
+        self.assertEqual(nw1 + nw5 + nw2 + nw3 + nw4, expected_concat)
 
     def test_iter(self):
         # Empty NW yields nothing
