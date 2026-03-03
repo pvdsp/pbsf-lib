@@ -252,11 +252,17 @@ class TestNestedWord(unittest.TestCase):
         # Check representation of empty NW
         nw = NestedWord()
         self.assertEqual(repr(nw), "NestedWord(Word(()), MatchingRelation(set()))")
-        # Check representation of NW
+        # Check representation of NW (do not depend on set element ordering)
         nw = NestedWord.from_tagged("<abb><ab>")
-        self.assertEqual(repr(nw),
-                         "NestedWord(Word(('a', 'b', 'b', 'a', 'b')),"
-                         " MatchingRelation({(0, 2), (3, 4)}))")
+        nw_repr = repr(nw)
+        self.assertTrue(
+            nw_repr.startswith(
+                "NestedWord(Word(('a', 'b', 'b', 'a', 'b')), MatchingRelation({"
+            )
+        )
+        self.assertIn("(0, 2)", nw_repr)
+        self.assertIn("(3, 4)", nw_repr)
+        self.assertTrue(nw_repr.endswith("}))"))
 
     def test_equal(self):
         nw1 = NestedWord.from_tagged("")
