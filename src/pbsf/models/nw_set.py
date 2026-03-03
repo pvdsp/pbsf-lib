@@ -83,7 +83,7 @@ class NestedWordSet(Model):
             If number is not positive or exceeds available open positions.
         """
         if number <= 0:
-            raise ValueError("Cannot close negative number of open positions.")
+            raise ValueError("Number of positions to close must be positive.")
         if number > len(pending := nw.matching.get_pending_calls()):
             raise ValueError("Number is greater than number of open positions.")
         tagged = list(nw.tagged)
