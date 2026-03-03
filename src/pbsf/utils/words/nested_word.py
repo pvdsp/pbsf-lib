@@ -228,16 +228,16 @@ class MatchingRelation:
             return self.__call_predecessors[i], i
         return None
 
-    def get_matches(self) -> set[tuple[int | None, int | None]]:
+    def get_matches(self) -> frozenset[tuple[int | None, int | None]]:
         """
         Get all matches in the matching relation.
 
         Returns
         -------
-        set[tuple[int | None, int | None]]
-            A set of all matches in the matching relation.
+        frozenset[tuple[int | None, int | None]]
+            A frozenset of all matches in the matching relation.
         """
-        return self.__matches
+        return frozenset(self.__matches)
 
     def get_pending(self) -> set[tuple[int | None, int | None]]:
         """
