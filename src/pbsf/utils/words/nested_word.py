@@ -334,7 +334,19 @@ class MatchingRelation:
         str
             String representation of the matching relation.
         """
-        return f"MatchingRelation({self.__matches})"
+        # Sort matches to ensure deterministic output; treat None as larger than any index.
+        sorted_matches = sorted(
+            self.__matches,
+            key=lambda m: (
+                float("inf") if m[0] is None else m[0],
+                float("inf") if m[1] is None else m[1],
+            ),
+        )
+        if not sorted_matches:
+            matches_repr = "set()"
+        else:
+            matches_repr = "{" + ", ".join(repr(m) for m in sorted_matches) + "}"
+        return f"MatchingRelation({matches_repr})"
 
     def __getitem__(
         self, key: int | slice,
