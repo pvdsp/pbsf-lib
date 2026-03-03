@@ -83,12 +83,14 @@ class NestedWordSet(Model):
             If number is not positive or exceeds available open positions.
         """
         if number <= 0:
-            raise ValueError("Cannot close negative number of open positions.")
+            raise ValueError("Number of positions to close must be positive.")
         if number > len(pending := nw.matching.get_pending_calls()):
             raise ValueError("Number is greater than number of open positions.")
+        tagged = list(nw.tagged)
         for position in reversed(sorted(pending)[-number:]):
-            nw.add_return(nw.word[position])
-        return nw
+            tagged.append(nw.word[position])
+            tagged.append(">")
+        return NestedWord.from_tagged(tagged)
 
     def _combine_nws(self, nw1: NestedWord, nw2: NestedWord) -> NestedWord:
         """
@@ -122,11 +124,11 @@ class NestedWordSet(Model):
         nw = NestedWord() + nw1
         for depth, (c1, c2) in enumerate(zip(s1, s2)):
             if c1 != c2:
-                self._close_positions(nw, len(s1) - depth)
-                nw += nw2[p2[depth]:]
+                nw = self._close_positions(nw, len(s1) - depth)
+                nw = nw + nw2[p2[depth]:]
                 break
         if nw.word[-1] != nw2.word[-1]:
-            nw.add_internal(nw2.word[-1])
+            nw = nw + NestedWord.from_tagged([nw2.word[-1]])
         self._combined_cache[(nw1, nw2)] = nw
         return nw
 
@@ -179,11 +181,12 @@ class NestedWordSet(Model):
                 f" {self.pattern_model}."
                 f" Use PatternGraph or PatternTree."
             )
-        nw = NestedWord()
-        if len(vertices) > 1:
-            nw.add_calls(vertices[:-1])
-        nw.add_internal(vertices[-1])
-        return nw
+        tagged = []
+        for v in vertices[:-1]:
+            tagged.append("<")
+            tagged.append(v)
+        tagged.append(vertices[-1])
+        return NestedWord.from_tagged(tagged)
 
     def update(self, chain: list) -> list:
         """
