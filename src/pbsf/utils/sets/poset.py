@@ -134,10 +134,11 @@ class MutablePoset:
         Returns
         -------
         bool
-            True if `a` succeeds `b` (directly or transitively), False otherwise.
+            True if `a` succeeds `b` (directly, transitively, or if `a == b`),
+            False otherwise.
         """
         if a == b:
-            return False
+            return True
         return b in self.__bft(a, b)
 
     def precedes(self, a: Any, b: Any) -> bool:
@@ -154,8 +155,11 @@ class MutablePoset:
         Returns
         -------
         bool
-            True if `a` precedes `b` (directly or transitively), False otherwise.
+            True if `a` precedes `b` (directly, transitively, or if `a == b`),
+            False otherwise.
         """
+        if a == b:
+            return True
         return self.succeeds(b, a)
 
     @property

@@ -83,8 +83,9 @@ class TestMutablePoset(unittest.TestCase):
         self.assertTrue(poset.precedes(4, 2))
         self.assertTrue(poset.precedes(4, 1))
         self.assertTrue(poset.precedes(2, 1))
-        # Confirm that 1 precedes nothing
-        for x in (1, 2, 3, 4):
+        # Confirm that 1 precedes only itself
+        self.assertTrue(poset.precedes(1, 1))
+        for x in (2, 3, 4):
             self.assertFalse(poset.precedes(1, x))
 
     def test_succeeds(self):
@@ -104,9 +105,12 @@ class TestMutablePoset(unittest.TestCase):
         # Confirm 2 succeeds 3 and 4
         self.assertTrue(poset.succeeds(2, 3))
         self.assertTrue(poset.succeeds(2, 4))
-        # Confirm 3 and 4 succeed nothing
-        for x in (1, 2, 3, 4):
+        # Confirm 3 and 4 only succeed themselves
+        self.assertTrue(poset.succeeds(3, 3))
+        self.assertTrue(poset.succeeds(4, 4))
+        for x in (1, 2, 4):
             self.assertFalse(poset.succeeds(3, x))
+        for x in (1, 2, 3):
             self.assertFalse(poset.succeeds(4, x))
 
     def test_greatest(self):
