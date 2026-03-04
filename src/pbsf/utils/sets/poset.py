@@ -1,7 +1,7 @@
 """Implementation of mutable partially ordered sets."""
 
 from collections import deque
-from typing import Any
+from typing import Any, Iterator
 
 
 class MutablePoset:
@@ -227,21 +227,21 @@ class MutablePoset:
         }
         return subposet
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Get the number of elements in the partially ordered set."""
         return len(self._elements)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         """Iterate over the elements of the partially ordered set."""
         return iter(self._elements)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Check equality based on elements and covering relations."""
         if not isinstance(other, MutablePoset):
             return False
         return ((self._elements == other._elements) and
                 (self._covering == other._covering))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation showing the number of elements."""
         return f"MutablePoset({len(self)} elements)"
