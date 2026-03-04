@@ -149,7 +149,7 @@ class TestMutablePoset(unittest.TestCase):
         self.assertEqual(poset.mc_subposet(2).elements, {2, 3, 4})
         self.assertEqual(poset.mc_subposet(3).elements, {3, 4})
         self.assertEqual(poset.mc_subposet(4).elements, {4})
-        # Confirm subposet from non-existant element raises error
+        # Confirm subposet from non-existent element raises error
         with self.assertRaises(ValueError):
             poset.mc_subposet("not in poset")
 

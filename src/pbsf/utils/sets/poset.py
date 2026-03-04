@@ -235,7 +235,7 @@ class MutablePoset:
         """Iterate over the elements of the partially ordered set."""
         return iter(self._elements)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: Any) -> bool:
         """Check equality based on elements and covering relations."""
         if not isinstance(other, MutablePoset):
             return False
