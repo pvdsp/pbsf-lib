@@ -301,38 +301,45 @@ class DFA(FiniteAcceptor):
                              f" from {s1} labelled {symbol}")
         self.transitions[s1][symbol] = {s2}
 
-    def step(self, state: int, symbol: int) -> set[int]:
+    def step(self, state: int, word: Word) -> tuple[set[int], Word]:
         """
-        Get the state reachable from a state and symbol.
+        Consume symbol from `word` and return resulting states and remaining word.
 
-        DFAs return a singleton set with the reachable state if
-        there is a relevant transition, otherwise return the empty set.
+        The position consumed is determined by `next_position`. On success
+        the symbol is removed and the remaining word is returned. On failure
+        (unknown symbol or no valid transition) the original `word` is
+        returned unchanged.
 
         Parameters
         ----------
         state : int
-            Integer identifier of a specific state.
-        symbol : int
-            Integer identifier of a specific symbol.
+            Integer identifier of the current state.
+        word : Word
+            The word to consume one symbol from.
 
         Returns
         -------
-        set[int]
-            Singleton set with integer identifier of reachable state
-            or empty set if there is no outgoing transition from state
-            labelled with symbol.
+        tuple[set[int], Word]
+            Reachable states (empty set on failure) and remaining word.
 
         Raises
         ------
         ValueError
-            If provided state or symbol identifier is respectively not
-            a valid state or symbol.
+            If `state` is not a valid state identifier.
         """
         self.__validate_state(state)
-        self.__validate_symbol(symbol)
+        if not isinstance(word, Word):
+            raise TypeError(f"Expected Word, received {type(word).__name__}.")
+        pos = self.next_position(state, word)
+        symbol = word.sequence[pos]
+        if (symbol_id := self.alphabet.get(symbol)) is None:
+            return set(), word
         transitions = self.transitions.get(state, {})
-        # Return a defensive copy to prevent external mutation of internal state
-        return set(transitions.get(symbol, set()))
+        next_states = set(transitions.get(symbol_id, set()))
+        if not next_states:
+            return set(), word
+        remaining = word[:pos] + word[pos + 1:]
+        return next_states, remaining
 
     def follow(self, state: int, word: Word) -> set[int]:
         """
@@ -359,21 +366,18 @@ class DFA(FiniteAcceptor):
         Raises
         ------
         ValueError
-            If provided state identifier or one of the symbols in the word
-            is respectively not a valid state or symbol.
+            If provided state identifier is not a valid state.
+        TypeError
+            If `word` is not a Word.
         """
         self.__validate_state(state)
         if not isinstance(word, Word):
             raise TypeError(f"Expected Word, received {type(word).__name__}.")
-
-        sequence = list(word)
-        for symbol in sequence:
-            sid = self.alphabet.get(symbol)
-            self.__validate_symbol(sid)
-            state_set = self.step(state, sid)
-            if not state_set:
+        while len(word) > 0:
+            next_states, word = self.step(state, word)
+            if not next_states:
                 return set()
-            state = next(iter(state_set))
+            state = next(iter(next_states))
         return {state}
 
     def accept(self, word: Word) -> bool:

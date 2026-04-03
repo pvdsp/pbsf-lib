@@ -334,3 +334,71 @@ class TestBiDFA(unittest.TestCase):
         self.assertFalse(d.accept(Word("abb")))
         self.assertFalse(d.accept(Word("ba")))
         self.assertFalse(d.accept(Word("baba")))
+
+    def test_next_position(self):
+        # Build a biDFA with one left and one right state
+        d = bidfa.biDFA()
+        l = d.initial
+        r = d.add_right('q_right')
+        w = Word("random_word")
+        # Left state always returns 0
+        self.assertEqual(d.next_position(l, w), 0)
+        self.assertEqual(d.next_position(l, Word()), 0)
+        self.assertEqual(d.next_position(l, Word("x")), 0)
+        self.assertEqual(d.next_position(l, Word("ab")), 0)
+        # Right state always returns len(word) - 1
+        self.assertEqual(d.next_position(r, w), len(w) - 1)
+        self.assertEqual(d.next_position(r, Word()), 0)
+        self.assertEqual(d.next_position(r, Word("x")), 0)
+        self.assertEqual(d.next_position(r, Word("ab")), 1)
+
+    def test_step(self):
+        # Build a biDFA: initial (left) -a-> q1 (right) -b-> initial
+        d = bidfa.biDFA()
+        q1 = d.add_right('q1')
+        a_sym = d.add_symbol('a')
+        b_sym = d.add_symbol('b')
+        d.set_transition(d.initial, q1, a_sym)
+        d.set_transition(q1, d.initial, b_sym)
+        empty = Word()
+        # Left state consumes leftmost symbol
+        # step(initial, "ab") consumes 'a' -> {q1}, remaining "b"
+        self.assertEqual(d.step(d.initial, Word("ab")), ({q1}, Word("b")))
+        # step(initial, "a") consumes 'a' -> {q1}, remaining ""
+        self.assertEqual(d.step(d.initial, Word("a")), ({q1}, empty))
+        # Right state consumes rightmost symbol
+        # step(q1, "ab") consumes 'b' -> {initial}, remaining "a"
+        self.assertEqual(d.step(q1, Word("ab")), ({d.initial}, Word("a")))
+        # step(q1, "b") consumes 'b' -> {initial}, remaining ""
+        self.assertEqual(d.step(q1, Word("b")), ({d.initial}, empty))
+        # No valid transition returns empty set and original word unchanged
+        b_word = Word("b")
+        self.assertEqual(d.step(d.initial, b_word), (set(), b_word))
+        a_word = Word("a")
+        self.assertEqual(d.step(q1, a_word), (set(), a_word))
+        # Unknown symbol returns empty set and original word unchanged
+        unknown = Word("x")
+        self.assertEqual(d.step(d.initial, unknown), (set(), unknown))
+        self.assertEqual(d.step(q1, unknown), (set(), unknown))
+
+    def test_type_errors(self):
+        # Build a small biDFA to test against
+        d = bidfa.biDFA()
+        q1 = d.add_right('q1')
+        a = d.add_symbol('a')
+        d.set_transition(d.initial, q1, a)
+        # step with non-int state
+        with self.assertRaises(TypeError):
+            d.step("q1", Word('a'))
+        # step with non-Word sequence
+        with self.assertRaises(TypeError):
+            d.step(d.initial, "a")
+        # follow with non-int state
+        with self.assertRaises(TypeError):
+            d.follow("q1", Word('a'))
+        # follow with non-Word
+        with self.assertRaises(TypeError):
+            d.follow(d.initial, "a")
+        # accept with non-Word
+        with self.assertRaises(TypeError):
+            d.accept(("a",))
