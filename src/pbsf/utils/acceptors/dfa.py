@@ -326,6 +326,8 @@ class DFA(FiniteAcceptor):
         ------
         ValueError
             If `state` is not a valid state identifier.
+        TypeError
+            If `word` is not a Word.
         """
         self.__validate_state(state)
         if not isinstance(word, Word):

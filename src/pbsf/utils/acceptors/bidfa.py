@@ -299,7 +299,7 @@ class biDFA(DFA):
         Returns
         -------
         int
-            `0` if `state` is a left state, `len(word) - 1` otherwise.
+            `0` if `state` is a left state, `max(0, len(word) - 1)` otherwise.
         """
         return 0 if state in self.left else max(0, len(word) - 1)
 
