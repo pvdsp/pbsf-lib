@@ -252,33 +252,39 @@ class TestDFA(unittest.TestCase):
         d = dfa.DFA()
         # Add two states and two symbols
         s1, s2 = d.add_states(['q1', 'q2'])
-        a, b = d.add_symbols(['a', 'b'])
+        a_sym, b_sym = d.add_symbols(['a', 'b'])
+        # Word for 'a' and 'b'
+        a = Word('a')
+        b = Word('b')
+        empty = Word()
         # Add transitions 0 -(a)-> s1 -(b)-> s2 -(a)-> 0
-        d.set_transition(0, s1, a)
-        d.set_transition(s1, s2, b)
-        d.set_transition(s2, 0, a)
+        d.set_transition(0, s1, a_sym)
+        d.set_transition(s1, s2, b_sym)
+        d.set_transition(s2, 0, a_sym)
         # Confirm step(0, a) = {s1}
-        self.assertEqual(d.step(0, a), {s1})
+        self.assertEqual(d.step(0, a), ({s1}, empty))
         # Confirm step(s1, b) = {s2}
-        self.assertEqual(d.step(s1, b), {s2})
+        self.assertEqual(d.step(s1, b), ({s2}, empty))
         # Confirm step(s2, a) = {0}
-        self.assertEqual(d.step(s2, a), {0})
+        self.assertEqual(d.step(s2, a), ({0}, empty))
         # Confirm step(0, b) = {}
-        self.assertEqual(d.step(0, b), set())
+        self.assertEqual(d.step(0, b), (set(), b))
         # Confirm step(s1, a) = {}
-        self.assertEqual(d.step(s1, a), set())
+        self.assertEqual(d.step(s1, a), (set(), a))
         # Confirm step(s2, b) = {}
-        self.assertEqual(d.step(s2, b), set())
+        self.assertEqual(d.step(s2, b), (set(), b))
         # Add transitions 0 -(b)-> 0, s1 -(a)-> s1, s2 -(b)-> s2
-        d.set_transition(0, 0, b)
-        d.set_transition(s1, s1, a)
-        d.set_transition(s2, s2, b)
+        d.set_transition(0, 0, b_sym)
+        d.set_transition(s1, s1, a_sym)
+        d.set_transition(s2, s2, b_sym)
         # Confirm step(0, b) = {0}
-        self.assertEqual(d.step(0, b), {0})
+        self.assertEqual(d.step(0, b), ({0}, empty))
         # Confirm step(s1, a) = {s1}
-        self.assertEqual(d.step(s1, a), {s1})
+        self.assertEqual(d.step(s1, a), ({s1}, empty))
         # Confirm step(s2, b) = {s2}
-        self.assertEqual(d.step(s2, b), {s2})
+        self.assertEqual(d.step(s2, b), ({s2}, empty))
+        # Confirm step on empty word returns clean failure
+        self.assertEqual(d.step(0, empty), (set(), empty))
 
     def test_follow(self):
         # Create an empty DFA
@@ -301,9 +307,6 @@ class TestDFA(unittest.TestCase):
         # Test with invalid state, catch ValueError
         with self.assertRaises(ValueError):
             d.follow(999, Word("abba"))
-        # Test with invalid symbol, catch ValueError
-        with self.assertRaises(ValueError):
-            d.follow(0, Word(('a', 'b', 999)))
         # Empty sequence from state 0 returns {0}
         self.assertEqual(d.follow(0, Word()), {0})
         # Empty sequence from state s1 returns {s1}
@@ -359,8 +362,8 @@ class TestDFA(unittest.TestCase):
         d.set_transition(0, s1, a)
         # Step with non-int state
         with self.assertRaises(TypeError):
-            d.step("q1", a)
-        # Step with non-int symbol
+            d.step("q1", Word('a'))
+        # Step with non-Word sequence
         with self.assertRaises(TypeError):
             d.step(0, "a")
         # Follow with non-int state

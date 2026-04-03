@@ -22,37 +22,54 @@ class Word:
             Iterable whose items form the symbols of the word. If ``None``, the
             empty word is created.
         """
-        self._sequence = tuple(sequence) if sequence is not None else ()
+        data = tuple(sequence) if sequence is not None else ()
+        self._data = data
+        self._view = range(len(data))
+        self._sequence = None
+
+    @classmethod
+    def _from_view(cls, data: tuple[Any, ...], view: range):
+        w = cls.__new__(cls)
+        w._data = data
+        w._view = view
+        w._sequence = None
+        return w
 
     @property
     def sequence(self) -> tuple[Any, ...]:
-        """Return the underlying tuple of symbols."""
+        """Return the symbols of this word as a tuple for the current view."""
+        if self._sequence is None:
+            self._sequence = tuple(self._data[i] for i in self._view)
         return self._sequence
+
+    def get_symbol(self, pos: int) -> Any:
+        """Return the raw symbol at position ``pos`` in O(1)."""
+        return self._data[self._view[pos]]
 
     def __len__(self) -> int:
         """Return number of symbols in the word."""
-        return len(self._sequence)
+        return len(self._view)
 
     def __iter__(self) -> Iterator[Any]:
         """Iterate over the symbols of the word."""
-        return iter(self._sequence)
+        return iter(self._data[i] for i in self._view)
 
     def __eq__(self, other: Any) -> bool:
         """Check if the word is equal to another object."""
         if not isinstance(other, Word):
             return False
-        return self._sequence == other.sequence
+        return self.sequence == other.sequence
 
     def __hash__(self) -> int:
         """Return the hash of the word."""
-        return hash(self._sequence)
+        return hash(self.sequence)
 
     def __getitem__(self, key: int | slice) -> 'Word | Any':
         """Return the symbol at a position, or get a subword from a slice."""
         if isinstance(key, slice):
-            return Word(self._sequence[key])
+            return Word._from_view(self._data, self._view[key])
         elif isinstance(key, int):
-            return self._sequence[key]
+            return self._data[self._view[key]]
         else:
             raise TypeError(
                 f"Word indices must be integers or slices, not {type(key).__name__}"
@@ -60,7 +77,7 @@ class Word:
 
     def __repr__(self) -> str:
         """Return string representation of the word."""
-        return f"Word({self._sequence})"
+        return f"Word({self.sequence})"
 
     def __add__(self, other: 'Word') -> 'Word':
         """
@@ -81,7 +98,11 @@ class Word:
             raise TypeError(
                 f"Can only concatenate Word (not {type(other).__name__}) to Word"
             )
-        return Word(self._sequence + other.sequence)
+        if len(self) == 0:
+            return other
+        if len(other) == 0:
+            return self
+        return Word(self.sequence + other.sequence)
 
     def __mul__(self, n: int) -> 'Word':
         """
@@ -103,7 +124,7 @@ class Word:
             raise TypeError(
                 f"Word can only be multiplied by an int, got {type(n).__name__} instead"
             )
-        return Word(self._sequence * n)
+        return Word(self.sequence * n)
 
     def __rmul__(self, n: int) -> 'Word':
         """Support multiplication with the integer on the left: n * word."""

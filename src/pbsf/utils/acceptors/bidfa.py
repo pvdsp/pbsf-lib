@@ -282,51 +282,38 @@ class biDFA(DFA):
         self.right.add(identifier)
         return identifier
 
-    def follow(self, state: int, word: Word) -> set[int]:
+    def next_position(self, state: int, word: Word) -> int:
         """
-        Get the state reachable from a start state and word.
+        Return the index in `word` that the biDFA will consume next.
 
-        In left states, the leftmost symbol of the word is consumed.
-        In right states, the rightmost symbol of the word is consumed.
-
-        biDFAs return a singleton set with the reachable state if
-        each symbol of the word corresponds to a relevant transition,
-        otherwise returns the empty set.
+        Left states consume the leftmost symbol (index `0`); right states
+        consume the rightmost symbol (index `len(word) - 1`).
 
         Parameters
         ----------
         state : int
-            Integer identifier of a specific state.
+            Integer identifier of the current state.
         word : Word
-            Sequence of symbols.
+            The word about to be processed.
 
         Returns
         -------
-        set[int]
-            Singleton set with integer identifier of reachable state
-            or empty set if there is no outgoing transition somewhere
-            along the path of visited states.
+        int
+            `0` if `state` is a left state, `max(0, len(word) - 1)` otherwise.
 
         Raises
         ------
+        TypeError
+            If the provided state is not an integer identifier.
         ValueError
-            If provided state identifier or one of the symbols in the word
-            is respectively not a valid state or symbol.
+            If the provided state is not part of this biDFA.
         """
-        self.__validate_state(state)
-        if not isinstance(word, Word):
-            raise TypeError(f"Expected Word, received {type(word).__name__}.")
-        symbols = list(word)
-        while len(symbols) > 0:
-            index = 0 if state in self.left else -1
-            symbol = symbols.pop(index)
-            sid = self.alphabet.get(symbol)
-            self.__validate_symbol(sid)
-            state_set = self.step(state, sid)
-            if not state_set:
-                return set()
-            state = next(iter(state_set))
-        return {state}
+        if not isinstance(state, int):
+            raise TypeError(f"Expected int, received {type(state).__name__}.")
+
+        if state not in self.left and state not in self.right:
+            raise ValueError(f"State {state} is not part of the biDFA.")
+        return 0 if state in self.left else max(0, len(word) - 1)
 
     def accept(self, word: Word) -> bool:
         """

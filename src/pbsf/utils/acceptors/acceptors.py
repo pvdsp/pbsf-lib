@@ -26,23 +26,50 @@ class FiniteAcceptor(ABC):
         """
         pass
 
-    @abstractmethod
-    def step(self, state: int, symbol: int) -> set[int]:
+    def next_position(self, state: int, word: Word) -> int:
         """
-        Get the set of states reachable from a state and symbol.
+        Return the index in `word` that this acceptor will consume next.
+
+        Subclasses can override this to implement non-left-to-right reading
+        strategies. For example, a bidirectional DFA may return `len(word) - 1`
+        when in a right state.
 
         Parameters
         ----------
         state : int
-            Integer identifier of a specific state.
-        symbol : int
-            Integer identifier of a given symbol.
+            Integer identifier of the current state.
+        word : Word
+            The word about to be processed.
 
         Returns
         -------
-        set[int]
-            Set of the integer identifiers of states reachable from
-            the given state and symbol.
+        int
+            Index of the symbol to consume. The default implementation
+            always returns `0`, corresponding to the leftmost symbol.
+        """
+        return 0
+
+    @abstractmethod
+    def step(self, state: int, word: Word) -> tuple[set[int], Word]:
+        """
+        Consume symbol from `word`, return resulting states and remaining word.
+
+        The position consumed is determined by `next_position`. On success
+        the symbol is removed from `word` and the remaining word is returned.
+        On failure (unknown symbol or no valid transition) the original
+        `word` is returned unchanged together with an empty state set.
+
+        Parameters
+        ----------
+        state : int
+            Integer identifier of the current state.
+        word : Word
+            The word to consume one symbol from.
+
+        Returns
+        -------
+        tuple[set[int], Word]
+            Reachable states (empty set on failure) and remaining word.
         """
         pass
 
