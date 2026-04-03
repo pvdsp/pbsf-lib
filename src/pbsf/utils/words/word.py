@@ -37,7 +37,7 @@ class Word:
 
     @property
     def sequence(self) -> tuple[Any, ...]:
-        """Return the underlying tuple of symbols."""
+        """Return the symbols of this word as a tuple for the current view."""
         if self._sequence is None:
             self._sequence = tuple(self._data[i] for i in self._view)
         return self._sequence
