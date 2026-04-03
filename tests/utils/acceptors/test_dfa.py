@@ -283,6 +283,8 @@ class TestDFA(unittest.TestCase):
         self.assertEqual(d.step(s1, a), ({s1}, empty))
         # Confirm step(s2, b) = {s2}
         self.assertEqual(d.step(s2, b), ({s2}, empty))
+        # Confirm step on empty word returns clean failure
+        self.assertEqual(d.step(0, empty), (set(), empty))
 
     def test_follow(self):
         # Create an empty DFA

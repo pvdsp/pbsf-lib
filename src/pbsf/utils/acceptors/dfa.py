@@ -330,7 +330,11 @@ class DFA(FiniteAcceptor):
         self.__validate_state(state)
         if not isinstance(word, Word):
             raise TypeError(f"Expected Word, received {type(word).__name__}.")
+        if len(word) == 0:
+            return set(), word
         pos = self.next_position(state, word)
+        if pos < 0 or pos >= len(word):
+            return set(), word
         symbol = word.sequence[pos]
         if (symbol_id := self.alphabet.get(symbol)) is None:
             return set(), word

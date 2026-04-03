@@ -380,6 +380,9 @@ class TestBiDFA(unittest.TestCase):
         unknown = Word("x")
         self.assertEqual(d.step(d.initial, unknown), (set(), unknown))
         self.assertEqual(d.step(q1, unknown), (set(), unknown))
+        # Empty word returns clean failure for both left and right states
+        self.assertEqual(d.step(d.initial, empty), (set(), empty))
+        self.assertEqual(d.step(q1, empty), (set(), empty))
 
     def test_type_errors(self):
         # Build a small biDFA to test against
