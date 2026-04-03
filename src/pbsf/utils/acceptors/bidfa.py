@@ -300,7 +300,19 @@ class biDFA(DFA):
         -------
         int
             `0` if `state` is a left state, `max(0, len(word) - 1)` otherwise.
+
+        Raises
+        ------
+        TypeError
+            If the provided state is not an integer identifier.
+        ValueError
+            If the provided state is not part of this biDFA.
         """
+        if not isinstance(state, int):
+            raise TypeError(f"Expected int, received {type(state).__name__}.")
+
+        if state not in self.left and state not in self.right:
+            raise ValueError(f"State {state} is not part of the biDFA.")
         return 0 if state in self.left else max(0, len(word) - 1)
 
     def accept(self, word: Word) -> bool:
