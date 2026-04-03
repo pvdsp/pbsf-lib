@@ -362,7 +362,7 @@ class TestDFA(unittest.TestCase):
         d.set_transition(0, s1, a)
         # Step with non-int state
         with self.assertRaises(TypeError):
-            d.step("q1", a)
+            d.step("q1", Word('a'))
         # Step with non-Word sequence
         with self.assertRaises(TypeError):
             d.step(0, "a")
