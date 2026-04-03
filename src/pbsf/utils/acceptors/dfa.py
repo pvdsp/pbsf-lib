@@ -337,7 +337,7 @@ class DFA(FiniteAcceptor):
         pos = self.next_position(state, word)
         if pos < 0 or pos >= len(word):
             return set(), word
-        symbol = word.sequence[pos]
+        symbol = word.get_symbol(pos)
         if (symbol_id := self.alphabet.get(symbol)) is None:
             return set(), word
         transitions = self.transitions.get(state, {})

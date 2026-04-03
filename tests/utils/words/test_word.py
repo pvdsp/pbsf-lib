@@ -115,6 +115,22 @@ class TestWord(unittest.TestCase):
         # Chained concatenation
         self.assertEqual(word + empty + word, Word("wordword"))
 
+    def test_get_symbol(self):
+        word = Word("word")
+        # get_symbol on a plain word
+        self.assertEqual(word.get_symbol(0), 'w')
+        self.assertEqual(word.get_symbol(3), 'd')
+        self.assertEqual(word.get_symbol(-1), 'd')
+        # get_symbol on a sliced word (view)
+        sliced = word[1:]
+        self.assertEqual(sliced.get_symbol(0), 'o')
+        self.assertEqual(sliced.get_symbol(1), 'r')
+        self.assertEqual(sliced.get_symbol(-1), 'd')
+        # get_symbol on a slice-of-slice
+        sliced2 = sliced[1:]
+        self.assertEqual(sliced2.get_symbol(0), 'r')
+        self.assertEqual(sliced2.get_symbol(1), 'd')
+
     def test_multiplication(self):
         # Empty word multiplied
         empty = Word()
