@@ -27,11 +27,15 @@ dev = [
     "ruff>=0.15.2",
 ]
 
+[tool.ruff]
+exclude = [".virtual_documents", "docs/notebooks/.virtual_documents"]
+
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "D"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["D100", "D101", "D102", "D103"]
+"*.ipynb" = ["F821", "F401"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

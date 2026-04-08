@@ -334,7 +334,7 @@ class MatchingRelation:
         str
             String representation of the matching relation.
         """
-        # Sort matches to ensure deterministic output; treat None as larger than any index.
+        # Sort matches for deterministic output; treat None as larger than any index.
         sorted_matches = sorted(
             self.__matches,
             key=lambda m: (

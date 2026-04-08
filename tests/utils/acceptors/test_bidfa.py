@@ -338,14 +338,14 @@ class TestBiDFA(unittest.TestCase):
     def test_next_position(self):
         # Build a biDFA with one left and one right state
         d = bidfa.biDFA()
-        l = d.initial
+        left = d.initial
         r = d.add_right('q_right')
         w = Word("random_word")
         # Left state always returns 0
-        self.assertEqual(d.next_position(l, w), 0)
-        self.assertEqual(d.next_position(l, Word()), 0)
-        self.assertEqual(d.next_position(l, Word("x")), 0)
-        self.assertEqual(d.next_position(l, Word("ab")), 0)
+        self.assertEqual(d.next_position(left, w), 0)
+        self.assertEqual(d.next_position(left, Word()), 0)
+        self.assertEqual(d.next_position(left, Word("x")), 0)
+        self.assertEqual(d.next_position(left, Word("ab")), 0)
         # Right state always returns len(word) - 1
         self.assertEqual(d.next_position(r, w), len(w) - 1)
         self.assertEqual(d.next_position(r, Word()), 0)
