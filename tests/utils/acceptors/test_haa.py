@@ -77,7 +77,7 @@ def simplest_recursive_haa() -> HAA:
     for k in range(2, 5):
         haa.add_mapping(
             acceptors=(dfa,) * k,
-            states=({0},) * (k-1),
+            states=({dfa.states['0']},) * (k - 1),
             symbols={'s'},
         )
     return haa
@@ -104,10 +104,11 @@ def palindromic_haa() -> HAA:
     haa = HAA(name="palindromic-haa",
               acceptors=MutablePoset({bidfa}))
 
+    final_ids = {bidfa.states['0'], bidfa.states['1'], bidfa.states['2']}
     for k in range(2, 5):
         haa.add_mapping(
             acceptors=(bidfa,) * k,
-            states = ({0, 1, 2},) * (k-1),
+            states=(final_ids,) * (k - 1),
             symbols={'p', 'q'},
         )
     return haa
