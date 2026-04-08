@@ -61,7 +61,7 @@ def make_haa() -> tuple[HAA, DFA, DFA, DFA]:
     return haa, main, even, odd
 
 
-def simplest_recursive_haa() -> tuple[HAA]:
+def simplest_recursive_haa() -> HAA:
     """HAA that accepts any NestedWord with symbols 's' up to certain depth."""
     dfa = DFA.from_description(
         """
@@ -83,7 +83,7 @@ def simplest_recursive_haa() -> tuple[HAA]:
     return haa
 
 
-def palindromic_haa() -> tuple[HAA, DFA]:
+def palindromic_haa() -> HAA:
     bidfa = biDFA.from_description(
         """
         palindromic
