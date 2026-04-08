@@ -542,6 +542,25 @@ class TestHAA(unittest.TestCase):
         with self.assertRaises(ValueError):
             haa.add_acceptor(main)
 
+    def test_accept_no_greatest_raises(self):
+        # With two incomparable acceptors there is no unique greatest element;
+        # greatest returns None and accept raises AttributeError.
+        a = DFA.from_description("""
+            a
+                initial 0
+                final 0
+                0 0 s
+        """)
+        b = DFA.from_description("""
+            b
+                initial 0
+                final 0
+                0 0 s
+        """)
+        haa = HAA(acceptors=MutablePoset({a, b}))
+        with self.assertRaises(AttributeError):
+            haa.accept(NestedWord.from_tagged("s"))
+
 
 if __name__ == '__main__':
     unittest.main()
