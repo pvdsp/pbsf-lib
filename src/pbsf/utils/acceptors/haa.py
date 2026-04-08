@@ -19,7 +19,7 @@ class MappingCondition(NamedTuple):
 
     A condition specifies when the k-th acceptor in a chain should process
     the next nested subword: the active states of the first (k-1) acceptors
-    must each belong to their respective state subset, and the current call
+    must each belong to their respective state subset, and the current
     position label must belong to the symbol set.
 
     Attributes
@@ -32,8 +32,8 @@ class MappingCondition(NamedTuple):
         (k-1)-tuple of state subsets, one per acceptor in the chain,
         excluding the last. Each frozenset contains integer state IDs.
     symbols : frozenset[Any]
-        Set of symbols corresponding to call position labels
-        for which this mapping applies.
+        Set of symbols corresponding to position labels for which
+        this mapping applies.
     """
 
     acceptors: tuple[FiniteAcceptor, ...]
@@ -51,7 +51,7 @@ class HAA(FiniteAcceptor):
 
     A mapping function determines which HAA substructure processes the nested subword
     corresponding to a deeper nesting layer, based on the chain of active acceptors,
-    their active states, and the current call position label.
+    their active states, and the current position label.
     """
 
     def __init__(
@@ -321,8 +321,8 @@ class HAA(FiniteAcceptor):
         in `acceptors` is the greatest acceptor of its partially ordered set will
         process the next nested subword corresponding to the deeper nesting layer.
         This condition is triggered when the active states of the first (k-1) acceptors
-        each belong to their respective subset in `states`, and the call position label
-        belongs to `symbols`.
+        each belong to their respective subset in `states`, and the relevant
+        position label belongs to `symbols`.
 
         Parameters
         ----------
@@ -333,7 +333,7 @@ class HAA(FiniteAcceptor):
             A (k-1)-tuple of state subsets, one per acceptor excluding the last.
             Each set contains integer state IDs of that acceptor.
         symbols : set[Any]
-            Set of surface call-position symbols that trigger this condition.
+            Set of symbols that trigger this condition.
 
         Raises
         ------
