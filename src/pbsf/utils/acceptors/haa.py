@@ -564,24 +564,14 @@ class HAA(FiniteAcceptor):
 
     def step(self, state: int, word: Word) -> tuple[set[int], Word]:
         """
-        Step the greatest acceptor through a state and word.
+        Not supported: HAA processes nested words via `follow`.
 
-        This delegates directly to the greatest acceptor and does not account
-        for nested structure. Intended for flat use at the top level only.
-
-        Parameters
-        ----------
-        state : int
-            State identifier in the greatest acceptor.
-        word : Word
-            The word to consume one symbol from.
-
-        Returns
-        -------
-        tuple[set[int], Word]
-            Reachable states (empty set on failure) and remaining word.
+        Raises
+        ------
+        NotImplementedError
+            Always.
         """
-        return self.acceptors.greatest.step(state, word)
+        raise NotImplementedError("HAA does not support `step`; use `follow`.")
 
     def follow(self, state: int, word: NestedWord) -> set[int]:
         """

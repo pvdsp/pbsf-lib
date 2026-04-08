@@ -531,11 +531,10 @@ class TestHAA(unittest.TestCase):
         self.assertEqual(states, 11)
         self.assertEqual(transitions, 11)
 
-    def test_step(self):
+    def test_step_not_implemented(self):
         haa, main, even, odd = make_haa()
-        next_states, remaining = haa.step(main.initial, NestedWord.from_tagged("sss"))
-        self.assertEqual(next_states, {main.states['1']})
-        self.assertEqual(len(remaining), 2)
+        with self.assertRaises(NotImplementedError):
+            haa.step(main.initial, NestedWord.from_tagged("sss"))
 
     def test_add_acceptor_duplicate(self):
         haa, main, even, odd = make_haa()
