@@ -633,6 +633,8 @@ class HAA(FiniteAcceptor):
         """
         greatest = self.acceptors.greatest
         result = self.follow(greatest.initial, word)
+        if greatest is None:
+            raise AttributeError(f"{self.acceptors} has no unique greatest element.")
         return bool(result & greatest.final)
 
     def add_acceptor(self, acceptor: FiniteAcceptor) -> None:
