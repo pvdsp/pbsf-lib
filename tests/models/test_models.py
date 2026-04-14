@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from pbsf.chains import Chain
 from pbsf.models import NestedWordSet, PatternGraph, PatternSet, PatternTree
 from pbsf.nodes import SlopeSignNode
 from pbsf.utils.words.nested_word import NestedWord
@@ -14,6 +15,10 @@ def create_test_node(slopes):
         "intercepts": np.array(slopes),
         "breakpoints": []
     })
+
+
+def create_test_chain(slope_lists):
+    return Chain([create_test_node(s) for s in slope_lists])
 
 class TestPatternSet(unittest.TestCase):
     def test_creation(self):
@@ -783,3 +788,70 @@ class TestNestedWordSet(unittest.TestCase):
         result = model.learn(chains)
         self.assertEqual(len(result), 3)
         self.assertEqual(len(model.nested_words), 2)
+
+
+class TestPatternTreeWithChain(unittest.TestCase):
+    def test_update_with_chain(self):
+        model = PatternTree()
+        chain = create_test_chain([[1], [1, 1], [1, 1, 1, 1]])
+        vertices = model.update(chain)
+        self.assertEqual(len(model.graph.vertices), 4)
+        self.assertEqual(model.graph.vertices[vertices[1]]["node"], chain[0])
+
+    def test_learn_with_chains(self):
+        model = PatternTree()
+        chains = [
+            create_test_chain([[1], [1, 1]]),
+            create_test_chain([[-1], [1, 1]]),
+        ]
+        result = model.learn(chains)
+        self.assertEqual(len(result), 2)
+
+    def test_contains_with_chain(self):
+        model = PatternTree()
+        chain = create_test_chain([[1], [1, -1]])
+        self.assertFalse(model.contains(chain))
+        model.update(chain)
+        self.assertTrue(model.contains(chain))
+
+
+class TestPatternGraphWithChain(unittest.TestCase):
+    def test_update_with_chain(self):
+        model = PatternGraph()
+        chain = create_test_chain([[1], [1, 1], [1, 1, 1, 1]])
+        vertices = model.update(chain)
+        self.assertEqual(len(model.graph.vertices), 3)
+        self.assertEqual(model.graph.vertices[vertices[0]]["node"], chain[0])
+
+    def test_learn_with_chains(self):
+        model = PatternGraph()
+        chains = [
+            create_test_chain([[1], [1, 1]]),
+            create_test_chain([[-1], [1, 1]]),
+        ]
+        result = model.learn(chains)
+        self.assertEqual(len(result), 2)
+
+    def test_contains_with_chain(self):
+        model = PatternGraph()
+        chain = create_test_chain([[1], [1, -1]])
+        self.assertFalse(model.contains(chain))
+        model.update(chain)
+        self.assertTrue(model.contains(chain))
+
+
+class TestNestedWordSetWithChain(unittest.TestCase):
+    def test_update_with_chain(self):
+        model = NestedWordSet({"context_size": 2})
+        chain1 = create_test_chain([[1.0]])
+        chain2 = create_test_chain([[-1.0]])
+        model.update(chain1)
+        model.update(chain2)
+        self.assertEqual(len(model.nested_words), 1)
+
+    def test_contains_with_chain(self):
+        model = NestedWordSet({"context_size": 1})
+        chain = create_test_chain([[1], [1, -1]])
+        self.assertFalse(model.contains([chain]))
+        model.update(chain)
+        self.assertTrue(model.contains([chain]))

@@ -6,6 +6,7 @@ from typing import Any
 import numpy as np
 import scipy.stats
 
+from pbsf.chains import Chain
 from pbsf.discretisers.base import Discretiser, _normalise
 from pbsf.discretisers.paa import PiecewiseAggregate
 from pbsf.nodes import PAANode, SAXNode
@@ -83,7 +84,7 @@ class SymbolicAggregate(Discretiser):
             cut_points = scipy.stats.norm.ppf(quantiles)
         return cut_points
 
-    def discretise(self, segment: np.ndarray) -> list:
+    def discretise(self, segment: np.ndarray) -> Chain:
         """
         Discretise a segment using Symbolic Aggregate Approximation.
 
@@ -97,9 +98,9 @@ class SymbolicAggregate(Discretiser):
 
         Returns
         -------
-        list
-            A list of nodes representing the segment in increasing granularity,
-            forming a chain from coarse to fine symbolic approximations.
+        Chain
+            A chain of nodes representing the segment in increasing granularity,
+            from coarse to fine symbolic approximations.
 
         Raises
         ------
@@ -129,4 +130,4 @@ class SymbolicAggregate(Discretiser):
                 **self.node_params
             })
             nodes.append(node)
-        return nodes
+        return Chain(nodes)

@@ -1,6 +1,7 @@
 """Directed acyclic graph model for storing discretised patterns."""
 
 import math
+from collections.abc import Sequence
 
 from pbsf.models.base import Model
 from pbsf.nodes import Node
@@ -223,8 +224,8 @@ class PatternGraph(Model):
         ValueError
             If chain is not a list or contains non-Node elements.
         """
-        if not isinstance(chain, list):
-            raise ValueError("Chain must be a list.")
+        if not isinstance(chain, (list, Sequence)):
+            raise ValueError("Chain must be a list or sequence.")
         if not all(isinstance(node, Node) for node in chain):
             raise ValueError("Chain must contain only nodes.")
 
@@ -267,9 +268,9 @@ class PatternGraph(Model):
             If the input data is not a list, contains elements that are not lists,
             or contains non-Node elements.
         """
-        if not isinstance(chains, list):
+        if not isinstance(chains, (list, Sequence)):
             raise ValueError("Chains must be a list.")
-        if not all(isinstance(chain, list) for chain in chains):
+        if not all(isinstance(chain, (list, Sequence)) for chain in chains):
             raise ValueError("Chains must contain only lists of Nodes.")
         if not all(
             all(isinstance(node, Node) for node in chain)

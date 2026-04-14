@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from pbsf.chains import Chain
 from pbsf.discretisers import PiecewiseLinear
 from pbsf.nodes import SlopeSignNode, StructuralProminenceNode
 
@@ -40,8 +41,9 @@ class TestPiecewiseLinear(unittest.TestCase):
             "node_params": {}
         })
         segment = np.sin(np.linspace(0, 2 * np.pi, 200))
-        nodes = discretiser.discretise(segment)
-        slopes = nodes[0].slopes
+        chain = discretiser.discretise(segment)
+        self.assertIsInstance(chain, Chain)
+        slopes = chain[0].slopes
         signs = np.array([1, 1, -1, -1, -1, -1, 1, 1])
         self.assertTrue(np.all((slopes >= 0) == (signs >= 0)))
 
@@ -58,9 +60,11 @@ class TestPiecewiseLinear(unittest.TestCase):
         with self.assertRaises(ValueError):
             discretiser.discretise(data)
         segment = np.arange(100)
-        nodes = discretiser.discretise(segment)
-        self.assertEqual(len(nodes), discretiser.max_depth(segment))
-        for idx, node in enumerate(nodes):
+        chain = discretiser.discretise(segment)
+        self.assertIsInstance(chain, Chain)
+        self.assertEqual(len(chain), discretiser.max_depth(segment))
+        self.assertEqual(chain.length, discretiser.max_depth(segment))
+        for idx, node in enumerate(chain):
             self.assertEqual(node.depth, idx)
             self.assertEqual(node.std, np.std(segment))
             self.assertEqual(len(node.slopes), 2 ** idx)

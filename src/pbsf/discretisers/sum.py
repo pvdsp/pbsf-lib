@@ -5,6 +5,7 @@ from typing import Any
 
 import numpy as np
 
+from pbsf.chains import Chain
 from pbsf.discretisers.base import Discretiser, _divide
 from pbsf.nodes import SumNode
 from pbsf.utils import has_required
@@ -42,7 +43,7 @@ class Summation(Discretiser):
         self.node_type = params["node_type"]
         self.node_params = params["node_params"]
 
-    def discretise(self, segment: np.ndarray) -> list:
+    def discretise(self, segment: np.ndarray) -> Chain:
         """
         Discretise a segment by splitting into frames and summing values.
 
@@ -53,9 +54,9 @@ class Summation(Discretiser):
 
         Returns
         -------
-        list
-            A list of nodes representing the segment in increasing granularity,
-            forming a chain from coarse to fine-grained approximations.
+        Chain
+            A chain of nodes representing the segment in increasing granularity,
+            from coarse to fine-grained approximations.
 
         Raises
         ------
@@ -75,4 +76,4 @@ class Summation(Discretiser):
                     **self.node_params
                 })
             )
-        return nodes
+        return Chain(nodes)
