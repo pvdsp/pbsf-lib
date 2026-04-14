@@ -151,7 +151,7 @@ class NestedWordSet(Model):
             result = self._combine_nws(result, nw)
         return result
 
-    def _chain_to_nw(self, chain: list[Node]) -> NestedWord:
+    def _chain_to_nw(self, chain: Sequence[Node]) -> NestedWord:
         """
         Convert a discretisation chain to a nested word representation.
 
@@ -160,7 +160,7 @@ class NestedWordSet(Model):
 
         Parameters
         ----------
-        chain : list[Node]
+        chain : Sequence[Node]
             Discretisation chain to convert.
 
         Returns
@@ -272,7 +272,7 @@ class NestedWordSet(Model):
             If chains is not a list of lists or if the number of chains doesn't
             match the context size.
         """
-        if not all(isinstance(chain, (list, Sequence)) for chain in chains):
+        if not all(isinstance(chain, Sequence) for chain in chains):
             raise ValueError(
                 f"NestedWordSet expects a list of"
                 f" {self.context_size} discretisation chains."

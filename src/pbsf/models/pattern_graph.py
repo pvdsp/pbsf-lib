@@ -162,7 +162,7 @@ class PatternGraph(Model):
         return v2 in children
 
     def chain_to_vertices(
-        self, chain: list[Node],
+        self, chain: Sequence[Node],
     ) -> tuple[list[int | None], list[bool]]:
         """
         Convert a chain of nodes to vertex identifiers and their connection status.
@@ -172,7 +172,7 @@ class PatternGraph(Model):
 
         Parameters
         ----------
-        chain : list[Node]
+        chain : Sequence[Node]
             Chain of nodes to match against the graph.
 
         Returns
@@ -202,7 +202,7 @@ class PatternGraph(Model):
                 traversal.append(None)
         return traversal, connection
 
-    def update(self, chain: list[Node]) -> list[int]:
+    def update(self, chain: Sequence[Node]) -> list[int]:
         """
         Update the graph with a new chain of discretised data.
 
@@ -211,8 +211,8 @@ class PatternGraph(Model):
 
         Parameters
         ----------
-        chain : list[Node]
-            A list of nodes representing the chain of discretised data.
+        chain : Sequence[Node]
+            A sequence of nodes representing the chain of discretised data.
 
         Returns
         -------
@@ -222,10 +222,10 @@ class PatternGraph(Model):
         Raises
         ------
         ValueError
-            If chain is not a list or contains non-Node elements.
+            If chain is not a sequence or contains non-Node elements.
         """
-        if not isinstance(chain, (list, Sequence)):
-            raise ValueError("Chain must be a list or sequence.")
+        if not isinstance(chain, Sequence):
+            raise ValueError("Chain must be a sequence.")
         if not all(isinstance(node, Node) for node in chain):
             raise ValueError("Chain must contain only nodes.")
 
@@ -245,7 +245,7 @@ class PatternGraph(Model):
 
         return vertices
 
-    def learn(self, chains: list[list[Node]]) -> list[list[int]]:
+    def learn(self, chains: Sequence[Sequence[Node]]) -> list[list[int]]:
         """
         Learn patterns from the provided dataset.
 
@@ -254,8 +254,8 @@ class PatternGraph(Model):
 
         Parameters
         ----------
-        chains : list[list[Node]]
-            A list of chains of nodes representing the dataset.
+        chains : Sequence[Sequence[Node]]
+            A sequence of chains of nodes representing the dataset.
 
         Returns
         -------
@@ -265,13 +265,13 @@ class PatternGraph(Model):
         Raises
         ------
         ValueError
-            If the input data is not a list, contains elements that are not lists,
-            or contains non-Node elements.
+            If the input data is not a sequence, contains elements that are not
+            sequences, or contains non-Node elements.
         """
-        if not isinstance(chains, (list, Sequence)):
-            raise ValueError("Chains must be a list.")
-        if not all(isinstance(chain, (list, Sequence)) for chain in chains):
-            raise ValueError("Chains must contain only lists of Nodes.")
+        if not isinstance(chains, Sequence):
+            raise ValueError("Chains must be a sequence.")
+        if not all(isinstance(chain, Sequence) for chain in chains):
+            raise ValueError("Chains must contain only sequences of Nodes.")
         if not all(
             all(isinstance(node, Node) for node in chain)
             for chain in chains
@@ -279,7 +279,7 @@ class PatternGraph(Model):
             raise ValueError("Chains must contain only nodes.")
         return [self.update(chain) for chain in chains]
 
-    def contains(self, chain: list[Node]) -> bool:
+    def contains(self, chain: Sequence[Node]) -> bool:
         """
         Check if the graph contains a specific chain of nodes and all its connections.
 
@@ -288,7 +288,7 @@ class PatternGraph(Model):
 
         Parameters
         ----------
-        chain : list[Node]
+        chain : Sequence[Node]
             Chain of nodes to check for membership.
 
         Returns

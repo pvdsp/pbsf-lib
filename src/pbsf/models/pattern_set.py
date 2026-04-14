@@ -1,5 +1,7 @@
 """Set-based model for tracking unique patterns at various depths."""
 
+from collections.abc import Sequence
+
 from pbsf.models.base import Model
 from pbsf.nodes import Node
 
@@ -37,7 +39,7 @@ class PatternSet(Model):
             self.params = {}
         self.nodes = []
 
-    def update(self, chain: list[Node]) -> list[bool]:
+    def update(self, chain: Sequence[Node]) -> list[bool]:
         """
         Update the sets with a new chain of discretised data.
 
@@ -47,8 +49,8 @@ class PatternSet(Model):
 
         Parameters
         ----------
-        chain : list[Node]
-            A list of nodes representing the chain of discretised data.
+        chain : Sequence[Node]
+            A sequence of nodes representing the chain of discretised data.
 
         Returns
         -------
@@ -66,7 +68,7 @@ class PatternSet(Model):
                 node_set.add(node)
         return present
 
-    def learn(self, chains: list[list[Node]]) -> list[list[bool]]:
+    def learn(self, chains: Sequence[Sequence[Node]]) -> list[list[bool]]:
         """
         Learn patterns from the provided dataset.
 
@@ -75,8 +77,8 @@ class PatternSet(Model):
 
         Parameters
         ----------
-        chains : list[list[Node]]
-            A list of chains of nodes representing the dataset.
+        chains : Sequence[Sequence[Node]]
+            A sequence of chains of nodes representing the dataset.
 
         Returns
         -------
@@ -87,18 +89,18 @@ class PatternSet(Model):
         Raises
         ------
         ValueError
-            If the input data is not a list, contains elements that are not lists,
-            or contains non-Node elements.
+            If the input data is not a sequence, contains elements that are not
+            sequences, or contains non-Node elements.
         """
-        if not isinstance(chains, list):
-            raise ValueError("Data must be a list.")
-        if not all(isinstance(chain, list) for chain in chains):
-            raise ValueError("Data must contain only lists of Nodes.")
+        if not isinstance(chains, Sequence):
+            raise ValueError("Data must be a sequence.")
+        if not all(isinstance(chain, Sequence) for chain in chains):
+            raise ValueError("Data must contain only sequences of Nodes.")
         if not all(all(isinstance(node, Node) for node in chain) for chain in chains):
             raise ValueError("Data must contain only nodes.")
         return [self.update(chain) for chain in chains]
 
-    def contains(self, chain: list[Node]) -> bool:
+    def contains(self, chain: Sequence[Node]) -> bool:
         """
         Check if the pattern set contains all nodes in a specific chain.
 
@@ -108,7 +110,7 @@ class PatternSet(Model):
 
         Parameters
         ----------
-        chain : list[Node]
+        chain : Sequence[Node]
             Chain of nodes to check for membership.
 
         Returns
