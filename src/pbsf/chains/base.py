@@ -38,7 +38,7 @@ class Chain(Sequence):
         node_type = type(nodes[0])
         if not all(type(n) is node_type for n in nodes):
             raise ValueError(
-                f"All nodes must be the same type, got mixed types."
+                "All nodes must be the same type, got mixed types."
             )
         self._nodes = tuple(nodes)
         self._distance_fn = distance_fn or self._weighted_distance
@@ -108,19 +108,24 @@ class Chain(Sequence):
         ) / a.length
 
     def __len__(self) -> int:
+        """Return the number of nodes in the chain."""
         return len(self._nodes)
 
     def __iter__(self) -> Iterator[Node]:
+        """Iterate over the nodes in the chain."""
         return iter(self._nodes)
 
     def __getitem__(self, index):
+        """Return the node at the given index."""
         return self._nodes[index]
 
     def __repr__(self) -> str:
+        """Return string representation of the chain."""
         node_type = type(self._nodes[0]).__name__
         return f"Chain(length={self.length}, node_type={node_type})"
 
     def __eq__(self, other: object) -> bool:
+        """Check equality based on node contents."""
         if not isinstance(other, Chain):
             return NotImplemented
         return self._nodes == other._nodes

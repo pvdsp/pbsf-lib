@@ -77,7 +77,8 @@ class TestChain(unittest.TestCase):
             c1.distance(c2)
 
     def test_distance_custom_fn(self):
-        custom = lambda a, b: 42.0
+        def custom(a, b):
+            return 42.0
         c1 = Chain([_make_sum_node(0, [10.0])], distance_fn=custom)
         c2 = Chain([_make_sum_node(0, [20.0])], distance_fn=custom)
         self.assertEqual(c1.distance(c2), 42.0)

@@ -2,4 +2,12 @@
 
 from pbsf import algorithms, chains, discretisers, models, nodes, segmenters, utils
 
-__all__ = ["algorithms", "chains", "discretisers", "models", "nodes", "segmenters", "utils"]
+__all__ = [
+    "algorithms",
+    "chains",
+    "discretisers",
+    "models",
+    "nodes",
+    "segmenters",
+    "utils",
+]
