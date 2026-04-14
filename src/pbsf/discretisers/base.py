@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from pbsf.chains import Chain
+
 
 class Discretiser(ABC):
     """
@@ -15,7 +17,7 @@ class Discretiser(ABC):
     """
 
     @abstractmethod
-    def discretise(self, segment: np.ndarray) -> np.ndarray:
+    def discretise(self, segment: np.ndarray) -> Chain:
         """
         Convert a segment into a discrete representation.
 
@@ -26,8 +28,8 @@ class Discretiser(ABC):
 
         Returns
         -------
-        np.ndarray
-            Discretised representation of the segment.
+        Chain
+            Chain of nodes representing the discretised segment.
         """
         pass
 

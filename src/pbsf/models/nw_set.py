@@ -1,5 +1,7 @@
 """Nested word set model for hierarchical pattern matching."""
 
+from collections.abc import Sequence
+
 from pbsf.models.base import Model
 from pbsf.models.pattern_graph import PatternGraph
 from pbsf.models.pattern_tree import PatternTree
@@ -149,7 +151,7 @@ class NestedWordSet(Model):
             result = self._combine_nws(result, nw)
         return result
 
-    def _chain_to_nw(self, chain: list[Node]) -> NestedWord:
+    def _chain_to_nw(self, chain: Sequence[Node]) -> NestedWord:
         """
         Convert a discretisation chain to a nested word representation.
 
@@ -158,7 +160,7 @@ class NestedWordSet(Model):
 
         Parameters
         ----------
-        chain : list[Node]
+        chain : Sequence[Node]
             Discretisation chain to convert.
 
         Returns
@@ -270,7 +272,7 @@ class NestedWordSet(Model):
             If chains is not a list of lists or if the number of chains doesn't
             match the context size.
         """
-        if not all(isinstance(chain, list) for chain in chains):
+        if not all(isinstance(chain, Sequence) for chain in chains):
             raise ValueError(
                 f"NestedWordSet expects a list of"
                 f" {self.context_size} discretisation chains."

@@ -1,6 +1,7 @@
 """Abstract base class for pattern storage models."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 
 
 class Model(ABC):
@@ -16,7 +17,7 @@ class Model(ABC):
     """
 
     @abstractmethod
-    def update(self, data: list) -> list:
+    def update(self, data: Sequence) -> list:
         """
         Update the model with a new data point.
 
@@ -25,7 +26,7 @@ class Model(ABC):
 
         Parameters
         ----------
-        data : list
+        data : Sequence
             New data to incorporate into the model.
 
         Returns
@@ -36,7 +37,7 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def learn(self, data: list) -> list:
+    def learn(self, data: Sequence) -> list:
         """
         Learn patterns from the provided dataset.
 
@@ -45,7 +46,7 @@ class Model(ABC):
 
         Parameters
         ----------
-        data : list
+        data : Sequence
             Dataset to learn patterns from.
 
         Returns
@@ -56,7 +57,7 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def contains(self, data: list) -> bool:
+    def contains(self, data: Sequence) -> bool:
         """
         Check if the model contains the given data.
 
@@ -65,7 +66,7 @@ class Model(ABC):
 
         Parameters
         ----------
-        data : list
+        data : Sequence
             Data to check for pattern membership.
 
         Returns

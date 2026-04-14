@@ -17,6 +17,7 @@ A Python module for **pattern-based sequence learning** using **hierarchical pie
 4. [Usage](#usage)
    - [Segmenters](#segmenters)
    - [Discretisers](#discretisers)
+   - [Chains](#chains)
    - [Nodes](#nodes)
    - [Models](#models)
    - [Utilities](#utilities)
@@ -40,12 +41,13 @@ The framework currently focused on anomaly detection, and implements the approac
 1. **Segmentation**  
    - Divide sequence data into contiguous subsequences (e.g., fixed-size sliding windows).
 
-2. **Discretisation**  
-   - Approximate each subsequence by repeated application of piecewise approximation method, from coarse- to fine-grained approximation.  
+2. **Discretisation**
+   - Approximate each subsequence by repeated application of piecewise approximation method, from coarse- to fine-grained approximation.
    - Encapsulate each local pattern as a ``Node`` that encodes the approximation.
+   - Group the resulting nodes into a ``Chain`` — an ordered sequence from coarsest to finest granularity that represents the full multi-resolution fingerprint of a subsequence.
 
-3. **Aggregation**  
-   - Combine discretised subsequences into an aggregate ``Model`` (e.g., a `PatternTree`) that captures pattern relationships and recurrences.
+3. **Aggregation**
+   - Combine chains into an aggregate ``Model`` (e.g., a `PatternTree`) that captures pattern relationships and recurrences.
 
 ---
 
@@ -54,9 +56,10 @@ The framework currently focused on anomaly detection, and implements the approac
 | Component | Description                                                                                                                                          |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Segmenters** | Divide series data into contiguous subsequences or segments.                                                                                                     |
-| **Discretisers** | Convert segments into coarse- to fine-grained representations using piecewise models.                                                 |
+| **Discretisers** | Convert segments into chains of nodes using piecewise models, from coarse to fine granularity.                                                 |
+| **Chains** | Ordered sequences of nodes representing a subsequence at multiple resolutions, with built-in distance computation. |
 | **Nodes** | Basic representational units that store results of the approximation (such as slopes and intercepts), and parameters (such as a distance threshold). |
-| **Models** | Graph-based, tree-based, or automaton-based aggregations of nodes capturing relationships between recurring patterns.                                                  |
+| **Models** | Graph-based, tree-based, or automaton-based aggregations of chains capturing relationships between recurring patterns.                                                  |
 | **Algorithms** | Higher-level methods that combine segmentation, discretisation, and aggregation for sequence learning tasks such as anomaly detection.               |
 
 ---
@@ -160,7 +163,6 @@ import matplotlib.pyplot as plt
 
 from pbsf.discretisers import PiecewiseLinear
 from pbsf.nodes import PLANode
-from pbsf.utils.visualise import show
 
 # Create a segment
 segment = np.sin(np.linspace(0, 4 * np.pi, 800))
@@ -176,14 +178,14 @@ discretiser = PiecewiseLinear({
     }
 })
 
-# Discretise the segment into a chain of nodes
-nodes = discretiser.discretise(segment)
-for node in nodes:
+# Discretise the segment into a Chain
+chain = discretiser.discretise(segment)
+for node in chain:
     print(node)
 
 # Visualise the approximations at each depth
 fig, axs = plt.subplots(3, 1, figsize=(8, 6), sharex=True)
-for depth, node in enumerate(nodes):
+for depth, node in enumerate(chain):
     axs[depth].plot((segment - segment.mean()) / segment.std(), alpha=.75)
     plt.axes(axs[depth])
     axs[depth].set_title(f"Node at depth {node.depth}, approximates segment using {len(node.slopes)} frames")
@@ -191,6 +193,47 @@ for depth, node in enumerate(nodes):
 ```
 
 ![readme-discretisers.png](docs/images/readme-discretisers.png)
+
+### Chains
+
+A `Chain` wraps the list of nodes returned by a discretiser into a single object with built-in distance computation. Coarser levels (earlier in the chain) carry more weight in the default distance, reflecting that broad shape matters more than fine detail.
+
+```python
+import numpy as np
+from pbsf.chains import Chain
+from pbsf.discretisers import PiecewiseLinear
+from pbsf.nodes import PLANode
+
+# Set up a discretiser and two segments
+discretiser = PiecewiseLinear({
+    "max_depth": lambda data: 3,
+    "frames": lambda depth: 3 ** depth,
+    "node_type": PLANode,
+    "node_params": {
+        "distance_threshold": lambda depth: 0.25
+    }
+})
+segment_a = np.sin(np.linspace(0, 4 * np.pi, 800))
+segment_b = np.cos(np.linspace(0, 4 * np.pi, 800))
+
+# Discretisers return Chain objects directly
+chain_a = discretiser.discretise(segment_a)
+chain_b = discretiser.discretise(segment_b)
+
+# Chain-level distance (default: exponential weighted, coarse levels weigh more)
+print(f"Distance: {chain_a.distance(chain_b):.4f}")
+
+# Chains implement the sequence protocol
+print(f"Length: {len(chain_a)}")
+print(f"First node: {chain_a[0]}")
+for node in chain_a:
+    print(node)
+
+# Use a different distance strategy
+chain_c = Chain(list(chain_a), distance_fn=Chain._mean_distance)
+chain_d = Chain(list(chain_b), distance_fn=Chain._mean_distance)
+print(f"Mean distance: {chain_c.distance(chain_d):.4f}")
+```
 
 ### Nodes
 
@@ -213,10 +256,10 @@ discretiser = PiecewiseLinear({
 })
 
 segment = np.random.randn(100)
-nodes = discretiser.discretise(segment)
+chain = discretiser.discretise(segment)
 
-# Each node contains slopes, intercepts, and thresholds
-for node in nodes:
+# Each node in the chain contains slopes, intercepts, and thresholds
+for node in chain:
     print(node)
 ```
 
@@ -370,6 +413,9 @@ Visualisations of anomaly scores and detected anomalies are saved in `ucr/result
 - **`PiecewiseLinear` (PLA)**: Piecewise linear approximation
 - **`PiecewiseAggregate` (PAA)**: Piecewise aggregate approximation
 - **`SymbolicAggregate` (SAX)**: Symbolic aggregate approximation
+
+### Chains
+- **`Chain`**: Ordered sequence of nodes from coarse to fine granularity, with configurable chain-level distance (default: exponential weighted). Implements the sequence protocol (`__len__`, `__iter__`, `__getitem__`) for backward compatibility.
 
 ### Nodes
 - **`SlopeSignNode`**: Encodes slope signs (positive/negative) of PLA segments

@@ -5,6 +5,7 @@ from typing import Any
 
 import numpy as np
 
+from pbsf.chains import Chain
 from pbsf.discretisers.base import Discretiser, _divide, _normalise
 from pbsf.nodes import PAANode
 from pbsf.utils import has_required
@@ -42,7 +43,7 @@ class PiecewiseAggregate(Discretiser):
         self.node_type = params["node_type"]
         self.node_params = params["node_params"]
 
-    def discretise(self, segment: np.ndarray) -> list:
+    def discretise(self, segment: np.ndarray) -> Chain:
         """
         Discretise a segment using Piecewise Aggregate Approximation.
 
@@ -53,9 +54,9 @@ class PiecewiseAggregate(Discretiser):
 
         Returns
         -------
-        list
-            A list of nodes representing the segment in increasing granularity,
-            forming a chain from coarse to fine approximations.
+        Chain
+            A chain of nodes representing the segment in increasing granularity,
+            from coarse to fine approximations.
 
         Raises
         ------
@@ -78,4 +79,4 @@ class PiecewiseAggregate(Discretiser):
                 **self.node_params
             })
             nodes.append(node)
-        return nodes
+        return Chain(nodes)
