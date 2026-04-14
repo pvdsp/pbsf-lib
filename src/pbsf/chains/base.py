@@ -116,7 +116,9 @@ class Chain(Sequence):
         return iter(self._nodes)
 
     def __getitem__(self, index):
-        """Return the node at the given index."""
+        """Return the node at the given index, or a new Chain for slices."""
+        if isinstance(index, slice):
+            return Chain(list(self._nodes[index]), self._distance_fn)
         return self._nodes[index]
 
     def __repr__(self) -> str:
