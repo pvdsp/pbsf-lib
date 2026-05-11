@@ -138,6 +138,8 @@ def hpm(train: np.ndarray, test: np.ndarray, parameters: dict):
         # Only keep points with the maximal count (fully covered by windows),
         # avoiding noisy scores from edge points with fewer overlapping windows.
         max_count = counts.max()
+        if max_count == 0:
+            return np.array([], dtype=int), np.array([])
         mask = counts == max_count
         x = np.where(mask)[0]
         return x, scores[mask] / max_count
