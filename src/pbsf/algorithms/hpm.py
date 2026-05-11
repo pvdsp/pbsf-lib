@@ -8,7 +8,7 @@ from pbsf.nodes import StructuralProminenceNode
 from pbsf.segmenters import SlidingWindow
 
 
-def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> np.ndarray:
+def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> tuple[np.ndarray, np.ndarray]:
     """
     Hierarchical Pattern Matching-based anomaly detection.
 
