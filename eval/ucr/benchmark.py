@@ -112,33 +112,20 @@ def evaluate_configurations(
             for params in algorithms:
                 name = params.get("name") or params.get("function").__name__
                 title = f'{name} on UCR {identifier}'
-                segmenter_params = params.get("segmenter_params") or {}
-                window_size = segmenter_params.get("window_size")
-
-                if window_size is None:
-                    segmenter = params.get("segmenter")()
-                    segmenter.segment(data=train)
-                    window_size = segmenter.window_size
-
                 # Apply the algorithm and find the minimum score
                 func = params["function"]
-                scores = func(train, test, params)
-                if len(scores) < window_size * 2:
-                    print(
-                        f"\nWarning: Scores length"
-                        f" {len(scores)} is less than two"
-                        f" times window size"
-                        f" {window_size}. Skipping."
-                    )
-                    results.append(False)
-                    continue
+                params["filter_max_overlap"] = True
+                x, scores = func(train, test, params)
 
-                # Save scores array if requested
+                # Save scores and indices if requested
                 if save_scores:
                     scores_filename = f"{identifier}-{name}-scores.npy"
+                    indices_filename = f"{identifier}-{name}-indices.npy"
                     scores_path = os.path.join(scores_dir, "scores", scores_filename)
+                    indices_path = os.path.join(scores_dir, "scores", indices_filename)
                     np.save(scores_path, scores)
-                min_idx = np.argmin(scores[window_size:-window_size]) + window_size
+                    np.save(indices_path, x)
+                min_idx = x[np.argmin(scores)]
 
                 # Check overlap with ground-truth anomaly
                 anomaly_length = end_anomaly - start_anomaly + 1
@@ -185,10 +172,12 @@ def evaluate_configurations(
                     ax1.grid(True, alpha=0.3)
 
                     # Second subplot: Anomaly scores aligned with test data
-                    ax2.plot(test_x, scores, color='crimson', label='Scores')
+                    ax2.plot(x + len(train), scores, color='crimson', label='Scores',
+                            marker='.', markersize=2)
+                    min_score_idx = np.argmin(scores)
                     ax2.plot(
                         min_idx + len(train),
-                        scores[min_idx], 'X',
+                        scores[min_score_idx], 'X',
                         markerfacecolor='crimson',
                         markersize=5, markeredgewidth=1,
                         markeredgecolor='black',
@@ -229,12 +218,11 @@ if __name__ == '__main__':
     algorithms = [
         {
             "function": hpm,
-            "name": "HPM_PatternGraph_auto_diff",
+            "name": "HPM_PatternGraph_auto",
             "segmenter": SlidingWindow,
             "segmenter_params": {
                 "window_size": 200,
                 "autocorrelation": True,
-                "differentiation": True
             },
             "model": PatternGraph,
             "model_params": {},
@@ -249,12 +237,12 @@ if __name__ == '__main__':
         },
         {
             "function": hpm,
-            "name": "HPM_PatternGraph_auto",
+            "name": "HPM_PatternGraph_auto_step",
             "segmenter": SlidingWindow,
             "segmenter_params": {
                 "window_size": 200,
                 "autocorrelation": True,
-                "differentiation": False
+                "step_size": 5
             },
             "model": PatternGraph,
             "model_params": {},
