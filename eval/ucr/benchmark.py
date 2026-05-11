@@ -112,14 +112,6 @@ def evaluate_configurations(
             for params in algorithms:
                 name = params.get("name") or params.get("function").__name__
                 title = f'{name} on UCR {identifier}'
-                segmenter_params = params.get("segmenter_params") or {}
-                window_size = segmenter_params.get("window_size")
-
-                if window_size is None:
-                    segmenter = params.get("segmenter")()
-                    segmenter.segment(data=train)
-                    window_size = segmenter.window_size
-
                 # Apply the algorithm and find the minimum score
                 func = params["function"]
                 params["filter_max_overlap"] = True
