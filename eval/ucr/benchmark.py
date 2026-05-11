@@ -117,11 +117,14 @@ def evaluate_configurations(
                 params["filter_max_overlap"] = True
                 x, scores = func(train, test, params)
 
-                # Save scores array if requested
+                # Save scores and indices if requested
                 if save_scores:
                     scores_filename = f"{identifier}-{name}-scores.npy"
+                    indices_filename = f"{identifier}-{name}-indices.npy"
                     scores_path = os.path.join(scores_dir, "scores", scores_filename)
+                    indices_path = os.path.join(scores_dir, "scores", indices_filename)
                     np.save(scores_path, scores)
+                    np.save(indices_path, x)
                 min_idx = x[np.argmin(scores)]
 
                 # Check overlap with ground-truth anomaly
