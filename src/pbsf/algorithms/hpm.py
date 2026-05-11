@@ -40,10 +40,11 @@ def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
-        Anomaly scores for each point in the test data. Values closer to 1 indicate
-        the pattern was seen during training (normal), values closer to 0 indicate
-        anomalies.
+    tuple[np.ndarray, np.ndarray]
+        A tuple (x, scores) where x contains the indices (into the test data) of
+        points with the maximal window overlap count, and scores contains their
+        normalised anomaly scores. Values closer to 1 indicate the pattern was
+        seen during training (normal), values closer to 0 indicate anomalies.
     """
     segmenter = parameters.get("segmenter") or SlidingWindow
     discretiser = parameters.get("discretiser") or PiecewiseLinear
@@ -127,8 +128,10 @@ def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> np.ndarray:
                 counts[point] += 1
                 scores[point] += float(contains_pattern)
 
-    # Avoid division by zero: set score to 0 where counts is 0
-    return np.divide(
-        scores, counts,
-        out=np.zeros_like(scores), where=counts != 0,
-    )
+    # Only keep points with the maximal count (fully covered by windows),
+    # avoiding noisy scores from edge points with fewer overlapping windows.
+    max_count = counts.max()
+    mask = counts == max_count
+    x = np.where(mask)[0]
+    scoring = scores[mask] / max_count
+    return x, scoring
