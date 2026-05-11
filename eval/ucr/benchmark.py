@@ -122,6 +122,7 @@ def evaluate_configurations(
 
                 # Apply the algorithm and find the minimum score
                 func = params["function"]
+                params["filter_max_overlap"] = True
                 x, scores = func(train, test, params)
 
                 # Save scores array if requested

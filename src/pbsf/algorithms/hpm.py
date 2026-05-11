@@ -8,7 +8,7 @@ from pbsf.nodes import StructuralProminenceNode
 from pbsf.segmenters import SlidingWindow
 
 
-def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> tuple[np.ndarray, np.ndarray]:
+def hpm(train: np.ndarray, test: np.ndarray, parameters: dict):
     """
     Hierarchical Pattern Matching-based anomaly detection.
 
@@ -37,14 +37,19 @@ def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> tuple[np.ndarr
           (e.g., context_size for NestedWordSet).
         - node_params (dict): Extra parameters to pass to the node constructor,
           e.g., functions for the structural and prominence thresholds.
+        - filter_max_overlap (bool): If True, return a tuple (x, scores) where
+          x contains the indices (into the test data) of points with the maximal
+          window overlap count and scores contains their normalised scores.
+          If False (default), return a single np.ndarray of scores for every
+          point in the test data.
 
     Returns
     -------
-    tuple[np.ndarray, np.ndarray]
-        A tuple (x, scores) where x contains the indices (into the test data) of
-        points with the maximal window overlap count, and scores contains their
-        normalised anomaly scores. Values closer to 1 indicate the pattern was
-        seen during training (normal), values closer to 0 indicate anomalies.
+    np.ndarray or tuple[np.ndarray, np.ndarray]
+        If ``filter_max_overlap`` is False, a score array with one entry per
+        test point. If True, a tuple (x, scores) containing only the points
+        with maximal overlap. Values closer to 1 indicate the pattern was seen
+        during training (normal), values closer to 0 indicate anomalies.
     """
     segmenter = parameters.get("segmenter") or SlidingWindow
     discretiser = parameters.get("discretiser") or PiecewiseLinear
@@ -128,10 +133,17 @@ def hpm(train: np.ndarray, test: np.ndarray, parameters: dict) -> tuple[np.ndarr
                 counts[point] += 1
                 scores[point] += float(contains_pattern)
 
-    # Only keep points with the maximal count (fully covered by windows),
-    # avoiding noisy scores from edge points with fewer overlapping windows.
-    max_count = counts.max()
-    mask = counts == max_count
-    x = np.where(mask)[0]
-    scoring = scores[mask] / max_count
-    return x, scoring
+    filter_max_overlap = parameters.get("filter_max_overlap", False)
+    if filter_max_overlap:
+        # Only keep points with the maximal count (fully covered by windows),
+        # avoiding noisy scores from edge points with fewer overlapping windows.
+        max_count = counts.max()
+        mask = counts == max_count
+        x = np.where(mask)[0]
+        return x, scores[mask] / max_count
+
+    # Avoid division by zero: set score to 0 where counts is 0
+    return np.divide(
+        scores, counts,
+        out=np.zeros_like(scores), where=counts != 0,
+    )
