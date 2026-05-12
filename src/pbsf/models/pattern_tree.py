@@ -225,6 +225,8 @@ class PatternTree(Model):
 
     def get_node(self, identifier: int) -> Node:
         """Get the node for the given vertex identifier."""
+        if identifier == self.root:
+            raise ValueError("The root does not have an associated Node.")
         return self.graph.vertices[identifier]["node"]
 
     def get_level(self, level: int) -> set[int]:
