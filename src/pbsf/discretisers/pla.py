@@ -46,6 +46,10 @@ class PiecewiseLinear(Discretiser):
         """
         Discretise a segment using Piecewise Linear Approximation.
 
+        This method does not normalise the segment. If z-score
+        normalisation is required, it should be applied beforehand
+        (e.g. by the Segmenter).
+
         Parameters
         ----------
         segment : np.ndarray
