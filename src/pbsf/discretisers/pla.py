@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 
 from pbsf.chains import Chain
-from pbsf.discretisers.base import Discretiser, _divide, _normalise, _piecewise_linear
+from pbsf.discretisers.base import Discretiser, _divide, _piecewise_linear
 from pbsf.nodes import PLANode, SlopeSignNode, StructuralProminenceNode
 from pbsf.utils import has_required
 
@@ -46,6 +46,10 @@ class PiecewiseLinear(Discretiser):
         """
         Discretise a segment using Piecewise Linear Approximation.
 
+        This method does not normalise the segment. If z-score
+        normalisation is required, it should be applied beforehand
+        (e.g. by the Segmenter).
+
         Parameters
         ----------
         segment : np.ndarray
@@ -64,7 +68,6 @@ class PiecewiseLinear(Discretiser):
         """
         nodes = []
         std = np.std(segment)
-        segment = _normalise(segment)
         if segment.ndim != 1:
             raise ValueError("Can only discretise 1D data.")
         for depth in range(self.max_depth(segment)):

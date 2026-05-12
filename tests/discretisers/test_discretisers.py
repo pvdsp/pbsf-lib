@@ -1,10 +1,11 @@
 import unittest
+import warnings
 
 import numpy as np
 
 from pbsf.chains import Chain
-from pbsf.discretisers import PiecewiseLinear
-from pbsf.nodes import SlopeSignNode, StructuralProminenceNode
+from pbsf.discretisers import PiecewiseLinear, SymbolicAggregate
+from pbsf.nodes import SAXNode, SlopeSignNode, StructuralProminenceNode
 
 
 class TestPiecewiseLinear(unittest.TestCase):
@@ -68,4 +69,31 @@ class TestPiecewiseLinear(unittest.TestCase):
             self.assertEqual(node.depth, idx)
             self.assertEqual(node.std, np.std(segment))
             self.assertEqual(len(node.slopes), 2 ** idx)
+
+
+class TestSymbolicAggregate(unittest.TestCase):
+    def setUp(self):
+        self.sax = SymbolicAggregate({
+            "max_depth": lambda _: 1,
+            "frames": lambda _: 4,
+            "alphabet_size": 4,
+            "node_type": SAXNode,
+            "node_params": {
+                "distance_threshold": lambda _: 0.1,
+            },
+        })
+
+    def test_unnormalised_segment_warns(self):
+        """Test that a UserWarning is raised for unnormalised input."""
+        segment = np.array([10.0, 20.0, 30.0, 40.0, 50.0])
+        with self.assertWarns(UserWarning):
+            self.sax.discretise(segment)
+
+    def test_normalised_segment_no_warning(self):
+        """Test that no warning is raised for z-normalised input."""
+        segment = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+        segment = (segment - np.mean(segment)) / np.std(segment)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            self.sax.discretise(segment)
 

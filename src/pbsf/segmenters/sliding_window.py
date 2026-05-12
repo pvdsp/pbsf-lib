@@ -23,11 +23,18 @@ class SlidingWindow(Segmenter):
           to the data before segmentation. Default: False.
         - autocorrelation (bool, optional): Whether to determine window size
           using autocorrelation. Default: False.
+        - z_normalisation (bool, optional): Whether to apply per-segment
+          z-score normalisation (zero mean, unit standard deviation).
+          Constant segments (zero standard deviation) are replaced with
+          all zeros. Default: True.
     """
 
     def __init__(self, params: dict[str, Any] | None = None) -> None:
+        if params is None:
+            params = {}
         self.autocorrelation = params.get("autocorrelation", False)
         self.differentiation = params.get("differentiation", False)
+        self.z_normalisation = params.get("z_normalisation", True)
         self.window_size = params.get("window_size", None)
         if not self.window_size:
             if not self.autocorrelation:
@@ -120,14 +127,22 @@ class SlidingWindow(Segmenter):
             raise ValueError("SlidingWindow only supports 1D data.")
         if self.autocorrelation and self.window_size is None:
             self.window_size = self._ac_window_size(data)
+        if self.differentiation:
+            data = np.diff(data)
         if len(data) < self.window_size:
             raise ValueError(
                 "Data length must be greater than or"
                 " equal to window size."
             )
-        if self.differentiation:
-            data = np.diff(data)
         windows = np.lib.stride_tricks.sliding_window_view(
             data, self.window_size
         )
-        return windows[::self.step_size]
+        segments = windows[::self.step_size]
+        if self.z_normalisation:
+            segments = np.array(segments, dtype=float)
+            mean = segments.mean(axis=1, keepdims=True)
+            std = segments.std(axis=1, keepdims=True)
+            constant = (std == 0)
+            safe_std = np.where(constant, 1, std)
+            segments = np.where(constant, 0.0, (segments - mean) / safe_std)
+        return segments
