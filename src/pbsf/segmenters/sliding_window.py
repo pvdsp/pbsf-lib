@@ -125,13 +125,13 @@ class SlidingWindow(Segmenter):
             raise ValueError("SlidingWindow only supports 1D data.")
         if self.autocorrelation and self.window_size is None:
             self.window_size = self._ac_window_size(data)
+        if self.differentiation:
+            data = np.diff(data)
         if len(data) < self.window_size:
             raise ValueError(
                 "Data length must be greater than or"
                 " equal to window size."
             )
-        if self.differentiation:
-            data = np.diff(data)
         windows = np.lib.stride_tricks.sliding_window_view(
             data, self.window_size
         )
