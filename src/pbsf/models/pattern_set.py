@@ -146,9 +146,16 @@ class PatternSet(Model):
     def get_related(self, identifier: int, level: int) -> set[int]:
         """Get related identifiers at the given level for a vertex.
 
-        Always returns an empty set, as relations between granularity
-        levels are not stored in a PatternSet.
+        Returns {identifier} when the requested level matches the
+        identifier's own level. Otherwise returns an empty set, as
+        relations between granularity levels are not stored in a
+        PatternSet.
         """
+        depth = next(
+            i for i, nodes in enumerate(self.nodes) if identifier in nodes
+        )
+        if level == depth:
+            return {identifier}
         return set()
 
     def __repr__(self) -> str:

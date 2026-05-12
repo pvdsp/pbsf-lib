@@ -115,7 +115,7 @@ class Model(ABC):
     @abstractmethod
     def get_related(self, identifier: int, level: int) -> set[int]:
         """
-        Get possible coarser- or finer-grained representations for a given identifier.
+        Get finer-grained representations for a given identifier.
 
         Parameters
         ----------

@@ -315,18 +315,18 @@ class PatternGraph(Model):
     def get_related(self, identifier: int, level: int) -> set[int]:
         """Get related vertex identifiers at the given level for a vertex."""
         depth = self.graph.vertices[identifier]["layer"]
-        if level > depth:
-            result = set()
-            for child in self.graph.outgoing(identifier):
-                result |= self.get_related(child, level)
-            return result
         if level < depth:
-            result = set()
-            for v in range(len(self.graph.vertices)):
-                if identifier in self.graph.outgoing(v):
-                    result |= self.get_related(v, level)
-            return result
-        return {identifier}
+            raise ValueError("Level should be equal to or deeper than the node's depth.")
+        return self._get_descendants(identifier, level)
+
+    def _get_descendants(self, identifier: int, level: int) -> set[int]:
+        """Recursively collect descendants at the given depth level."""
+        if self.graph.vertices[identifier]["layer"] == level:
+            return {identifier}
+        result = set()
+        for child in self.graph.outgoing(identifier):
+            result |= self._get_descendants(child, level)
+        return result
 
     def __repr__(self) -> str:
         """
