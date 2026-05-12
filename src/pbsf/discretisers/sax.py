@@ -7,7 +7,7 @@ import numpy as np
 import scipy.stats
 
 from pbsf.chains import Chain
-from pbsf.discretisers.base import Discretiser, _normalise
+from pbsf.discretisers.base import Discretiser
 from pbsf.discretisers.paa import PiecewiseAggregate
 from pbsf.nodes import PAANode, SAXNode
 from pbsf.utils import has_required
@@ -108,7 +108,6 @@ class SymbolicAggregate(Discretiser):
             If the segment is not 1D.
         """
         nodes = []
-        segment = _normalise(segment)
         if segment.ndim != 1:
             raise ValueError("Can only discretise 1D data.")
         paa = PiecewiseAggregate({

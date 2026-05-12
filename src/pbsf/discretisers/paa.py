@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 
 from pbsf.chains import Chain
-from pbsf.discretisers.base import Discretiser, _divide, _normalise
+from pbsf.discretisers.base import Discretiser, _divide
 from pbsf.nodes import PAANode
 from pbsf.utils import has_required
 
@@ -64,7 +64,6 @@ class PiecewiseAggregate(Discretiser):
             If the segment is not 1D.
         """
         nodes = []
-        segment = _normalise(segment)
         if segment.ndim != 1:
             raise ValueError("Can only discretise 1D data.")
         for depth in range(self.max_depth(segment)):

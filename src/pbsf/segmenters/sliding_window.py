@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy as np
 
-from .base import Segmenter
+from .base import Segmenter, _normalise
 
 
 class SlidingWindow(Segmenter):
@@ -28,6 +28,7 @@ class SlidingWindow(Segmenter):
     def __init__(self, params: dict[str, Any] | None = None) -> None:
         self.autocorrelation = params.get("autocorrelation", False)
         self.differentiation = params.get("differentiation", False)
+        self.z_normalisation = params.get("z_normalisation", True)
         self.window_size = params.get("window_size", None)
         if not self.window_size:
             if not self.autocorrelation:
@@ -130,4 +131,7 @@ class SlidingWindow(Segmenter):
         windows = np.lib.stride_tricks.sliding_window_view(
             data, self.window_size
         )
-        return windows[::self.step_size]
+        segments = windows[::self.step_size]
+        if self.z_normalisation:
+            segments = np.array([_normalise(s) for s in segments])
+        return segments
