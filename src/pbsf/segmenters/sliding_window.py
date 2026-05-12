@@ -4,7 +4,7 @@ from typing import Any
 
 import numpy as np
 
-from .base import Segmenter, _normalise
+from .base import Segmenter
 
 
 class SlidingWindow(Segmenter):
@@ -135,7 +135,11 @@ class SlidingWindow(Segmenter):
         windows = np.lib.stride_tricks.sliding_window_view(
             data, self.window_size
         )
-        segments = windows[::self.step_size]
+        segments = np.array(windows[::self.step_size], dtype=float)
         if self.z_normalisation:
-            segments = np.array([_normalise(s) for s in segments])
+            mean = segments.mean(axis=1, keepdims=True)
+            std = segments.std(axis=1, keepdims=True)
+            constant = (std == 0)
+            safe_std = np.where(constant, 1, std)
+            segments = np.where(constant, 0.0, (segments - mean) / safe_std)
         return segments

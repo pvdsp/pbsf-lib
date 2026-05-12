@@ -30,31 +30,3 @@ class Segmenter(ABC):
             Segmented data.
         """
         pass
-
-
-def _normalise(data: np.ndarray) -> np.ndarray:
-    """
-    Compute the z-score normalisation of the data.
-
-    Parameters
-    ----------
-    data : np.ndarray
-        1D array to normalise.
-
-    Returns
-    -------
-    np.ndarray
-        Z-score normalised data. Returns array of zeros if standard deviation is zero.
-
-    Raises
-    ------
-    ValueError
-        If data is empty or not 1D.
-    """
-    if len(data) == 0:
-        raise ValueError("Cannot normalise empty sequence")
-    if data.ndim != 1:
-        raise ValueError(f"Can only normalise 1D data, got {data.ndim}D data")
-    if np.std(data) == 0:
-        return np.zeros(len(data))
-    return (data - np.mean(data)) / np.std(data)
