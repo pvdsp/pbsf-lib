@@ -137,6 +137,8 @@ class PatternSet(Model):
 
     def get_node(self, identifier: int) -> Node:
         """Get the node for the given identifier."""
+        if identifier not in self.ids.inverse:
+            raise KeyError(f"Unknown identifier: {identifier}")
         return self.ids.inverse[identifier]
 
     def get_level(self, level: int) -> set[int]:
