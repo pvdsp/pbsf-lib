@@ -306,7 +306,7 @@ class PatternGraph(Model):
 
     def get_level(self, level: int) -> set[int]:
         """Get all vertex identifiers at the given depth level."""
-        return self.graph.get_layer(level)
+        return set(self.graph.get_layer(level))
 
     def get_related(self, identifier: int, level: int) -> set[int]:
         """Get related vertex identifiers at the given level for a vertex."""
