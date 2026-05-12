@@ -223,6 +223,43 @@ class PatternTree(Model):
         vertices = self.chain_to_vertices(chain)
         return len(vertices) == len(chain) + 1
 
+    def get_node(self, identifier: int) -> Node:
+        """Get the node for the given vertex identifier."""
+        if identifier < 0 or identifier >= len(self.graph.vertices):
+            raise KeyError(f"Unknown identifier: {identifier}")
+        if identifier == self.root:
+            raise KeyError(f"Identifier {identifier} refers to the root.")
+        return self.graph.vertices[identifier]["node"]
+
+    def get_level(self, level: int) -> set[int]:
+        """Get all vertex identifiers at the given depth level."""
+        if level < 0:
+            raise ValueError("Level should be positive or zero.")
+        return {
+            v for v in range(len(self.graph.vertices))
+            if self.graph.vertices[v]["depth"] == level
+        }
+
+    def get_related(self, identifier: int, level: int) -> set[int]:
+        """Get related vertex identifiers at the given level for a vertex."""
+        if identifier < 0 or identifier >= len(self.graph.vertices):
+            raise KeyError(f"Unknown identifier: {identifier}")
+        if identifier == self.root:
+            raise KeyError(f"Identifier {identifier} refers to the root.")
+        depth = self.graph.vertices[identifier]["depth"]
+        if level < depth:
+            raise ValueError("Level should be equal to or deeper than the node's depth.")
+        return self._get_descendants(identifier, level)
+
+    def _get_descendants(self, identifier: int, level: int) -> set[int]:
+        """Recursively collect descendants at the given depth level."""
+        if self.graph.vertices[identifier]["depth"] == level:
+            return {identifier}
+        result = set()
+        for child in self.graph.outgoing(identifier):
+            result |= self._get_descendants(child, level)
+        return result
+
     def __repr__(self) -> str:
         """
         Return string representation of the PatternTree.

@@ -3,6 +3,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
+from pbsf.nodes import Node
+
 
 class Model(ABC):
     """
@@ -73,5 +75,58 @@ class Model(ABC):
         -------
         bool
             True if the data matches learned patterns, False otherwise.
+        """
+        pass
+
+    @abstractmethod
+    def get_node(self, identifier: int) -> Node:
+        """
+        Get the sequence representation through its identifier.
+
+        Parameters
+        ----------
+        identifier : int
+            The identifier of the requested representation.
+
+        Returns
+        -------
+        Node
+            The requested representation
+        """
+        pass
+
+    @abstractmethod
+    def get_level(self, level: int) -> set[int]:
+        """
+        Get all sequence representation identifiers for a given level of granularity.
+
+        Parameters
+        ----------
+        level : int
+            The requested level of granularity.
+
+        Returns
+        -------
+        set[int]
+            A set of identifiers for the requested level of granularity.
+        """
+        pass
+
+    @abstractmethod
+    def get_related(self, identifier: int, level: int) -> set[int]:
+        """
+        Get finer-grained representations for a given identifier.
+
+        Parameters
+        ----------
+        identifier : int
+            The identifier of the representation.
+        level: int
+            The requested granularity of the representation.
+
+        Returns
+        -------
+        set[int]
+            The set of identifiers in the requested granularity.
         """
         pass
