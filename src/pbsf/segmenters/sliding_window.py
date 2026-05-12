@@ -23,6 +23,10 @@ class SlidingWindow(Segmenter):
           to the data before segmentation. Default: False.
         - autocorrelation (bool, optional): Whether to determine window size
           using autocorrelation. Default: False.
+        - z_normalisation (bool, optional): Whether to apply per-segment
+          z-score normalisation (zero mean, unit standard deviation).
+          Constant segments (zero standard deviation) are replaced with
+          all zeros. Default: True.
     """
 
     def __init__(self, params: dict[str, Any] | None = None) -> None:
