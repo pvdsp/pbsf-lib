@@ -126,8 +126,12 @@ class PatternSet(Model):
             True if all nodes in the chain are present in their corresponding sets,
             False otherwise.
         """
-        for node in chain:
+        for level, node in enumerate(chain):
+            if level >= len(self.nodes):
+                return False
             if node not in self.ids:
+                return False
+            if self.ids[node] not in self.nodes[level]:
                 return False
         return True
 
