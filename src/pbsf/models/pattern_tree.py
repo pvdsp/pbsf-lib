@@ -231,6 +231,8 @@ class PatternTree(Model):
 
     def get_level(self, level: int) -> set[int]:
         """Get all vertex identifiers at the given depth level."""
+        if level < 0:
+            raise ValueError("Level should be positive or zero.")
         return {
             v for v in range(len(self.graph.vertices))
             if self.graph.vertices[v]["depth"] == level
