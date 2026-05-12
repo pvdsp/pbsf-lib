@@ -155,12 +155,12 @@ class PatternSet(Model):
         relations between granularity levels are not stored in a
         PatternSet.
         """
-        depth = next(
-            i for i, nodes in enumerate(self.nodes) if identifier in nodes
-        )
-        if level == depth:
-            return {identifier}
-        return set()
+        for depth, nodes in enumerate(self.nodes):
+            if identifier in nodes:
+                if level == depth:
+                    return {identifier}
+                return set()
+        raise KeyError(f"Unknown identifier: {identifier}")
 
     def __repr__(self) -> str:
         """
