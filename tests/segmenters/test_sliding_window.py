@@ -52,7 +52,7 @@ class TestSlidingWindow(unittest.TestCase):
             segmenter = SlidingWindow({'window_size': 3, 'step_size': -1})
         with self.assertRaises(ValueError):
             segmenter = SlidingWindow({'window_size': 3, 'step_size': -5})
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             SlidingWindow(None)
         with self.assertRaises(ValueError):
             SlidingWindow({})

@@ -1,5 +1,6 @@
 """Symbolic Aggregate Approximation discretiser."""
 
+import warnings
 from collections.abc import Callable
 from typing import Any
 
@@ -91,10 +92,15 @@ class SymbolicAggregate(Discretiser):
         First applies PAA to reduce dimensionality, then converts PAA values to
         symbols using the pre-calculated cut points.
 
+        The segment must already be z-score normalised (zero mean, unit
+        standard deviation). The Gaussian breakpoints used for symbol
+        assignment assume a standard normal distribution, so unnormalised
+        input will produce meaningless symbols.
+
         Parameters
         ----------
         segment : np.ndarray
-            The segment to discretise.
+            The z-normalised segment to discretise.
 
         Returns
         -------
@@ -106,10 +112,26 @@ class SymbolicAggregate(Discretiser):
         ------
         ValueError
             If the segment is not 1D.
+
+        Warnings
+        --------
+        UserWarning
+            If the segment does not appear to be z-normalised (mean not
+            approximately zero or standard deviation not approximately one).
         """
         nodes = []
         if segment.ndim != 1:
             raise ValueError("Can only discretise 1D data.")
+        mean = np.mean(segment)
+        std = np.std(segment)
+        if not (np.isclose(mean, 0) and np.isclose(std, 1)):
+            warnings.warn(
+                f"Segment does not appear to be z-normalised"
+                f" (mean={mean:.4f}, std={std:.4f}). SAX assumes"
+                f" z-normalised input for meaningful symbol"
+                f" assignment.",
+                stacklevel=2,
+            )
         paa = PiecewiseAggregate({
                 "max_depth": self.max_depth,
                 "frames": self.frames,
