@@ -306,6 +306,10 @@ class PatternGraph(Model):
 
     def get_level(self, level: int) -> set[int]:
         """Get all vertex identifiers at the given depth level."""
+        if level < 0:
+            raise ValueError("Level should be positive or zero.")
+        if level >= self.graph.max_depth:
+            return set()
         return set(self.graph.get_layer(level))
 
     def get_related(self, identifier: int, level: int) -> set[int]:

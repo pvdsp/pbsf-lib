@@ -137,6 +137,10 @@ class PatternSet(Model):
 
     def get_level(self, level: int) -> set[int]:
         """Get all identifiers at the given depth level."""
+        if level < 0:
+            raise ValueError("Level should be positive or zero.")
+        if level >= len(self.nodes):
+            return set()
         return set(self.nodes[level])
 
     def get_related(self, identifier: int, level: int) -> set[int]:
