@@ -137,8 +137,9 @@ class SlidingWindow(Segmenter):
         windows = np.lib.stride_tricks.sliding_window_view(
             data, self.window_size
         )
-        segments = np.array(windows[::self.step_size], dtype=float)
+        segments = windows[::self.step_size]
         if self.z_normalisation:
+            segments = np.array(segments, dtype=float)
             mean = segments.mean(axis=1, keepdims=True)
             std = segments.std(axis=1, keepdims=True)
             constant = (std == 0)
