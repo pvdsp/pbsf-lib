@@ -30,6 +30,8 @@ class SlidingWindow(Segmenter):
     """
 
     def __init__(self, params: dict[str, Any] | None = None) -> None:
+        if params is None:
+            params = {}
         self.autocorrelation = params.get("autocorrelation", False)
         self.differentiation = params.get("differentiation", False)
         self.z_normalisation = params.get("z_normalisation", True)
