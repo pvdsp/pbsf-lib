@@ -2,6 +2,8 @@
 
 from collections.abc import Sequence
 
+from bidict import bidict
+
 from pbsf.models.base import Model
 from pbsf.nodes import Node
 
@@ -21,9 +23,10 @@ class PatternSet(Model):
 
     Attributes
     ----------
-    nodes : list[set[Node]]
-        List of sets that stores discretisations at various depths. Each set
-        contains unique nodes at a specific depth level.
+    ids : dict
+        Integer identifiers for discretisations.
+    nodes : list[set[int]]
+        List of sets that stores discretisation identifiers of various depths.
     params : dict
         Configuration parameters.
 
@@ -34,9 +37,11 @@ class PatternSet(Model):
     """
 
     def __init__(self, params: dict | None = None) -> None:
+        self.__next_free = 0
         self.params = params
         if self.params is None:
             self.params = {}
+        self.ids = bidict()
         self.nodes = []
 
     def update(self, chain: Sequence[Node]) -> list[bool]:
@@ -61,11 +66,13 @@ class PatternSet(Model):
         present = []
         while len(self.nodes) < len(chain):
             self.nodes.append(set())
-        for node, node_set in zip(chain, self.nodes):
-            was_present = node in node_set
+        for level, node in enumerate(chain):
+            was_present = node in self.ids
             present.append(was_present)
             if not was_present:
-                node_set.add(node)
+                self.ids[node] = self.__next_free
+                self.nodes[level].add(self.__next_free)
+                self.__next_free += 1
         return present
 
     def learn(self, chains: Sequence[Sequence[Node]]) -> list[list[bool]]:
@@ -119,10 +126,26 @@ class PatternSet(Model):
             True if all nodes in the chain are present in their corresponding sets,
             False otherwise.
         """
-        present = [node in node_set for node, node_set in zip(chain, self.nodes)]
-        while len(present) < len(chain):
-            present.append(False)
-        return all(present)
+        for node in chain:
+            if node not in self.ids:
+                return False
+        return True
+
+    def get_node(self, identifier: int) -> Node:
+        """Get the node for the given identifier."""
+        return self.ids.inverse[identifier]
+
+    def get_level(self, level: int) -> set[int]:
+        """Get all identifiers at the given depth level."""
+        return set(self.nodes[level])
+
+    def get_related(self, identifier: int, level: int) -> set[int]:
+        """Get related identifiers at the given level for a vertex.
+
+        Always returns an empty set, as relations between granularity
+        levels are not stored in a PatternSet.
+        """
+        return set()
 
     def __repr__(self) -> str:
         """

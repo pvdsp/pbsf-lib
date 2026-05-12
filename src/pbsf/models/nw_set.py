@@ -285,6 +285,18 @@ class NestedWordSet(Model):
             combined = self._combine_nws(combined, nw)
         return combined in self.nested_words
 
+    def get_node(self, identifier: int) -> Node:
+        """Get the node for the given identifier."""
+        return self.patterns.get_node(identifier)
+
+    def get_level(self, level: int) -> set[int]:
+        """Get all identifiers at the given depth level."""
+        return self.patterns.get_level(level)
+
+    def get_related(self, identifier: int, level: int) -> set[int]:
+        """Get related identifiers at the given level for a vertex."""
+        return self.patterns.get_related(identifier, level)
+
     def __repr__(self) -> str:
         """
         Return string representation of the NestedWordSet.
