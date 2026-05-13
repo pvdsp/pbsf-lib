@@ -32,7 +32,7 @@ A Python module for **pattern-based sequence learning** using **hierarchical pie
 
 The **Pattern-Based Series Framework (`pbsf`)** provides a Python module for designing, testing, and evaluating algorithms that operate on **sequential data**. It is particularly suited for sequence learning tasks such as **pattern discovery**, **anomaly detection**, and **sequence classification**.
 
-The framework currently focused on anomaly detection, and implements the approach described in the accompanying paper. This approach represents sequences using models containing subsequence approximations that capture local and global trends at multiple scales.
+The framework currently focuses on anomaly detection, and implements the approach described in the accompanying paper. This approach represents sequences using models containing subsequence approximations that capture local and global trends at multiple scales.
 
 ---
 
@@ -358,56 +358,69 @@ The repository includes a benchmarking script for evaluating anomaly detection p
 ### Running Benchmarks
 
 ```bash
-cd ucr
-uv run benchmark.py
+cd eval/ucr
+uv run main.py
 ```
 
-The benchmark script will:
-- Load UCR time series datasets from `ucr/data/`
+The benchmark will:
+- Load UCR time series datasets from `eval/ucr/data/`
 - Evaluate configured algorithms on each dataset
-- Generate visualisations in `ucr/results/`
-- Save performance results to `ucr/results/results.csv`
+- Generate visualisations in `eval/ucr/results/`
+- Save performance results to `eval/ucr/results/results.csv`
 
 ### Configuring Algorithms
 
-Edit `ucr/benchmark.py` to add or modify algorithm configurations:
+Edit `eval/ucr/main.py` to add or modify algorithm configurations. Each entry specifies the algorithm function, segmenter, discretiser, and node parameters. An optional `select_anomaly` callable controls how the most anomalous point is selected from the score array (defaults to `argmin`):
 
 ```python
+from benchmark import evaluate_configurations
+
 algorithms = [
     {
-        "function": hpm,
-        "name": "HPM_Custom",
+        "function": matrix_profile,
+        "name": "MatrixProfile",
+        "select_anomaly": lambda s: np.argmax(s),
         "segmenter": SlidingWindow,
         "segmenter_params": {
             "window_size": 200,
+            "step_size": 5,
             "autocorrelation": True,
         },
-        "model": PatternGraph,
         "discretiser": PiecewiseLinear,
         "discretiser_params": {
-            "node_type": StructuralProminenceNode,
+            "node_type": PLANode,
         },
         "node_params": {
-            "structural_threshold": lambda depth: 0.25,
-            "prominence_threshold": lambda depth: 0.25
-        }
+            "distance_threshold": lambda depth: 5.0,
+        },
     }
 ]
+
+evaluate_configurations(algorithms)
 ```
 
 ### Visualising Results
 
-Visualisations of anomaly scores and detected anomalies are saved in `ucr/results/figures/`. Example:
+Visualisations of anomaly scores and detected anomalies are saved in `eval/ucr/results/`. Example:
 
-![019-HPM_PatternGraph_auto.png](docs/images/019-HPM_PatternGraph_auto.png)
-![046-HPM_PatternGraph_auto.png](docs/images/046-HPM_PatternGraph_auto.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/032-MatrixProfile-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/032-MatrixProfile.svg">
+  <img alt="Benchmark result showing correct anomaly detection on UCR dataset 032" src="docs/images/032-MatrixProfile.png">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/249-MatrixProfile-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/249-MatrixProfile.svg">
+  <img alt="Benchmark result showing incorrect anomaly detection on UCR dataset 249" src="docs/images/249-MatrixProfile.png">
+</picture>
 
 ---
 
 ## Available Components
 
 ### Segmenters
-- **`SlidingWindow`**: Overlapping or non-overlapping window segmentation with optional autocorrelation-based window sizing and differentiation
+- **`SlidingWindow`**: Overlapping or non-overlapping window segmentation with optional autocorrelation-based window sizing, differentiation, and per-segment z-normalisation (enabled by default)
 
 ### Discretisers
 - **`PiecewiseLinear` (PLA)**: Piecewise linear approximation
@@ -433,14 +446,18 @@ Visualisations of anomaly scores and detected anomalies are saved in `ucr/result
 
 ### Utilities
 - **`Word`**: Immutable finite sequence of symbols, used as input for finite acceptors
+- **`MatchingRelation`**: Immutable set of call/return position pairs encoding hierarchical nesting within a word
 - **`NestedWord`**: A word paired with a matching relation, capturing both linear order and hierarchical nesting of symbols
 - **`DFA`**: Deterministic Finite Automaton that recognises regular languages over words
 - **`biDFA`**: Bidirectional DFA with states partitioned into left and right sets, recognising symmetric languages
+- **`HAA`**: Hierarchical-Alphabet Automaton
 - **`Digraph`**: Simple directed graph with vertex properties and adjacency-based edge storage
 - **`LayeredDigraph`**: Directed acyclic graph enforcing a layered structure where vertices of layer *n* can only point to vertices in layer *n+1*
+- **`MutablePoset`**: Partially ordered set
 
 ### Algorithms
-- **Hierarchical Pattern Matching (`HPM`)**: Anomaly detection using hierarchical pattern matching against learned normal patterns
+- **Hierarchical Pattern Matching (`hpm`)**: Anomaly detection using hierarchical pattern matching against learned normal patterns
+- **Matrix Profile (`matrix_profile`)**: Approximate nearest-neighbour distance from test to training subsequences using hierarchical pruning
 
 ---
 
