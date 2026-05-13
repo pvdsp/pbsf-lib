@@ -103,6 +103,26 @@ class TestNNApproximate(unittest.TestCase):
         dist = nn_approximate(model, chains[0])
         self.assertGreaterEqual(dist, 0.0)
 
+    def test_drop_ratio_negative_raises(self):
+        model, chains = self._build_model_and_chains(self.train)
+        with self.assertRaises(ValueError):
+            nn_approximate(model, chains[0], drop_ratio=-0.1)
+
+    def test_drop_ratio_one_raises(self):
+        model, chains = self._build_model_and_chains(self.train)
+        with self.assertRaises(ValueError):
+            nn_approximate(model, chains[0], drop_ratio=1.0)
+
+    def test_drop_ratio_above_one_raises(self):
+        model, chains = self._build_model_and_chains(self.train)
+        with self.assertRaises(ValueError):
+            nn_approximate(model, chains[0], drop_ratio=1.5)
+
+    def test_drop_ratio_zero_accepted(self):
+        model, chains = self._build_model_and_chains(self.train)
+        dist = nn_approximate(model, chains[0], drop_ratio=0.0)
+        self.assertIsInstance(dist, float)
+
     def test_empty_model_returns_inf(self):
         model = PatternTree(params={})
         model.learn([])

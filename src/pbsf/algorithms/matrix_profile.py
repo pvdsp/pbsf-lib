@@ -35,6 +35,10 @@ def nn_approximate(model: Model, chain: Chain, drop_ratio: float = 0.6):
         The approximate nearest-neighbour distance, or math.inf if no
         candidates are found.
     """
+    if not 0 <= drop_ratio < 1:
+        msg = f"drop_ratio must be in [0, 1), got {drop_ratio}"
+        raise ValueError(msg)
+
     candidates = model.get_level(0)
     if not candidates:
         return math.inf
