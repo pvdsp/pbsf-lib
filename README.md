@@ -319,6 +319,8 @@ show(model)
   <img alt="PatternGraph visualisation" src="docs/images/patterngraph.png">
 </picture>
 
+<br>
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/patterntree-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="docs/images/patterntree.svg">
