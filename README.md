@@ -192,7 +192,11 @@ for depth, node in enumerate(chain):
     node.show()
 ```
 
-![readme-discretisers.png](docs/images/readme-discretisers.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/discretisation-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/discretisation.svg">
+  <img alt="Piecewise linear discretisation at three depth levels" src="docs/images/discretisation.png">
+</picture>
 
 ### Chains
 
@@ -309,7 +313,17 @@ print(f"Pattern seen before: {contains}")
 show(model)
 ```
 
-![readme-model.png](docs/images/readme-model.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/patterngraph-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/patterngraph.svg">
+  <img alt="PatternGraph visualisation" src="docs/images/patterngraph.png">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/patterntree-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/patterntree.svg">
+  <img alt="PatternTree visualisation" src="docs/images/patterntree.png">
+</picture>
 
 ### Algorithms
 
