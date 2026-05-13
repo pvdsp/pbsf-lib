@@ -320,7 +320,8 @@ class PatternGraph(Model):
             raise KeyError(f"Unknown identifier: {identifier}")
         depth = self.graph.vertices[identifier]["layer"]
         if level < depth:
-            raise ValueError("Level should be equal to or deeper than the node's depth.")
+            msg = "Level should be equal to or deeper than the node's depth."
+            raise ValueError(msg)
         return self._get_descendants(identifier, level)
 
     def _get_descendants(self, identifier: int, level: int) -> set[int]:

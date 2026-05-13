@@ -248,7 +248,8 @@ class PatternTree(Model):
             raise KeyError(f"Identifier {identifier} refers to the root.")
         depth = self.graph.vertices[identifier]["depth"]
         if level < depth:
-            raise ValueError("Level should be equal to or deeper than the node's depth.")
+            msg = "Level should be equal to or deeper than the node's depth."
+            raise ValueError(msg)
         return self._get_descendants(identifier, level)
 
     def _get_descendants(self, identifier: int, level: int) -> set[int]:

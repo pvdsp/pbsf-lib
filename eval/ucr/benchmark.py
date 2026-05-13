@@ -7,12 +7,6 @@ from typing import Any
 import numpy as np
 from matplotlib import pyplot as plt
 
-from pbsf.algorithms import hpm
-from pbsf.discretisers import PiecewiseLinear
-from pbsf.models import PatternGraph
-from pbsf.nodes import StructuralProminenceNode
-from pbsf.segmenters import SlidingWindow
-
 
 def get_ucr(path: str):
     """
@@ -125,7 +119,8 @@ def evaluate_configurations(
                     indices_path = os.path.join(scores_dir, "scores", indices_filename)
                     np.save(scores_path, scores)
                     np.save(indices_path, x)
-                min_idx = x[np.argmin(scores)]
+                select_anomaly = params.get("select_anomaly", lambda s: np.argmin(s))
+                suspected = x[select_anomaly(scores)]
 
                 # Check overlap with ground-truth anomaly
                 anomaly_length = end_anomaly - start_anomaly + 1
@@ -133,7 +128,9 @@ def evaluate_configurations(
                 margin = max(anomaly_length, 100)
                 min_anomaly = start_anomaly - margin
                 max_anomaly = end_anomaly + margin
-                if min_anomaly < (min_idx + len(train)) < max_anomaly:
+                anomaly_idx = suspected + len(train)
+                correct = (min_anomaly < anomaly_idx < max_anomaly)
+                if correct:
                     title += "\nCorrect prediction ✓"
                     results.append(True)
                 else:
@@ -174,10 +171,10 @@ def evaluate_configurations(
                     # Second subplot: Anomaly scores aligned with test data
                     ax2.plot(x + len(train), scores, color='crimson', label='Scores',
                             marker='.', markersize=2)
-                    min_score_idx = np.argmin(scores)
+                    suspected_score_idx = select_anomaly(scores)
                     ax2.plot(
-                        min_idx + len(train),
-                        scores[min_score_idx], 'X',
+                        anomaly_idx,
+                        scores[suspected_score_idx], 'X',
                         markerfacecolor='crimson',
                         markersize=5, markeredgewidth=1,
                         markeredgecolor='black',
@@ -212,49 +209,3 @@ def evaluate_configurations(
                 f.write(f",{result}")
             f.write("\n")
             f.flush()
-
-
-if __name__ == '__main__':
-    algorithms = [
-        {
-            "function": hpm,
-            "name": "HPM_PatternGraph_auto",
-            "segmenter": SlidingWindow,
-            "segmenter_params": {
-                "window_size": 200,
-                "autocorrelation": True,
-            },
-            "model": PatternGraph,
-            "model_params": {},
-            "discretiser": PiecewiseLinear,
-            "discretiser_params": {
-                "node_type": StructuralProminenceNode,
-            },
-            "node_params": {
-                "structural_threshold": lambda depth: 0.25,
-                "prominence_threshold": lambda depth: 0.25
-            }
-        },
-        {
-            "function": hpm,
-            "name": "HPM_PatternGraph_auto_step",
-            "segmenter": SlidingWindow,
-            "segmenter_params": {
-                "window_size": 200,
-                "autocorrelation": True,
-                "step_size": 5
-            },
-            "model": PatternGraph,
-            "model_params": {},
-            "discretiser": PiecewiseLinear,
-            "discretiser_params": {
-                "node_type": StructuralProminenceNode,
-            },
-            "node_params": {
-                "structural_threshold": lambda depth: 0.25,
-                "prominence_threshold": lambda depth: 0.25
-            }
-        }
-    ]
-
-    evaluate_configurations(algorithms)
