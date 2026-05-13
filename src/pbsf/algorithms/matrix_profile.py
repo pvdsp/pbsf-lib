@@ -107,9 +107,8 @@ def matrix_profile(train: np.ndarray, test: np.ndarray, parameters: dict):
     discretiser_type = parameters.get("discretiser") or PiecewiseLinear
     model_type = parameters.get("model") or PatternTree
 
-    segmenter_params = parameters.get("segmenter_params")
-    if segmenter_params is None:
-        segmenter_params = {'window_size': 200}
+    segmenter_params = dict(parameters.get("segmenter_params", {}))
+    segmenter_params.setdefault("window_size", 200)
 
     node_params = dict(parameters.get("node_params", {}))
     if node_params.get("distance_threshold") is None:
