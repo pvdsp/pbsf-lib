@@ -40,6 +40,13 @@ class TestMatrixProfile(unittest.TestCase):
         scores = matrix_profile(self.train, self.test, self.params)
         self.assertTrue(np.all(scores >= 0))
 
+    def test_missing_window_size_uses_default(self):
+        train = np.sin(np.arange(0, 100, 0.1))
+        test = np.sin(np.arange(0, 100, 0.1))
+        params = {**self.params, "segmenter_params": {}}
+        scores = matrix_profile(train, test, params)
+        self.assertEqual(len(scores), len(test))
+
     def test_filter_max_overlap_returns_tuple(self):
         params = {**self.params, "filter_max_overlap": True}
         result = matrix_profile(self.train, self.test, params)
