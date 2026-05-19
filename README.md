@@ -186,7 +186,7 @@ for node in chain:
 # Visualise the approximations at each depth
 fig, axs = plt.subplots(3, 1, figsize=(8, 6), sharex=True)
 for depth, node in enumerate(chain):
-    axs[depth].plot((segment - segment.mean()) / segment.std(), alpha=.75)
+    axs[depth].plot(segment, alpha=.75)
     plt.axes(axs[depth])
     axs[depth].set_title(f"Node at depth {node.depth}, approximates segment using {len(node.slopes)} frames")
     node.show()
