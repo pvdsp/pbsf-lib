@@ -52,6 +52,8 @@ class Chain(Sequence):
         Returns the distance between the most fine-grained (last) nodes
         of the two chains.
 
+        Raises ValueError if the chains are not comparable (other is not a Chain,
+        different lengths, or different node types).
         Parameters
         ----------
         other : Chain
