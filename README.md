@@ -233,10 +233,8 @@ print(f"First node: {chain_a[0]}")
 for node in chain_a:
     print(node)
 
-# Use a different distance strategy
-chain_c = Chain(list(chain_a), distance_fn=Chain._mean_distance)
-chain_d = Chain(list(chain_b), distance_fn=Chain._mean_distance)
-print(f"Mean distance: {chain_c.distance(chain_d):.4f}")
+# Distance uses the most fine-grained (last) node
+print(f"Fine-grained distance: {chain_a.distance(chain_b):.4f}")
 ```
 
 ### Nodes

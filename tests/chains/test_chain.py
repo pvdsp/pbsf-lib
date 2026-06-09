@@ -76,47 +76,21 @@ class TestChain(unittest.TestCase):
         with self.assertRaises(ValueError):
             c1.distance(c2)
 
-    def test_distance_custom_fn(self):
-        def custom(a, b):
-            return 42.0
-        c1 = Chain([_make_sum_node(0, [10.0])], distance_fn=custom)
-        c2 = Chain([_make_sum_node(0, [20.0])], distance_fn=custom)
-        self.assertEqual(c1.distance(c2), 42.0)
-
-    def test_distance_different_fn_raises(self):
-        c1 = Chain([_make_sum_node(0, [10.0])], distance_fn=lambda a, b: 1.0)
-        c2 = Chain([_make_sum_node(0, [10.0])], distance_fn=lambda a, b: 1.0)
-        with self.assertRaises(ValueError):
-            c1.distance(c2)
-
-    def test_mean_distance(self):
-        c1 = Chain(
-            [_make_sum_node(0, [10.0]), _make_sum_node(1, [5.0, 5.0])],
-            distance_fn=Chain._mean_distance,
-        )
-        c2 = Chain(
-            [_make_sum_node(0, [10.0]), _make_sum_node(1, [5.0, 5.0])],
-            distance_fn=Chain._mean_distance,
-        )
+    def test_distance_uses_finest_node(self):
+        # Chains with same fine node but different coarse nodes
+        c1 = Chain([_make_sum_node(0, [0.0]), _make_sum_node(1, [5.0, 5.0])])
+        c2 = Chain([_make_sum_node(0, [99.0]), _make_sum_node(1, [5.0, 5.0])])
         self.assertAlmostEqual(c1.distance(c2), 0.0)
+
+        # Chains with same coarse node but different fine nodes
+        c3 = Chain([_make_sum_node(0, [0.0]), _make_sum_node(1, [0.0, 0.0])])
+        c4 = Chain([_make_sum_node(0, [0.0]), _make_sum_node(1, [10.0, 0.0])])
+        self.assertGreater(c3.distance(c4), 0.0)
 
     def test_not_hashable(self):
         c = Chain([_make_sum_node(0, [10.0])])
         with self.assertRaises(TypeError):
             hash(c)
-
-    def test_weighted_distance_coarse_matters_more(self):
-        # Two chains that differ only at depth 0 (coarse)
-        c1 = Chain([_make_sum_node(0, [0.0]), _make_sum_node(1, [0.0, 0.0])])
-        c2 = Chain([_make_sum_node(0, [10.0]), _make_sum_node(1, [0.0, 0.0])])
-        d_coarse = c1.distance(c2)
-
-        # Two chains that differ only at depth 1 (fine)
-        c3 = Chain([_make_sum_node(0, [0.0]), _make_sum_node(1, [0.0, 0.0])])
-        c4 = Chain([_make_sum_node(0, [0.0]), _make_sum_node(1, [10.0, 0.0])])
-        d_fine = c3.distance(c4)
-
-        self.assertGreater(d_coarse, d_fine)
 
     def test_equality(self):
         c1 = Chain([_make_sum_node(0, [10.0])])
