@@ -1,5 +1,6 @@
 """Anomaly detection algorithms built on the PBSF framework."""
 
+from .distance_profile import distance_profile
 from .hpm import hpm
 from .matrix_profile import matrix_profile
 
