@@ -1,6 +1,6 @@
 """Chain class for wrapping discretisation node sequences."""
 
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Iterator, Sequence
 
 from pbsf.nodes import Node
 
@@ -9,16 +9,13 @@ class Chain(Sequence):
     """
     A chain of discretisation nodes from coarse to fine granularity.
 
-    Wraps a sequence of nodes and provides chain-level distance computation
-    with configurable distance strategies.
+    Wraps a sequence of nodes. Distance between chains is the distance
+    between their most fine-grained (last) nodes.
 
     Parameters
     ----------
     nodes : list[Node]
         Non-empty list of Node instances, all of the same type.
-    distance_fn : Callable | None, default=None
-        Custom distance function taking two Chain instances and returning a float.
-        Defaults to exponential weighted distance.
 
     Raises
     ------
@@ -26,11 +23,7 @@ class Chain(Sequence):
         If nodes is empty, contains non-Node instances, or contains mixed types.
     """
 
-    def __init__(
-        self,
-        nodes: list[Node],
-        distance_fn: Callable[['Chain', 'Chain'], float] | None = None,
-    ) -> None:
+    def __init__(self, nodes: list[Node]) -> None:
         if not nodes:
             raise ValueError("Chain must contain at least one node.")
         if not all(isinstance(n, Node) for n in nodes):
@@ -41,7 +34,6 @@ class Chain(Sequence):
                 "All nodes must be the same type, got mixed types."
             )
         self._nodes = tuple(nodes)
-        self._distance_fn = distance_fn or self._weighted_distance
 
     @property
     def nodes(self) -> tuple[Node, ...]:
@@ -57,6 +49,11 @@ class Chain(Sequence):
         """
         Compute distance between this chain and another.
 
+        Returns the distance between the most fine-grained (last) nodes
+        of the two chains.
+
+        Raises ValueError if the chains are not comparable (other is not a Chain,
+        different lengths, or different node types).
         Parameters
         ----------
         other : Chain
@@ -81,31 +78,7 @@ class Chain(Sequence):
             )
         if type(self._nodes[0]) is not type(other._nodes[0]):
             raise ValueError("Chains must contain the same node type.")
-        if self._distance_fn is not other._distance_fn:
-            raise ValueError("Chains must use the same distance function.")
-        return self._distance_fn(self, other)
-
-    @staticmethod
-    def _weighted_distance(a: 'Chain', b: 'Chain') -> float:
-        """
-        Exponential weighted distance: coarser levels weigh more.
-
-        Weight for depth i = 2^(length - 1 - i), normalised by sum of weights.
-        """
-        total_weight = 0.0
-        weighted_sum = 0.0
-        for i in range(a.length):
-            w = 2 ** (a.length - 1 - i)
-            weighted_sum += w * a._nodes[i].distance(b._nodes[i])
-            total_weight += w
-        return weighted_sum / total_weight
-
-    @staticmethod
-    def _mean_distance(a: 'Chain', b: 'Chain') -> float:
-        """Unweighted mean distance across all levels."""
-        return sum(
-            a._nodes[i].distance(b._nodes[i]) for i in range(a.length)
-        ) / a.length
+        return self._nodes[-1].distance(other._nodes[-1])
 
     def __len__(self) -> int:
         """Return the number of nodes in the chain."""
@@ -118,7 +91,7 @@ class Chain(Sequence):
     def __getitem__(self, index):
         """Return the node at the given index, or a new Chain for slices."""
         if isinstance(index, slice):
-            return Chain(list(self._nodes[index]), self._distance_fn)
+            return Chain(list(self._nodes[index]))
         return self._nodes[index]
 
     def __repr__(self) -> str:
