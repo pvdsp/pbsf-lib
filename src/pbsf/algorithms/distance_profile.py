@@ -49,7 +49,7 @@ def distance_profile(query: np.ndarray, data: np.ndarray,
         for i, segment in enumerate(segments):
             distances[i] = distance.euclidean(query, segment)
     else:
-        params = parameters.get("discretiser_params")
+        params = parameters.get("discretiser_params") or {}
         discretiser = discretiser_type(params)
         n1 = discretiser.discretise(query)[-1]
         for i, segment in enumerate(segments):
