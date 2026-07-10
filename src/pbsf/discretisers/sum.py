@@ -29,6 +29,11 @@ class Summation(Discretiser):
         - node_type (type): The type of the node to use for the chain. Must be
           SumNode.
         - node_params (dict): The parameters to pass to the node constructor.
+
+        Optional keys:
+
+        - absolute_value (bool): If True, take the absolute value of each data
+          point when calculating the sums. Default is False.
     """
 
     def __init__(self, params: dict[str, Any] | None = None) -> None:
@@ -42,6 +47,7 @@ class Summation(Discretiser):
         self.frames = params["frames"]
         self.node_type = params["node_type"]
         self.node_params = params["node_params"]
+        self.absolute_value = params.get("absolute_value", False)
 
     def discretise(self, segment: np.ndarray) -> Chain:
         """
@@ -66,9 +72,10 @@ class Summation(Discretiser):
         nodes = []
         if segment.ndim != 1:
             raise ValueError("Can only discretise 1D data.")
+        values = np.abs(segment) if self.absolute_value else segment
         for depth in range(self.max_depth(segment)):
             breakpoints = _divide(0, len(segment), self.frames(depth))
-            sums = np.array([np.sum(segment[i:j]) for (i, j) in breakpoints])
+            sums = np.array([np.sum(values[i:j]) for (i, j) in breakpoints])
             nodes.append(
                 self.node_type({
                     "depth": depth,
