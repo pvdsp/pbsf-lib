@@ -47,7 +47,12 @@ class Summation(Discretiser):
         self.frames = params["frames"]
         self.node_type = params["node_type"]
         self.node_params = params["node_params"]
-        self.absolute_value = params.get("absolute_value", False)
+        absolute_value = params.get("absolute_value", False)
+        if not isinstance(absolute_value, (bool, np.bool_)):
+            raise ValueError(
+                f"Property absolute_value should be of type bool, got {type(absolute_value)} instead."
+            )
+        self.absolute_value = bool(absolute_value)
 
     def discretise(self, segment: np.ndarray) -> Chain:
         """
