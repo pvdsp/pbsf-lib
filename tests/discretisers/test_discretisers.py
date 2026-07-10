@@ -4,8 +4,8 @@ import warnings
 import numpy as np
 
 from pbsf.chains import Chain
-from pbsf.discretisers import PiecewiseLinear, SymbolicAggregate
-from pbsf.nodes import SAXNode, SlopeSignNode, StructuralProminenceNode
+from pbsf.discretisers import PiecewiseLinear, Summation, SymbolicAggregate
+from pbsf.nodes import SAXNode, SlopeSignNode, StructuralProminenceNode, SumNode
 
 
 class TestPiecewiseLinear(unittest.TestCase):
@@ -69,6 +69,37 @@ class TestPiecewiseLinear(unittest.TestCase):
             self.assertEqual(node.depth, idx)
             self.assertEqual(node.std, np.std(segment))
             self.assertEqual(len(node.slopes), 2 ** idx)
+
+
+class TestSummation(unittest.TestCase):
+    def _make_discretiser(self, params=None):
+        return Summation({
+            "max_depth": lambda _: 1,
+            "frames": lambda _: 2,
+            "node_type": SumNode,
+            "node_params": {
+                "distance_threshold": lambda _: 0.1
+            },
+            **(params or {})
+        })
+
+    def test_absolute_value_defaults_to_false(self):
+        discretiser = self._make_discretiser()
+        self.assertFalse(discretiser.absolute_value)
+
+    def test_discretise(self):
+        discretiser = self._make_discretiser()
+        segment = np.array([1.0, -2.0, 3.0, -4.0])
+        chain = discretiser.discretise(segment)
+        self.assertIsInstance(chain, Chain)
+        self.assertTrue(np.array_equal(chain[0].sums, np.array([-1.0, -1.0])))
+
+    def test_discretise_absolute_value(self):
+        discretiser = self._make_discretiser({"absolute_value": True})
+        segment = np.array([1.0, -2.0, 3.0, -4.0])
+        chain = discretiser.discretise(segment)
+        self.assertTrue(np.array_equal(chain[0].sums, np.array([3.0, 7.0])))
+        self.assertTrue(np.array_equal(segment, np.array([1.0, -2.0, 3.0, -4.0])))
 
 
 class TestSymbolicAggregate(unittest.TestCase):
