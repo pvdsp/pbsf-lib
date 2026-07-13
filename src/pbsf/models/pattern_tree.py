@@ -1,8 +1,8 @@
 """Tree-based model for storing coarse-to-fine discretised patterns."""
 
-import math
 from collections.abc import Sequence
 
+from pbsf.chains import Chain
 from pbsf.models.base import Model
 from pbsf.nodes import Node
 from pbsf.utils.digraph import Digraph
@@ -20,10 +20,7 @@ class PatternTree(Model):
     Parameters
     ----------
     params : dict | None, default=None
-        Configuration dictionary. Optional keys:
-
-        - closest_match (bool): If True, use best match strategy based on distance;
-          if False, use first match strategy. Default is False.
+        Configuration dictionary. Currently not in use.
 
     Attributes
     ----------
@@ -45,68 +42,23 @@ class PatternTree(Model):
             "depth": -1
         })
 
-    def _first_match(self, node: Node, candidates: set[int]) -> int | None:
-        """
-        Find the first matching node among candidates.
+    def __vertices_to_chain(self, vertices: Sequence[int]) -> Chain:
+        """Convert a sequence of vertex identifiers to a chain of nodes."""
+        if vertices and vertices[0] == self.root:
+            vertices = vertices[1:]
+        return Chain([self.get_node(idx) for idx in vertices])
 
-        Returns the first vertex from candidates whose node is equivalent to the
-        given node, using the node's equivalence operator.
+    def __closest_path(self, paths, chain) -> tuple[int, ...]:
+        """Return path closest to provided chain."""
+        chains = [(path, self.__vertices_to_chain(path)) for path in paths]
+        vertices, _ = min(chains, key=lambda c: chain.distance(c[1]))
+        return vertices
 
-        Parameters
-        ----------
-        node : Node
-            Node to match against candidates.
-        candidates : set[int]
-            Set of vertex identifiers to search through.
-
-        Returns
-        -------
-        int | None
-            Vertex identifier of the first match, or None if no match found.
-        """
-        for vertex in candidates:
-            candidate = self.graph.vertices[vertex]["node"]
-            if node == candidate:
-                return vertex
-        return None
-
-    def _best_match(self, node: Node, candidates: set[int]) -> int | None:
-        """
-        Find the closest matching node among candidates.
-
-        Returns the vertex from candidates whose node is equivalent to the given
-        node and has the smallest distance, according to the node's distance metric.
-
-        Parameters
-        ----------
-        node : Node
-            Node to match against candidates.
-        candidates : set[int]
-            Set of vertex identifiers to search through.
-
-        Returns
-        -------
-        int | None
-            Vertex identifier of the best match, or None if no match found.
-        """
-        current_match = None
-        current_distance = math.inf
-        for vertex in candidates:
-            candidate = self.graph.vertices[vertex]["node"]
-            distance = node.distance(candidate)
-            if node == candidate and distance < current_distance:
-                current_match = vertex
-                current_distance = distance
-        return current_match
-
-    def chain_to_vertices(self, chain: Sequence[Node]) -> list[int]:
+    def chain_to_vertices(self, chain: Sequence[Node]) -> tuple[int, ...]:
         """
         Convert a chain of nodes to existing vertex identifiers.
 
-        Traverses the tree from the root, matching each node in the chain to an
-        existing vertex. At the first mismatch, the traversal stops and returns
-        the partial path. The match strategy (first match or best match) is determined
-        by the 'closest_match' parameter.
+        Returns the path corresponding to the closest Chain in the tree.
 
         Parameters
         ----------
@@ -115,21 +67,29 @@ class PatternTree(Model):
 
         Returns
         -------
-        list[int]
-            List of vertex identifiers representing the matched path, starting with
+        tuple[int, ...]
+            Tuple of vertex identifiers representing the matched path, starting with
             the root. Length will be len(chain) + 1 if all nodes match, or shorter
             if matching stops early.
         """
-        traversal = [self.root]
-        closest_match = self.params.get("closest_match", False)
-        match_strategy = self._best_match if closest_match else self._first_match
+        if not isinstance(chain, Chain):
+            chain = Chain(chain)
+
+        paths = set([(self.root,)])
         for node in chain:
-            neighbours = self.graph.outgoing(traversal[-1])
-            candidate = match_strategy(node, neighbours)
-            if candidate is None:
-                break
-            traversal.append(candidate)
-        return traversal
+            new_paths = set()
+            for path in paths:
+                neighbours = self.graph.outgoing(path[-1])
+                for neighbour in neighbours:
+                    candidate = self.graph.vertices[neighbour]
+                    if node == candidate["node"]:
+                        new_paths.add(path + (neighbour,))
+            if len(new_paths) > 0:
+                paths = new_paths
+            else:
+                return self.__closest_path(paths, chain)
+
+        return self.__closest_path(paths, chain)
 
     def update(self, chain: Sequence[Node]) -> list[int]:
         """
@@ -158,7 +118,7 @@ class PatternTree(Model):
         if not all(isinstance(node, Node) for node in chain):
             raise ValueError("Chain must contain only nodes.")
 
-        vertices = self.chain_to_vertices(chain)
+        vertices = list(self.chain_to_vertices(chain))
         while len(vertices) <= len(chain):
             current_vertex = vertices[-1]
             next_vertex = self.graph.add_vertex({
