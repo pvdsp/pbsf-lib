@@ -87,7 +87,7 @@ class TestChain(unittest.TestCase):
         d = c1.distance(c2)
         self.assertGreater(d, 0.0)
 
-    def test_distance_length_mismatch_raises(self):
+    def test_distance_length_mismatch_compares_common_depth(self):
         c1 = Chain([_make_sum_node(0, [10.0])])
         c2 = Chain([_make_sum_node(0, [10.0]),
                     _make_sum_node(1, [5.0, 5.0])])
