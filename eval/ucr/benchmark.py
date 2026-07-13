@@ -109,7 +109,7 @@ def evaluate_configurations(
                 # Apply the algorithm and find the minimum score
                 func = params["function"]
                 params["filter_max_overlap"] = True
-                x, scores = func(train, test, params)
+                x, scores = func(train, np.concatenate((train, test)), params)
 
                 # Save scores and indices if requested
                 if save_scores:
@@ -128,7 +128,7 @@ def evaluate_configurations(
                 margin = max(anomaly_length, 100)
                 min_anomaly = start_anomaly - margin
                 max_anomaly = end_anomaly + margin
-                anomaly_idx = suspected + len(train)
+                anomaly_idx = suspected
                 correct = (min_anomaly < anomaly_idx < max_anomaly)
                 if correct:
                     title += "\nCorrect prediction ✓"
@@ -168,8 +168,8 @@ def evaluate_configurations(
                     ax1.legend()
                     ax1.grid(True, alpha=0.3)
 
-                    # Second subplot: Anomaly scores aligned with test data
-                    ax2.plot(x + len(train), scores, color='crimson', label='Scores',
+                    # Second subplot: Anomaly scores
+                    ax2.plot(x, scores, color='crimson', label='Scores',
                             marker='.', markersize=2)
                     suspected_score_idx = select_anomaly(scores)
                     ax2.plot(

@@ -64,7 +64,6 @@ class TestPiecewiseLinear(unittest.TestCase):
         chain = discretiser.discretise(segment)
         self.assertIsInstance(chain, Chain)
         self.assertEqual(len(chain), discretiser.max_depth(segment))
-        self.assertEqual(chain.length, discretiser.max_depth(segment))
         for idx, node in enumerate(chain):
             self.assertEqual(node.depth, idx)
             self.assertEqual(node.std, np.std(segment))

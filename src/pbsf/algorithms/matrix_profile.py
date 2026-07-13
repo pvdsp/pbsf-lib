@@ -55,7 +55,7 @@ def nn_approximate(model: Model, chain: Chain, drop_ratio: float = 0.6):
         distances = distances[:keep]
 
         # Proceed to finer granularity with remaining candidates
-        if level < chain.length - 1:
+        if level < len(chain) - 1:
             candidates = set()
             for candidate, _ in distances:
                 candidates |= model.get_related(candidate, level + 1)
