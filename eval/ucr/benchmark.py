@@ -168,7 +168,7 @@ def evaluate_configurations(
                     ax1.legend()
                     ax1.grid(True, alpha=0.3)
 
-                    # Second subplot: Anomaly scores aligned with test data
+                    # Second subplot: Anomaly scores
                     ax2.plot(x, scores, color='crimson', label='Scores',
                             marker='.', markersize=2)
                     suspected_score_idx = select_anomaly(scores)
