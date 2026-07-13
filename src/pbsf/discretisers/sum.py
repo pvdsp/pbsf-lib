@@ -50,7 +50,8 @@ class Summation(Discretiser):
         absolute_value = params.get("absolute_value", False)
         if not isinstance(absolute_value, (bool, np.bool_)):
             raise ValueError(
-                f"Property absolute_value should be of type bool, got {type(absolute_value)} instead."
+                "Property absolute_value should be of type bool, "
+                f"got {type(absolute_value)} instead."
             )
         self.absolute_value = bool(absolute_value)
 
