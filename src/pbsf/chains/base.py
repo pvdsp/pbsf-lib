@@ -17,7 +17,7 @@ class Chain(Sequence):
     Parameters
     ----------
     nodes : Sequence[Node]
-        Optionl sequence of Node instances, all of the same type.
+        Optional sequence of Node instances, all of the same type.
 
     Raises
     ------
