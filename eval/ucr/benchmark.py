@@ -109,7 +109,7 @@ def evaluate_configurations(
                 # Apply the algorithm and find the minimum score
                 func = params["function"]
                 params["filter_max_overlap"] = True
-                x, scores = func(train, np.append(train, test), params)
+                x, scores = func(train, np.concatenate((train, test)), params)
 
                 # Save scores and indices if requested
                 if save_scores:
