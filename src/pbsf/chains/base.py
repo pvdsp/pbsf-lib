@@ -2,6 +2,8 @@
 
 from collections.abc import Iterator, Sequence
 
+import numpy as np
+
 from pbsf.nodes import Node
 
 
@@ -14,25 +16,28 @@ class Chain(Sequence):
 
     Parameters
     ----------
-    nodes : list[Node]
-        Non-empty list of Node instances, all of the same type.
+    nodes : Sequence[Node]
+        Optionl sequence of Node instances, all of the same type.
 
     Raises
     ------
     ValueError
-        If nodes is empty, contains non-Node instances, or contains mixed types.
+        If nodes contain non-Node instances, or contains mixed types.
     """
 
-    def __init__(self, nodes: list[Node]) -> None:
-        if not nodes:
-            raise ValueError("Chain must contain at least one node.")
+    def __init__(self, nodes: Sequence[Node] | None = None) -> None:
+        if nodes is None:
+           nodes = []
         if not all(isinstance(n, Node) for n in nodes):
             raise ValueError("All elements must be Node instances.")
-        node_type = type(nodes[0])
-        if not all(type(n) is node_type for n in nodes):
-            raise ValueError(
-                "All nodes must be the same type, got mixed types."
-            )
+        if len(nodes) > 0:
+            self.type = type(nodes[0])
+            if not all(type(n) is self.type for n in nodes):
+                raise ValueError(
+                    "All nodes must be the same type, got mixed types."
+                )
+        else:
+           self.type = Node
         self._nodes = tuple(nodes)
 
     @property
@@ -40,20 +45,17 @@ class Chain(Sequence):
         """The nodes in this chain."""
         return self._nodes
 
-    @property
-    def length(self) -> int:
-        """Number of nodes in the chain."""
-        return len(self._nodes)
-
     def distance(self, other: 'Chain') -> float:
         """
-        Compute distance between this chain and another.
+        Compute distance between this chain and another chain.
 
-        Returns the distance between the most fine-grained (last) nodes
+        Returns the distance between the most fine-grained compatible nodes
         of the two chains.
+        Empty chains are equal, and non-empty chains have
+        infinite distance to empty chains.
 
-        Raises ValueError if the chains are not comparable (other is not a Chain,
-        different lengths, or different node types).
+        Raises ValueError if other is not a Chain or has different node type.
+
         Parameters
         ----------
         other : Chain
@@ -67,42 +69,47 @@ class Chain(Sequence):
         Raises
         ------
         ValueError
-            If chains have different lengths or different node types.
+            If other is not a Chain or has different node type.
         """
         if not isinstance(other, Chain):
             raise ValueError("Can only compute distance to another Chain.")
-        if self.length != other.length:
-            raise ValueError(
-                f"Chains must have the same length,"
-                f" got {self.length} and {other.length}."
-            )
-        if type(self._nodes[0]) is not type(other._nodes[0]):
-            raise ValueError("Chains must contain the same node type.")
-        return self._nodes[-1].distance(other._nodes[-1])
+        if self.empty and other.empty:
+            return 0.0
+        if self.empty or other.empty:
+            return np.inf
+        if self.type != other.type:
+            expected = self.type.__name__
+            got = other.type.__name__
+            raise ValueError(f"Chains must contain the same node type. "
+                             f"Expected {expected}, received {got} instead.")
+        level = min(len(self), len(other)) - 1
+        return self.nodes[level].distance(other.nodes[level])
+
+    @property
+    def empty(self) -> bool:
+        """Check if Chain is empty."""
+        return len(self.nodes) == 0
 
     def __len__(self) -> int:
         """Return the number of nodes in the chain."""
-        return len(self._nodes)
+        return len(self.nodes)
 
     def __iter__(self) -> Iterator[Node]:
         """Iterate over the nodes in the chain."""
-        return iter(self._nodes)
+        return iter(self.nodes)
 
     def __getitem__(self, index):
         """Return the node at the given index, or a new Chain for slices."""
         if isinstance(index, slice):
-            return Chain(list(self._nodes[index]))
-        return self._nodes[index]
+            return Chain(list(self.nodes[index]))
+        return self.nodes[index]
 
     def __repr__(self) -> str:
         """Return string representation of the chain."""
-        node_type = type(self._nodes[0]).__name__
-        return f"Chain(length={self.length}, node_type={node_type})"
+        return f"Chain(length={len(self)}, node_type={self.type.__name__})"
 
     def __eq__(self, other: object) -> bool:
         """Check equality based on node contents."""
         if not isinstance(other, Chain):
             return NotImplemented
-        return self._nodes == other._nodes
-
-    __hash__ = None
+        return self.nodes == other.nodes
