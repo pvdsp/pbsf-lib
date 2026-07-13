@@ -50,7 +50,7 @@ class PatternTree(Model):
 
     def __closest_path(self, paths, chain) -> tuple[int, ...]:
         """Return path closest to provided chain."""
-        chains = [(path, self.__vertices_to_chain(path)) for path in paths]
+        chains = ((path, self.__vertices_to_chain(path)) for path in paths)
         vertices, _ = min(chains, key=lambda c: (chain.distance(c[1]), c[0]))
         return vertices
 
