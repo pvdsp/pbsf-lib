@@ -37,7 +37,7 @@ class Chain(Sequence):
                     "All nodes must be the same type, got mixed types."
                 )
         else:
-           self.type = Node
+            self.type = Node
         self._nodes = tuple(nodes)
 
     @property
