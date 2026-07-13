@@ -27,7 +27,7 @@ class Chain(Sequence):
 
     def __init__(self, nodes: Sequence[Node] | None = None) -> None:
         if nodes is None:
-           nodes = []
+            nodes = []
         if not all(isinstance(n, Node) for n in nodes):
             raise ValueError("All elements must be Node instances.")
         if len(nodes) > 0:
