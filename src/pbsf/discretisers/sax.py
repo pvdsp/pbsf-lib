@@ -146,7 +146,7 @@ class SymbolicAggregate(Discretiser):
                 "nr_of_frames": self.frames(paa_node.depth),
                 "alphabet_size": self.alphabet_size,
                 "breakpoints": paa_node.breakpoints,
-                "sax": np.digitize(paa_node.paa, self.cut_points) - 1,
+                "sax": np.digitize(paa_node.paa, self.cut_points),
                 "cut_points": self.cut_points,
                 **self.node_params
             })
