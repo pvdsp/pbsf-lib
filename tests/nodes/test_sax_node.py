@@ -30,6 +30,26 @@ class TestSAXNode(unittest.TestCase):
         self.assertAlmostEqual(node._dist(0, node.alphabet_size - 1), 1.35,
                                places=2)
 
+    def test_cut_point_count(self):
+        # test if construction throws error unless
+        # len(cut_points) == alphabet_size - 1
+        properties = {
+            "depth": 0,
+            "segment_length": 10,
+            "nr_of_frames": 3,
+            "breakpoints": [],
+            "sax": np.array([0, 1, 2]),
+            "cut_points": np.array([-0.67448975,  0.        ,  0.67448975]),
+            "distance_threshold": lambda depth: 0.5
+        }
+
+        node = SAXNode({**properties, "alphabet_size": 4})
+        self.assertEqual(len(node.cut_points), node.alphabet_size - 1)
+
+        for alphabet_size in (3, 5):
+            with self.assertRaises(ValueError):
+                SAXNode({**properties, "alphabet_size": alphabet_size})
+
     def test_distance(self):
         n1 = SAXNode({
             "depth": 0,

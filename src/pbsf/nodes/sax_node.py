@@ -33,6 +33,13 @@ class SAXNode(Node):
         - alphabet_size (int): Number of symbols in the alphabet.
         - distance_threshold (Callable): Function that returns the distance
           threshold at a given depth.
+
+    Raises
+    ------
+    ValueError
+        If cut_points does not hold exactly alphabet_size - 1 breakpoints.
+        The alphabet_size symbols are the bands cut by those breakpoints, so
+        any other length leaves symbols that index outside cut_points.
     """
 
     def __init__(self, properties: dict[str, Any]) -> None:
@@ -53,6 +60,12 @@ class SAXNode(Node):
         self.sax = properties["sax"]
         self.alphabet_size = properties["alphabet_size"]
         self.cut_points = properties["cut_points"]
+        if len(self.cut_points) != self.alphabet_size - 1:
+            raise ValueError(
+                f"Expected {self.alphabet_size - 1} cut points for an"
+                f" alphabet of size {self.alphabet_size},"
+                f" got {len(self.cut_points)}."
+            )
         self.distance_threshold = properties["distance_threshold"](self.depth)
 
     def _is_comparable(self, node: 'SAXNode') -> None:
