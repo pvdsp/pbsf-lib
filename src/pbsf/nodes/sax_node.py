@@ -114,7 +114,8 @@ class SAXNode(Node):
         ValueError
             If either symbol index is out of bounds for the alphabet size.
         """
-        if s1 > self.alphabet_size - 1 or s2 > self.alphabet_size - 1:
+        if ((s1 >= self.alphabet_size) or (s1 < 0) or
+            (s2 >= self.alphabet_size) or (s2 < 0)):
             raise ValueError(
                 f"Symbol index out of bounds: {s1}, {s2}"
                 f" with alphabet size {self.alphabet_size}."
@@ -189,8 +190,8 @@ class SAXNode(Node):
         for cut_point in self.cut_points:
             plt.axhline(y=cut_point, color="lightgrey", linestyle=":")
         for (x1, x2), symbol in zip(self.breakpoints, self.sax):
-            y1 = self.cut_points[symbol] if symbol >= 0 else -5
-            y2 = self.cut_points[symbol + 1] if symbol + 1 < len(self.cut_points) else 5
+            y1 = self.cut_points[symbol - 1] if symbol > 0 else -5
+            y2 = self.cut_points[symbol] if symbol < len(self.cut_points) else 5
             plt.fill_between(
                 x=np.linspace(x1, x2, 100),
                 y1=y1, y2=y2, color="orangered", alpha=0.5
