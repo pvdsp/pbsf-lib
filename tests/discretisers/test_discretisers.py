@@ -127,3 +127,24 @@ class TestSymbolicAggregate(unittest.TestCase):
             warnings.simplefilter("error")
             self.sax.discretise(segment)
 
+    def test_alphabet_indices(self):
+        """Test that every symbol indexes the band its PAA value falls in."""
+        segments = {
+            "ramp": np.arange(64.0),
+            "sine": np.sin(2 * np.pi * np.linspace(0, 1, 64)),
+        }
+        for name, segment in segments.items():
+            segment = (segment - np.mean(segment)) / np.std(segment)
+            node = self.sax.discretise(segment)[-1]
+            cut_points = node.cut_points
+
+            for (start, end), symbol in zip(node.breakpoints, node.sax):
+                paa = np.mean(segment[start:end])
+                self.assertGreaterEqual(symbol, 0, name)
+                self.assertLess(symbol, node.alphabet_size, name)
+                lower = (cut_points[symbol - 1] if symbol > 0
+                         else -np.inf)
+                upper = (cut_points[symbol] if symbol < len(cut_points)
+                         else np.inf)
+                self.assertGreaterEqual(paa, lower, f"{name}: symbol {symbol}")
+                self.assertLess(paa, upper, f"{name}: symbol {symbol}")

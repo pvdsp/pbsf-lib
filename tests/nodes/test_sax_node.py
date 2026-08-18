@@ -6,6 +6,30 @@ from pbsf.nodes import SAXNode
 
 
 class TestSAXNode(unittest.TestCase):
+    def test_alphabet_bounds(self):
+        # test if dist throws error on -1 or alphabet_size
+        node = SAXNode({
+            "depth": 0,
+            "segment_length": 10,
+            "nr_of_frames": 3,
+            "alphabet_size": 4,
+            "breakpoints": [],
+            "sax": np.array([0, 1, 2]),
+            "cut_points": np.array([-0.67448975,  0.        ,  0.67448975]),
+            "distance_threshold": lambda depth: 0.5
+        })
+
+        for symbol in (-1, node.alphabet_size):
+            with self.assertRaises(ValueError):
+                node._dist(0, symbol)
+            with self.assertRaises(ValueError):
+                node._dist(symbol, 0)
+
+        # the first and last symbols of the alphabet are themselves valid
+        self.assertAlmostEqual(node._dist(0, 0), 0.0)
+        self.assertAlmostEqual(node._dist(0, node.alphabet_size - 1), 1.35,
+                               places=2)
+
     def test_distance(self):
         n1 = SAXNode({
             "depth": 0,
