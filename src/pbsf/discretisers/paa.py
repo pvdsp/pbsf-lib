@@ -7,7 +7,7 @@ import numpy as np
 
 from pbsf.chains import Chain
 from pbsf.discretisers.base import Discretiser, _divide
-from pbsf.nodes import PAANode
+from pbsf.nodes import AggregateSignNode, PAANode
 from pbsf.utils import has_required
 
 
@@ -35,7 +35,7 @@ class PiecewiseAggregate(Discretiser):
         has_required(params, [
             ("max_depth", Callable),
             ("frames", Callable),
-            ("node_type", [PAANode]),
+            ("node_type", [AggregateSignNode, PAANode]),
             ("node_params", dict)
         ])
         self.max_depth = params["max_depth"]
