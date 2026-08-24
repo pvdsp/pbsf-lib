@@ -137,13 +137,16 @@ class AggregateSignNode(Node):
 
     def __hash__(self) -> int:
         """
-        Return hash of the node based on slope signs.
+        Return hash of the node based on mean signs.
+
+        Zero means are treated as positive, matching `distance`,
+        `__eq__` and `__repr__`.
 
         Returns
         -------
         int
-            Hash value computed from the tuple of signs
-            (1 for positive, -1 for negative).
+            Hash value computed from the tuple of mean signs
+            (1 for positive/zero, -1 for negative).
         """
         return hash(
             tuple(1 if s >= 0 else -1 for s in self.paa)
