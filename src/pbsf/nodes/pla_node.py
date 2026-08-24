@@ -88,12 +88,13 @@ class PLANode(Node):
             raise ValueError("Cannot compare nodes of different depths.")
         if self.distance_threshold != node.distance_threshold:
             raise ValueError("Cannot compare nodes with different distance thresholds.")
+        total = 0.0
         slopes = self.slopes - node.slopes
         intercepts = self.intercepts - node.intercepts
-        length = self.breakpoints[0][1] - self.breakpoints[0][0]
-        j_values = np.arange(1, length + 1).reshape(-1, 1)
-        result = slopes * j_values + intercepts
-        return np.sqrt(np.sum(result ** 2))
+        lengths = [end - begin for begin, end in self.breakpoints]
+        for length, slope, intercept in zip(lengths, slopes, intercepts):
+            total += np.sum((slope * np.arange(length) + intercept) ** 2)
+        return np.sqrt(total)
 
     def __eq__(self, node: 'PLANode') -> bool:
         """
