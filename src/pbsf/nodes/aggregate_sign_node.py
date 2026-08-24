@@ -123,7 +123,7 @@ class AggregateSignNode(Node):
             return False
         return self.distance(node) == 0.0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Return string representation of the AggregateSignNode.
 
