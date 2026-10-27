@@ -6,7 +6,9 @@ from typing import Any
 
 import numpy as np
 from matplotlib import pyplot as plt
+from vus.metrics import get_metrics
 
+VUS_METRICS = ("VUS_ROC", "VUS_PR")
 
 def get_ucr(path: str):
     """
@@ -92,6 +94,8 @@ def evaluate_configurations(
         for params in algorithms:
             name = params.get("name") or params.get("function").__name__
             f.write(f",{name}")
+            for metric in VUS_METRICS:
+                f.write(f",{name}_{metric}")
         f.write("\n")
 
     # Iterate through UCR datasets, apply algorithms, and write results:
@@ -136,6 +140,21 @@ def evaluate_configurations(
                 else:
                     title += "\nIncorrect prediction ✗"
                     results.append(False)
+
+                # Calculate VUS metrics
+                # Retrieve mask of anomaly labels:
+                labels = ((x >= start_anomaly) & (x <= end_anomaly)).astype(int)
+                # VUS expects higher scores to be more anomalous
+                vus_scores = np.asarray(scores, dtype=float)
+                if select_anomaly(scores) == np.argmin(scores):
+                    vus_scores = -vus_scores
+                # VUS requires median anomaly length, but each UCR TS has one anomaly
+                vus_results = get_metrics(
+                    vus_scores, labels,
+                    metric='vus',
+                    slidingWindow=anomaly_length,
+                )
+                results.extend(f"{vus_results[metric]:.4f}" for metric in VUS_METRICS)
 
                 # Visualise the results if requested
                 if visualise:
